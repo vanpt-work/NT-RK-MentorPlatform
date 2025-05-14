@@ -11,16 +11,8 @@
         "@trivago/prettier-plugin-sort-imports",
         "prettier-plugin-tailwindcss"
     ],
-    "importOrder": [
-        "^@/",
-        "^./",
-        "^../"
-    ],
+    "importOrder": ["^@/", "^./", "^../"],
     "importOrderSeparation": true,
     "importOrderSortSpecifiers": true,
-    "importOrderParserPlugins": [
-        "jsx",
-        "typescript",
-        "decorators-legacy"
-    ]
+    "importOrderParserPlugins": ["jsx", "typescript", "decorators-legacy"]
 }
