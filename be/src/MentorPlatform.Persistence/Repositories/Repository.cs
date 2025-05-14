@@ -102,4 +102,14 @@ where TEntity : class, IHasKey<TKey>
     {
         return query.ToListAsync();
     }
+
+    public Task<int> CountAsync<T>(IQueryable<T> query)
+    {
+        return query.CountAsync();
+    }
+
+    public Task<bool> AnyAsync<T>(IQueryable<T> query)
+    {
+        return query.AnyAsync();
+    }
 }
