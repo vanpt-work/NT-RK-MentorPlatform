@@ -1,10 +1,5 @@
 import { z } from "zod";
-
-import {
-    accountSchema,
-    preferencesSchema,
-    profileSchema,
-} from "../utils/schemas";
+import { accountSchema, profileSchema, preferencesSchema } from "../utils/schemas";
 
 // Define types from schemas
 export type AccountFormValues = z.infer<typeof accountSchema>;
@@ -15,34 +10,36 @@ export type PreferencesFormValues = z.infer<typeof preferencesSchema>;
 
 // Sample data for selects
 export const expertiseAreas = [
-    "Leadership",
-    "Programming",
-    "Design",
-    "Marketing",
-    "Data Science",
-    "Business",
-    "Project Management",
-    "Communication",
-] as const;
+  "Leadership",
+  "Programming",
+  "Design",
+  "Marketing",
+  "Data Science",
+  "Business",
+  "Project Management",
+  "Communication",
+];
 
-export const professionalSkills = [
-    "JavaScript",
-    "Python",
-    "React",
-    "Node.js",
-    "UI/UX Design",
-    "Product Management",
-    "Digital Marketing",
-    "Data Analysis",
-    "Machine Learning",
-    "Public Speaking",
-] as const;
+// Topics of Interest for preferences
+export const interestTopics = [
+  "Content Writing",
+  "Design",
+  "Product",
+  "Product Research",
+  "Technical Skills",
+  "Leadership",
+  "Communication",
+  "Career Development",
+  "Work-Life Balance", 
+  "Industry Insights",
+  "Networking",
+  "Entrepreneurship",
+];
 
 export const availabilitySlots = [
-    "Weekdays Morning",
-    "Weekdays Afternoon",
-    "Weekdays Evening",
-    "Weekend Morning",
-    "Weekend Afternoon",
-    "Weekend Evening",
-] as const;
+  "Weekdays",
+  "Weekends",
+  "Mornings",
+  "Afternoons",
+  "Evenings",
+]; 

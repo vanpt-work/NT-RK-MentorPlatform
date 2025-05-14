@@ -24,7 +24,7 @@ export function AccountStep({
 
     // Handle checkbox selection for terms
     const handleTermsChange = (checked: boolean) => {
-        form.setValue("terms", checked, {
+        form.setValue("termsAgreed", checked, {
             shouldValidate: true,
         });
     };
@@ -111,12 +111,12 @@ export function AccountStep({
 
                 <div className="flex items-center space-x-2">
                     <Checkbox
-                        id="terms"
-                        checked={form.watch("terms")}
+                        id="termsAgreed"
+                        checked={form.watch("termsAgreed")}
                         onCheckedChange={handleTermsChange}
                     />
                     <Label
-                        htmlFor="terms"
+                        htmlFor="termsAgreed"
                         className="text-sm leading-none font-medium"
                     >
                         I agree to the{" "}
@@ -143,9 +143,9 @@ export function AccountStep({
                         </button>
                     </Label>
                 </div>
-                {form.formState.errors.terms && (
+                {form.formState.errors.termsAgreed && (
                     <p className="text-sm text-red-500">
-                        {form.formState.errors.terms.message}
+                        {form.formState.errors.termsAgreed.message}
                     </p>
                 )}
             </div>

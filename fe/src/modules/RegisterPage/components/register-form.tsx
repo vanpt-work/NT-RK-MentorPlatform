@@ -34,6 +34,7 @@ import {
     preferencesSchema,
     profileSchema,
 } from "../utils/schemas";
+import LoadingSpinner from "@/common/components/loading-spinner";
 
 export function RegisterForm() {
     const [step, setStep] = useState(1);
@@ -49,22 +50,22 @@ export function RegisterForm() {
             email: "",
             password: "",
             confirmPassword: "",
-            terms: false,
+            termsAgreed: false,
         },
     });
 
     const profileForm = useForm<ProfileFormValues>({
         resolver: zodResolver(profileSchema),
         defaultValues: {
-            role: "learner",
+            role: "Learner",
             fullName: "",
             bio: "",
-            avatarUrl: "",
+            photo: undefined,
             expertise: [],
-            professionalSkills: [],
-            experience: "",
-            communication: "video",
+            professionalSkills: "",
+            industryExperience: "",
             availability: [],
+            communicationMethod: "Video call",
             goals: "",
         },
     });
@@ -72,22 +73,21 @@ export function RegisterForm() {
     const preferencesForm = useForm<PreferencesFormValues>({
         resolver: zodResolver(preferencesSchema) as any,
         defaultValues: {
-            interests: [],
-            sessionFrequency: "weekly",
-            sessionDuration: "60min",
-            learningStyle: "visual",
-            teachingApproach: undefined,
-            privacy: {
+            topics: [],
+            sessionFrequency: "Weekly",
+            sessionDuration: "1 hour",
+            learningStyle: "Visual",
+            privacySettings: {
                 privateProfile: false,
                 allowMessages: true,
-                notifications: true,
+                receiveNotifications: true,
             },
         },
     });
 
     // Handle checkbox selection for terms
     const handleTermsChange = (checked: boolean) => {
-        accountForm.setValue("terms", checked, {
+        accountForm.setValue("termsAgreed", checked, {
             shouldValidate: true,
         });
     };
@@ -100,7 +100,7 @@ export function RegisterForm() {
             reader.onload = (event) => {
                 const result = event.target?.result as string;
                 setAvatarPreview(result);
-                profileForm.setValue("avatarUrl", result);
+                profileForm.setValue("photo", file);
             };
             reader.readAsDataURL(file);
         }
@@ -138,54 +138,6 @@ export function RegisterForm() {
         } finally {
             setIsLoading(false);
         }
-    };
-
-    // Handle expertise selection
-    const handleExpertiseChange = (expertise: string) => {
-        const currentExpertise = profileForm.getValues("expertise") || [];
-        const updatedExpertise = currentExpertise.includes(expertise)
-            ? currentExpertise.filter((e) => e !== expertise)
-            : [...currentExpertise, expertise];
-
-        profileForm.setValue("expertise", updatedExpertise, {
-            shouldValidate: true,
-        });
-    };
-
-    // Handle professional skills selection
-    const handleSkillChange = (skill: string) => {
-        const currentSkills = profileForm.getValues("professionalSkills") || [];
-        const updatedSkills = currentSkills.includes(skill)
-            ? currentSkills.filter((s) => s !== skill)
-            : [...currentSkills, skill];
-
-        profileForm.setValue("professionalSkills", updatedSkills, {
-            shouldValidate: true,
-        });
-    };
-
-    // Handle availability selection
-    const handleAvailabilityChange = (slot: string) => {
-        const currentAvailability = profileForm.getValues("availability") || [];
-        const updatedAvailability = currentAvailability.includes(slot)
-            ? currentAvailability.filter((a) => a !== slot)
-            : [...currentAvailability, slot];
-
-        profileForm.setValue("availability", updatedAvailability, {
-            shouldValidate: true,
-        });
-    };
-
-    // Handle interests selection
-    const handleInterestChange = (interest: string) => {
-        const currentInterests = preferencesForm.getValues("interests") || [];
-        const updatedInterests = currentInterests.includes(interest)
-            ? currentInterests.filter((i) => i !== interest)
-            : [...currentInterests, interest];
-
-        preferencesForm.setValue("interests", updatedInterests, {
-            shouldValidate: true,
-        });
     };
 
     // Step navigation
@@ -259,6 +211,7 @@ export function RegisterForm() {
                         form={profileForm}
                         avatarPreview={avatarPreview}
                         onAvatarChange={handleAvatarChange}
+                        hideRoleSelection={false}
                     />
                 )}
 
@@ -295,8 +248,17 @@ export function RegisterForm() {
                         onClick={preferencesForm.handleSubmit(onFinalSubmit)}
                         disabled={isLoading}
                     >
-                        {isLoading ? "Creating Account..." : "Create Account"}
-                        {!isLoading && <Check className="ml-2 h-4 w-4" />}
+                        {isLoading ? (
+                            <div className="flex items-center justify-center gap-2">
+                                <LoadingSpinner size="sm" />
+                                <span>Creating Account...</span>
+                            </div>
+                        ) : (
+                            <>
+                                Create Account
+                                <Check className="ml-2 h-4 w-4" />
+                            </>
+                        )}
                     </Button>
                 )}
             </CardFooter>

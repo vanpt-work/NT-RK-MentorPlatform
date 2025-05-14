@@ -7,8 +7,12 @@ import {
     GraduationCap,
     Lightbulb,
     LineChart,
+    MessageSquare,
     MessagesSquare,
     Palette,
+    Phone,
+    Users,
+    Video,
 } from "lucide-react";
 import type { UseFormReturn } from "react-hook-form";
 
@@ -33,19 +37,20 @@ import type { ProfileFormValues } from "../types/Account";
 import {
     availabilitySlots,
     expertiseAreas,
-    professionalSkills,
 } from "../types/Account";
 
 type ProfileStepProps = {
     form: UseFormReturn<ProfileFormValues>;
     avatarPreview: string | null;
     onAvatarChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    hideRoleSelection?: boolean;
 };
 
 export function ProfileStep({
     form,
     avatarPreview,
     onAvatarChange,
+    hideRoleSelection = false,
 }: ProfileStepProps) {
     // Handle expertise selection
     const handleExpertiseChange = (expertise: string) => {
@@ -61,12 +66,23 @@ export function ProfileStep({
 
     // Handle professional skills selection
     const handleSkillChange = (skill: string) => {
-        const currentSkills = form.getValues("professionalSkills") || [];
-        const updatedSkills = currentSkills.includes(skill)
-            ? currentSkills.filter((s) => s !== skill)
-            : [...currentSkills, skill];
-
-        form.setValue("professionalSkills", updatedSkills, {
+        // Get current skills as string
+        const currentSkillsStr = form.getValues("professionalSkills") || "";
+        const currentSkills = currentSkillsStr ? currentSkillsStr.split(", ") : [];
+        
+        // Check if skill is already included
+        const hasSkill = currentSkills.includes(skill);
+        
+        // Create new skills array
+        let updatedSkills;
+        if (hasSkill) {
+            updatedSkills = currentSkills.filter(s => s !== skill);
+        } else {
+            updatedSkills = [...currentSkills, skill];
+        }
+        
+        // Join back to string
+        form.setValue("professionalSkills", updatedSkills.join(", "), {
             shouldValidate: true,
         });
     };
@@ -83,59 +99,75 @@ export function ProfileStep({
         });
     };
 
+    // Check if a skill is selected
+    const isSkillSelected = (skill: string) => {
+        const currentSkillsStr = form.getValues("professionalSkills") || "";
+        const currentSkills = currentSkillsStr ? currentSkillsStr.split(", ") : [];
+        return currentSkills.includes(skill);
+    };
+
+    // Handle communication method selection
+    const handleCommunicationChange = (method: "Video call" | "Audio call" | "Text chat") => {
+        form.setValue("communicationMethod", method, {
+            shouldValidate: true,
+        });
+    };
+
     return (
         <form className="space-y-8">
-            <div className="mb-6 pt-2">
-                <h3 className="mb-2 text-lg font-medium">I am joining as:</h3>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <div
-                        className={`flex cursor-pointer flex-col items-center rounded-lg border p-4 text-center transition-all ${
-                            form.getValues("role") === "learner"
-                                ? "border-primary bg-primary/5"
-                                : "hover:border-gray-400"
-                        }`}
-                        onClick={() =>
-                            form.setValue("role", "learner", {
-                                shouldValidate: true,
-                            })
-                        }
-                    >
-                        <div className="mb-2 flex h-16 w-16 items-center justify-center">
-                            <GraduationCap className="text-primary h-12 w-12" />
+            {!hideRoleSelection && (
+                <div className="mb-6 pt-2">
+                    <h3 className="mb-2 text-lg font-medium">I am joining as:</h3>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div
+                            className={`flex cursor-pointer flex-col items-center rounded-lg border p-4 text-center transition-all ${
+                                form.getValues("role") === "Learner"
+                                    ? "border-primary bg-primary/5"
+                                    : "hover:border-gray-400"
+                            }`}
+                            onClick={() =>
+                                form.setValue("role", "Learner", {
+                                    shouldValidate: true,
+                                })
+                            }
+                        >
+                            <div className="mb-2 flex h-16 w-16 items-center justify-center">
+                                <GraduationCap className="text-primary h-12 w-12" />
+                            </div>
+                            <h4 className="text-lg font-medium">Learner</h4>
+                            <p className="text-muted-foreground text-sm">
+                                I want to find mentors
+                            </p>
                         </div>
-                        <h4 className="text-lg font-medium">Learner</h4>
-                        <p className="text-muted-foreground text-sm">
-                            I want to find mentors
-                        </p>
-                    </div>
-
-                    <div
-                        className={`flex cursor-pointer flex-col items-center rounded-lg border p-4 text-center transition-all ${
-                            form.getValues("role") === "mentor"
-                                ? "border-primary bg-primary/5"
-                                : "hover:border-gray-400"
-                        }`}
-                        onClick={() =>
-                            form.setValue("role", "mentor", {
-                                shouldValidate: true,
-                            })
-                        }
-                    >
-                        <div className="mb-2 flex h-16 w-16 items-center justify-center">
-                            <Lightbulb className="text-primary h-12 w-12" />
+                        
+                        <div
+                            className={`flex cursor-pointer flex-col items-center rounded-lg border p-4 text-center transition-all ${
+                                form.getValues("role") === "Mentor"
+                                    ? "border-primary bg-primary/5"
+                                    : "hover:border-gray-400"
+                            }`}
+                            onClick={() =>
+                                form.setValue("role", "Mentor", {
+                                    shouldValidate: true,
+                                })
+                            }
+                        >
+                            <div className="mb-2 flex h-16 w-16 items-center justify-center">
+                                <Users className="text-primary h-12 w-12" />
+                            </div>
+                            <h4 className="text-lg font-medium">Mentor</h4>
+                            <p className="text-muted-foreground text-sm">
+                                I want to mentor others
+                            </p>
                         </div>
-                        <h4 className="text-lg font-medium">Mentor</h4>
-                        <p className="text-muted-foreground text-sm">
-                            I want to mentor others
-                        </p>
                     </div>
+                    {form.formState.errors.role && (
+                        <p className="mt-2 text-sm text-red-500">
+                            {form.formState.errors.role.message}
+                        </p>
+                    )}
                 </div>
-                {form.formState.errors.role && (
-                    <p className="mt-2 text-sm text-red-500">
-                        {form.formState.errors.role.message}
-                    </p>
-                )}
-            </div>
+            )}
 
             {/* Profile Information Block */}
             <div className="rounded-lg border p-6">
@@ -188,7 +220,7 @@ export function ProfileStep({
                                 </Avatar>
                                 <div className="relative">
                                     <Input
-                                        id="avatar"
+                                        id="photo"
                                         type="file"
                                         accept="image/*"
                                         className="hidden"
@@ -199,7 +231,7 @@ export function ProfileStep({
                                         variant="outline"
                                         onClick={() =>
                                             document
-                                                .getElementById("avatar")
+                                                .getElementById("photo")
                                                 ?.click()
                                         }
                                     >
@@ -285,77 +317,44 @@ export function ProfileStep({
                             )}
                         </div>
 
-                        <div className="space-y-3">
-                            <Label>Professional Skills</Label>
-                            <div className="grid grid-cols-2 gap-2">
-                                {professionalSkills.map((skill) => (
-                                    <div
-                                        key={skill}
-                                        className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                            (
-                                                form.getValues(
-                                                    "professionalSkills",
-                                                ) || []
-                                            ).includes(skill)
-                                                ? "border-primary bg-primary/5"
-                                                : "hover:border-gray-400"
-                                        }`}
-                                        onClick={() => handleSkillChange(skill)}
-                                    >
-                                        <span className="text-sm font-medium">
-                                            {skill}
-                                        </span>
-                                    </div>
-                                ))}
+                        <div className="space-y-6">
+                            <div className="space-y-3">
+                                <Label>Professional Skills</Label>
+                                <Textarea
+                                    id="professionalSkills"
+                                    placeholder="e.g. JavaScript, Project Management, Research"
+                                    className="min-h-16"
+                                    {...form.register("professionalSkills")}
+                                />
+                                {form.formState.errors.professionalSkills && (
+                                    <p className="text-sm text-red-500">
+                                        {
+                                            form.formState.errors.professionalSkills
+                                                .message
+                                        }
+                                    </p>
+                                )}
                             </div>
-                            {form.formState.errors.professionalSkills && (
-                                <p className="text-sm text-red-500">
-                                    {
-                                        form.formState.errors.professionalSkills
-                                            .message
-                                    }
-                                </p>
-                            )}
+
+                            <div className="space-y-3">
+                                <Label htmlFor="industryExperience">Industry Experience</Label>
+                                <Textarea
+                                    id="industryExperience"
+                                    placeholder="e.g. 5 years in Tech, 3 years in Finance"
+                                    className="min-h-16"
+                                    {...form.register("industryExperience")}
+                                />
+                                {form.formState.errors.industryExperience && (
+                                    <p className="text-sm text-red-500">
+                                        {form.formState.errors.industryExperience.message}
+                                    </p>
+                                )}
+                            </div>
                         </div>
                     </div>
 
-                    {/* Experience and Goals row */}
-                    <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-                        <div className="space-y-3">
-                            <Label htmlFor="experience">Experience Level</Label>
-                            <Select
-                                defaultValue=""
-                                onValueChange={(value) =>
-                                    form.setValue("experience", value, {
-                                        shouldValidate: true,
-                                    })
-                                }
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select experience level" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="beginner">
-                                        Beginner (0-1 years)
-                                    </SelectItem>
-                                    <SelectItem value="intermediate">
-                                        Intermediate (1-3 years)
-                                    </SelectItem>
-                                    <SelectItem value="advanced">
-                                        Advanced (3-5 years)
-                                    </SelectItem>
-                                    <SelectItem value="expert">
-                                        Expert (5+ years)
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
-                            {form.formState.errors.experience && (
-                                <p className="text-sm text-red-500">
-                                    {form.formState.errors.experience.message}
-                                </p>
-                            )}
-                        </div>
-
+                    {/* Goals row */}
+                    <div className="grid grid-cols-1">
                         <div className="space-y-3">
                             <Label htmlFor="goals">Goals</Label>
                             <Textarea
@@ -379,82 +378,92 @@ export function ProfileStep({
                 <h3 className="mb-4 text-lg font-medium">
                     Communication & Availability
                 </h3>
-                <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-                    <div className="space-y-6">
-                        <div className="space-y-3">
-                            <Label htmlFor="communication">
-                                Preferred Communication Method
-                            </Label>
-                            <Select
-                                defaultValue={form.getValues("communication")}
-                                onValueChange={(value) =>
-                                    form.setValue(
-                                        "communication",
-                                        value as "video" | "audio" | "text",
-                                        {
-                                            shouldValidate: true,
-                                        },
-                                    )
-                                }
+                <div className="space-y-6">
+                    <div className="space-y-3">
+                        <Label htmlFor="communicationMethod">
+                            Preferred Communication Method
+                        </Label>
+                        <div className="grid grid-cols-3 gap-2">
+                            <div
+                                className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
+                                    form.getValues("communicationMethod") === "Video call"
+                                        ? "border-primary bg-primary/5"
+                                        : "hover:border-gray-400"
+                                }`}
+                                onClick={() => handleCommunicationChange("Video call")}
                             >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select communication method" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="video">
-                                        Video Call
-                                    </SelectItem>
-                                    <SelectItem value="audio">
-                                        Audio Call
-                                    </SelectItem>
-                                    <SelectItem value="text">
-                                        Text Chat
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
-                            {form.formState.errors.communication && (
-                                <p className="text-sm text-red-500">
-                                    {
-                                        form.formState.errors.communication
-                                            .message
-                                    }
-                                </p>
-                            )}
+                                <div className="flex h-6 w-6 items-center justify-center">
+                                    <Video className="h-4 w-4 text-primary" />
+                                </div>
+                                <span className="text-sm font-medium">Video Call</span>
+                            </div>
+                            <div
+                                className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
+                                    form.getValues("communicationMethod") === "Audio call"
+                                        ? "border-primary bg-primary/5"
+                                        : "hover:border-gray-400"
+                                }`}
+                                onClick={() => handleCommunicationChange("Audio call")}
+                            >
+                                <div className="flex h-6 w-6 items-center justify-center">
+                                    <Phone className="h-4 w-4 text-primary" />
+                                </div>
+                                <span className="text-sm font-medium">Audio Call</span>
+                            </div>
+                            <div
+                                className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
+                                    form.getValues("communicationMethod") === "Text chat"
+                                        ? "border-primary bg-primary/5"
+                                        : "hover:border-gray-400"
+                                }`}
+                                onClick={() => handleCommunicationChange("Text chat")}
+                            >
+                                <div className="flex h-6 w-6 items-center justify-center">
+                                    <MessageSquare className="h-4 w-4 text-primary" />
+                                </div>
+                                <span className="text-sm font-medium">Text Chat</span>
+                            </div>
                         </div>
+                        {form.formState.errors.communicationMethod && (
+                            <p className="text-sm text-red-500">
+                                {
+                                    form.formState.errors.communicationMethod
+                                        .message
+                                }
+                            </p>
+                        )}
                     </div>
 
-                    <div className="space-y-6">
-                        <div className="space-y-3">
-                            <Label>Your Availability</Label>
-                            <div className="grid grid-cols-2 gap-2">
-                                {availabilitySlots.map((slot) => (
-                                    <div
-                                        key={slot}
-                                        className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                            (
-                                                form.getValues(
-                                                    "availability",
-                                                ) || []
-                                            ).includes(slot)
-                                                ? "border-primary bg-primary/5"
-                                                : "hover:border-gray-400"
-                                        }`}
-                                        onClick={() =>
-                                            handleAvailabilityChange(slot)
-                                        }
-                                    >
-                                        <span className="text-sm font-medium">
-                                            {slot}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                            {form.formState.errors.availability && (
-                                <p className="text-sm text-red-500">
-                                    {form.formState.errors.availability.message}
-                                </p>
-                            )}
+                    <div className="space-y-3">
+                        <Label>Your Availability</Label>
+                        <div className="grid grid-cols-3 gap-2">
+                            {availabilitySlots.map((slot) => (
+                                <div
+                                    key={slot}
+                                    className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
+                                        (
+                                            form.getValues(
+                                                "availability",
+                                            ) || []
+                                        ).includes(slot)
+                                            ? "border-primary bg-primary/5"
+                                            : "hover:border-gray-400"
+                                    }`}
+                                    onClick={() =>
+                                        handleAvailabilityChange(slot)
+                                    }
+                                >
+                                    <span className="text-sm font-medium">
+                                        {slot}
+                                    </span>
+                                </div>
+                            ))}
                         </div>
+                        {form.formState.errors.availability && (
+                            <p className="text-sm text-red-500">
+                                {form.formState.errors.availability.message}
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>
