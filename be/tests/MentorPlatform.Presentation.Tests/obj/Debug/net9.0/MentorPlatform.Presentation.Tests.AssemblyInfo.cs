@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MentorPlatform.Presentation.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d9ce12c5484315a370e03a71f9b66b21b9b7358a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6eb83c81cacdea059221d9b746dcb3c6ecc9663d")]
 [assembly: System.Reflection.AssemblyProductAttribute("MentorPlatform.Presentation.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MentorPlatform.Presentation.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
