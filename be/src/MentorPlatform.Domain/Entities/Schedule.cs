@@ -11,4 +11,6 @@ public class Schedule : AuditableEntity, IHasKey<Guid>
     public DateTimeOffset DateAvailable { get; set; }
     public TimeOnly StartTime { get; set; } 
     public TimeOnly EndTime { get; set; }
+    public MentoringSession? MentoringSession { get; set; }
+
 }
