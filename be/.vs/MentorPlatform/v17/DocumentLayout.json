@@ -1,12 +1,7 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\hieud\\source\\repos\\folder\\be\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{0998DE88-810B-4FC7-9655-C03064AE00B6}|src\\MentorPlatform.Application\\MentorPlatform.Application.csproj|c:\\users\\hieud\\source\\repos\\folder\\be\\src\\mentorplatform.application\\services\\notification\\email\\iemailservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0998DE88-810B-4FC7-9655-C03064AE00B6}|src\\MentorPlatform.Application\\MentorPlatform.Application.csproj|solutionrelative:src\\mentorplatform.application\\services\\notification\\email\\iemailservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    }
-  ],
+  "WorkspaceRootPath": "C:\\Users\\hieud\\Documents\\code\\Net\\mockproject\\NT-RK-MentorPlatform\\be\\",
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -14,7 +9,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": -1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -39,19 +34,6 @@
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "IEmailServices.cs",
-              "DocumentMoniker": "C:\\Users\\hieud\\source\\repos\\folder\\be\\src\\MentorPlatform.Application\\Services\\Notification\\Email\\IEmailServices.cs",
-              "RelativeDocumentMoniker": "src\\MentorPlatform.Application\\Services\\Notification\\Email\\IEmailServices.cs",
-              "ToolTip": "C:\\Users\\hieud\\source\\repos\\folder\\be\\src\\MentorPlatform.Application\\Services\\Notification\\Email\\IEmailServices.cs",
-              "RelativeToolTip": "src\\MentorPlatform.Application\\Services\\Notification\\Email\\IEmailServices.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-14T05:46:33.577Z",
-              "EditorCaption": ""
             }
           ]
         },
