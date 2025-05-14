@@ -1,4 +1,5 @@
 ﻿
+using MentorPlatform.Domain.Enums;
 using MentorPlatform.Domain.Primitives;
 using System.Text.Json.Serialization;
 
@@ -10,12 +11,13 @@ public class User : AuditableEntity, IHasKey<Guid>, ISoftDeleteEntity
     public bool IsDeleted { get; set; } = false;
     public string Email { get; set; } = default!;
     public string Password { get; set; } = default!;
-    public int Role { get; set; }
+    public Role Role { get; set; }
     public bool IsNotification { get; set; } = true;
     public bool IsReceiveMessage { get; set; } = true;
     public bool IsPrivateProfile { get; set; } = false;
     public bool IsVerifyEmail { get; set; } = true;
     public bool IsActive { get; set; } = true;
+    public DateTime LastActiveDate { get; set; } = default!;
     public Guid UserDetailId { get; set; }
     [JsonIgnore]
     public UserDetail UserDetail { get; set; } = default!;
