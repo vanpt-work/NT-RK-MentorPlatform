@@ -25,8 +25,8 @@ public static class DependencyInjection
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
             var auditableInterceptor = sp.GetRequiredService<AuditableEntityInterceptor>();
-            options.UseSqlServer(config.GetConnectionString(nameof(ApplicationDbContext)))
-                .AddInterceptors(auditableInterceptor);
+            options.UseSqlServer("Server=localhost;Database=MentorPlatform;User Id=saa;Password=123;TrustServerCertificate=True;Application Name=parabook;");
+            options.AddInterceptors(auditableInterceptor);
         });
 
         return services;    

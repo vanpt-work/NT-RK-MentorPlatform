@@ -14,14 +14,15 @@ public class User : AuditableEntity, IHasKey<Guid>, ISoftDeleteEntity
     public bool IsNotification { get; set; } = true;
     public bool IsReceiveMessage { get; set; } = true;
     public bool IsPrivateProfile { get; set; } = false;
-    public bool IsVerifyEmail { get; set; } = false;
+    public bool IsVerifyEmail { get; set; } = true;
     public bool IsActive { get; set; } = true;
     public Guid UserDetailId { get; set; }
+    [JsonIgnore]
+    public UserDetail UserDetail { get; set; } = default!;
     public virtual ICollection<UserExpertise>? UserExpertises { get; set; } = default;
     public virtual ICollection<UserCourse>? UserCourses { get; set; }
     public virtual ICollection<MentoringSession>? MentoringSessions { get; set; }
     public virtual ICollection<Schedule>? Schedules { get; set; }
-    [JsonIgnore]
     public virtual ICollection<ApplicationRequest>? ApplicationRequests { get; set; }
     public virtual ICollection<UserCourseCategory>? UserCourseCategories { get; set; } = default;
     public virtual ICollection<RefreshToken>? RefreshTokens { get; set; }

@@ -11,7 +11,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection ConfigureInfrastructureLayer(this IServiceCollection services)
     {
-        services.ConfigureJwtTokenServices();
+        services.ConfigureJwtTokenServices().ConfigureExecutionContext();
         return services;
     }
 
