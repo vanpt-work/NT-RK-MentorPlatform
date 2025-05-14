@@ -1,0 +1,23 @@
+﻿
+using MentorPlatform.Domain.Shared;
+
+namespace MentorPlatform.Application.Commons.Errors;
+
+public static class UserErrorMessages
+{
+    public const string EmailNotAlreadyRegister = "Email does not already register";
+    public const string PasswordIncorrect = "Password incorrect";
+    public const string UserIsDeactivated = "User is deactivated";
+    public const string UserNotExists = "User does not exists";
+    public const string UserHasNotBeenVerified = "User has not been verified email";
+}
+public static class UserErrors
+{
+    public static Error EmailNotAlreadyRegister => new(nameof(EmailNotAlreadyRegister),
+        UserErrorMessages.EmailNotAlreadyRegister);
+
+    public static Error UserIsDeactivated => new(nameof(UserIsDeactivated),
+        UserErrorMessages.UserIsDeactivated);
+
+    public static Error PasswordIncorrect => new(nameof(PasswordIncorrect), UserErrorMessages.PasswordIncorrect);
+}

@@ -1,0 +1,40 @@
+﻿
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using MentorPlatform.Application.Services.Security;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace MentorPlatform.Application.Extensions;
+
+public static class DependencyInjection
+{
+    public static IServiceCollection ConfigureApplicationLayer(this IServiceCollection services)
+    {
+        return services.ConfigureUseCases()
+            .ConfigureJwtTokenOptions()
+            .ConfigureFluentValidation();
+    }
+
+    public static IServiceCollection ConfigureUseCases(this IServiceCollection services)
+    {
+        return services;
+    }
+    public static IServiceCollection ConfigureFluentValidation(this IServiceCollection services)
+    {
+        services.AddValidatorsFromAssemblyContaining(typeof(DependencyInjection));
+        services.AddFluentValidationAutoValidation(options =>
+        {
+            options.DisableDataAnnotationsValidation = true;
+        });
+        return services;
+    }
+
+    public static IServiceCollection ConfigureJwtTokenOptions(this IServiceCollection services)
+    {
+        using var serviceProvider = services.BuildServiceProvider();
+        var config = serviceProvider.GetRequiredService<IConfiguration>();
+        services.Configure<JwtTokenOptions>(config.GetRequiredSection(nameof(JwtTokenOptions)));
+        return services;
+    }
+}
