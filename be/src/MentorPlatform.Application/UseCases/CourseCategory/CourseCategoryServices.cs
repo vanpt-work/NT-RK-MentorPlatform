@@ -8,11 +8,11 @@ using MentorPlatform.Domain.Repositories;
 using MentorPlatform.Domain.Shared;
 
 namespace MentorPlatform.Application.UseCases.CourseCategory;
-public class CourseCategoryService : ICourseCategoryService
+public class CourseCategoryServices : ICourseCategoryServices
 {
     private readonly ICourseCategoryRepository _courseCategoryRepository;
     private readonly IUnitOfWork _unitOfWork;
-    public CourseCategoryService(ICourseCategoryRepository courseCategoryRepository, IUnitOfWork unitOfWork)
+    public CourseCategoryServices(ICourseCategoryRepository courseCategoryRepository, IUnitOfWork unitOfWork)
     {
         _courseCategoryRepository = courseCategoryRepository;
         _unitOfWork = unitOfWork;

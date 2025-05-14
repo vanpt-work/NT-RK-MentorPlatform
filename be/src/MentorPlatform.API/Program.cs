@@ -56,7 +56,7 @@ builder.Services.AddCors(opt =>
 });
 builder.Services.AddExceptionHandler<GlobalHandlingExceptionMiddleware>();
 builder.Services.AddMemoryCache();
-var app = builder.Build();
+  var app = builder.Build();
 
 app.UseExceptionHandler((_) => { });
 if (app.Environment.IsDevelopment())

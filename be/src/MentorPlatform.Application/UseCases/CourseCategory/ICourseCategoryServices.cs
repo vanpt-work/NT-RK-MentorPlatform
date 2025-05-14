@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace MentorPlatform.Application.UseCases.CourseCategory;
-public interface ICourseCategoryService
+public interface ICourseCategoryServices
 {
     public Task<Result> GetAllAsync(QueryParameters queryParameters);
     public Task<Result> GetByIdAsync(Guid id);
