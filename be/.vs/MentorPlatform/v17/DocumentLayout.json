@@ -3,16 +3,40 @@
   "WorkspaceRootPath": "D:\\Documents\\NashTech\\FinalAssignment\\project\\NT-RK-MentorPlatform\\be\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{689E971D-0E02-45B6-8EE7-8DB2D5374F42}|src\\MentorPlatform.API\\MentorPlatform.WebApi.csproj|d:\\documents\\nashtech\\finalassignment\\project\\nt-rk-mentorplatform\\be\\src\\mentorplatform.api\\controllers\\authscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{689E971D-0E02-45B6-8EE7-8DB2D5374F42}|src\\MentorPlatform.API\\MentorPlatform.WebApi.csproj|solutionrelative:src\\mentorplatform.api\\controllers\\authscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{689E971D-0E02-45B6-8EE7-8DB2D5374F42}|src\\MentorPlatform.API\\MentorPlatform.WebApi.csproj|d:\\documents\\nashtech\\finalassignment\\project\\nt-rk-mentorplatform\\be\\src\\mentorplatform.api\\controllers\\coursecategoriescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{689E971D-0E02-45B6-8EE7-8DB2D5374F42}|src\\MentorPlatform.API\\MentorPlatform.WebApi.csproj|solutionrelative:src\\mentorplatform.api\\controllers\\coursecategoriescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{689E971D-0E02-45B6-8EE7-8DB2D5374F42}|src\\MentorPlatform.API\\MentorPlatform.WebApi.csproj|d:\\documents\\nashtech\\finalassignment\\project\\nt-rk-mentorplatform\\be\\src\\mentorplatform.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{689E971D-0E02-45B6-8EE7-8DB2D5374F42}|src\\MentorPlatform.API\\MentorPlatform.WebApi.csproj|solutionrelative:src\\mentorplatform.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{689E971D-0E02-45B6-8EE7-8DB2D5374F42}|src\\MentorPlatform.API\\MentorPlatform.WebApi.csproj|d:\\documents\\nashtech\\finalassignment\\project\\nt-rk-mentorplatform\\be\\src\\mentorplatform.api\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{689E971D-0E02-45B6-8EE7-8DB2D5374F42}|src\\MentorPlatform.API\\MentorPlatform.WebApi.csproj|solutionrelative:src\\mentorplatform.api\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B5AC3FB7-88D2-4BB0-891C-E430F8304C5F}|src\\MentorPlatform.Persistence\\MentorPlatform.Persistence.csproj|d:\\documents\\nashtech\\finalassignment\\project\\nt-rk-mentorplatform\\be\\src\\mentorplatform.persistence\\extensions\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B5AC3FB7-88D2-4BB0-891C-E430F8304C5F}|src\\MentorPlatform.Persistence\\MentorPlatform.Persistence.csproj|solutionrelative:src\\mentorplatform.persistence\\extensions\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{689E971D-0E02-45B6-8EE7-8DB2D5374F42}|src\\MentorPlatform.API\\MentorPlatform.WebApi.csproj|d:\\documents\\nashtech\\finalassignment\\project\\nt-rk-mentorplatform\\be\\src\\mentorplatform.api\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{689E971D-0E02-45B6-8EE7-8DB2D5374F42}|src\\MentorPlatform.API\\MentorPlatform.WebApi.csproj|solutionrelative:src\\mentorplatform.api\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{689E971D-0E02-45B6-8EE7-8DB2D5374F42}|src\\MentorPlatform.API\\MentorPlatform.WebApi.csproj|d:\\documents\\nashtech\\finalassignment\\project\\nt-rk-mentorplatform\\be\\src\\mentorplatform.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{689E971D-0E02-45B6-8EE7-8DB2D5374F42}|src\\MentorPlatform.API\\MentorPlatform.WebApi.csproj|solutionrelative:src\\mentorplatform.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{0998DE88-810B-4FC7-9655-C03064AE00B6}|src\\MentorPlatform.Application\\MentorPlatform.Application.csproj|d:\\documents\\nashtech\\finalassignment\\project\\nt-rk-mentorplatform\\be\\src\\mentorplatform.application\\mentorplatform.application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
       "RelativeMoniker": "D:0:0:{0998DE88-810B-4FC7-9655-C03064AE00B6}|src\\MentorPlatform.Application\\MentorPlatform.Application.csproj|solutionrelative:src\\mentorplatform.application\\mentorplatform.application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{0998DE88-810B-4FC7-9655-C03064AE00B6}|src\\MentorPlatform.Application\\MentorPlatform.Application.csproj|d:\\documents\\nashtech\\finalassignment\\project\\nt-rk-mentorplatform\\be\\src\\mentorplatform.application\\extensions\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0998DE88-810B-4FC7-9655-C03064AE00B6}|src\\MentorPlatform.Application\\MentorPlatform.Application.csproj|solutionrelative:src\\mentorplatform.application\\extensions\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{689E971D-0E02-45B6-8EE7-8DB2D5374F42}|src\\MentorPlatform.API\\MentorPlatform.WebApi.csproj|d:\\documents\\nashtech\\finalassignment\\project\\nt-rk-mentorplatform\\be\\src\\mentorplatform.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{689E971D-0E02-45B6-8EE7-8DB2D5374F42}|src\\MentorPlatform.API\\MentorPlatform.WebApi.csproj|solutionrelative:src\\mentorplatform.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -27,14 +51,27 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "MentorPlatform.Application",
-              "DocumentMoniker": "D:\\Documents\\NashTech\\FinalAssignment\\project\\NT-RK-MentorPlatform\\be\\src\\MentorPlatform.Application\\MentorPlatform.Application.csproj",
-              "RelativeDocumentMoniker": "src\\MentorPlatform.Application\\MentorPlatform.Application.csproj",
-              "ToolTip": "D:\\Documents\\NashTech\\FinalAssignment\\project\\NT-RK-MentorPlatform\\be\\src\\MentorPlatform.Application\\MentorPlatform.Application.csproj",
-              "RelativeToolTip": "src\\MentorPlatform.Application\\MentorPlatform.Application.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-05-14T11:25:05.636Z",
+              "Title": "AuthsController.cs",
+              "DocumentMoniker": "D:\\Documents\\NashTech\\FinalAssignment\\project\\NT-RK-MentorPlatform\\be\\src\\MentorPlatform.API\\Controllers\\AuthsController.cs",
+              "RelativeDocumentMoniker": "src\\MentorPlatform.API\\Controllers\\AuthsController.cs",
+              "ToolTip": "D:\\Documents\\NashTech\\FinalAssignment\\project\\NT-RK-MentorPlatform\\be\\src\\MentorPlatform.API\\Controllers\\AuthsController.cs",
+              "RelativeToolTip": "src\\MentorPlatform.API\\Controllers\\AuthsController.cs",
+              "ViewState": "AgIAABMAAAAAAAAAAAAQwBoAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-14T12:30:58.674Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "CourseCategoriesController.cs",
+              "DocumentMoniker": "D:\\Documents\\NashTech\\FinalAssignment\\project\\NT-RK-MentorPlatform\\be\\src\\MentorPlatform.API\\Controllers\\CourseCategoriesController.cs",
+              "RelativeDocumentMoniker": "src\\MentorPlatform.API\\Controllers\\CourseCategoriesController.cs",
+              "ToolTip": "D:\\Documents\\NashTech\\FinalAssignment\\project\\NT-RK-MentorPlatform\\be\\src\\MentorPlatform.API\\Controllers\\CourseCategoriesController.cs",
+              "RelativeToolTip": "src\\MentorPlatform.API\\Controllers\\CourseCategoriesController.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABwAAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-14T12:30:38.434Z",
               "EditorCaption": ""
             },
             {
@@ -45,20 +82,85 @@
               "RelativeDocumentMoniker": "src\\MentorPlatform.API\\Program.cs",
               "ToolTip": "D:\\Documents\\NashTech\\FinalAssignment\\project\\NT-RK-MentorPlatform\\be\\src\\MentorPlatform.API\\Program.cs",
               "RelativeToolTip": "src\\MentorPlatform.API\\Program.cs",
-              "ViewState": "AgIAACEAAAAAAAAAAAAAADQAAAAMAAAAAAAAAA==",
+              "ViewState": "AgIAABcAAAAAAAAAAIAwwEYAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-14T11:01:25.97Z",
+              "WhenOpened": "2025-05-14T12:25:56.494Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "D:\\Documents\\NashTech\\FinalAssignment\\project\\NT-RK-MentorPlatform\\be\\src\\MentorPlatform.API\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "src\\MentorPlatform.API\\Properties\\launchSettings.json",
+              "ToolTip": "D:\\Documents\\NashTech\\FinalAssignment\\project\\NT-RK-MentorPlatform\\be\\src\\MentorPlatform.API\\Properties\\launchSettings.json",
+              "RelativeToolTip": "src\\MentorPlatform.API\\Properties\\launchSettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-05-14T12:22:07.291Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "DependencyInjection.cs",
+              "DocumentMoniker": "D:\\Documents\\NashTech\\FinalAssignment\\project\\NT-RK-MentorPlatform\\be\\src\\MentorPlatform.Persistence\\Extensions\\DependencyInjection.cs",
+              "RelativeDocumentMoniker": "src\\MentorPlatform.Persistence\\Extensions\\DependencyInjection.cs",
+              "ToolTip": "D:\\Documents\\NashTech\\FinalAssignment\\project\\NT-RK-MentorPlatform\\be\\src\\MentorPlatform.Persistence\\Extensions\\DependencyInjection.cs",
+              "RelativeToolTip": "src\\MentorPlatform.Persistence\\Extensions\\DependencyInjection.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAEwBgAAABEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-14T12:14:35.454Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "appsettings.Development.json",
+              "DocumentMoniker": "D:\\Documents\\NashTech\\FinalAssignment\\project\\NT-RK-MentorPlatform\\be\\src\\MentorPlatform.API\\appsettings.Development.json",
+              "RelativeDocumentMoniker": "src\\MentorPlatform.API\\appsettings.Development.json",
+              "ToolTip": "D:\\Documents\\NashTech\\FinalAssignment\\project\\NT-RK-MentorPlatform\\be\\src\\MentorPlatform.API\\appsettings.Development.json",
+              "RelativeToolTip": "src\\MentorPlatform.API\\appsettings.Development.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAD4AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-05-14T12:11:31.309Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\Documents\\NashTech\\FinalAssignment\\project\\NT-RK-MentorPlatform\\be\\src\\MentorPlatform.API\\appsettings.json",
+              "RelativeDocumentMoniker": "src\\MentorPlatform.API\\appsettings.json",
+              "ToolTip": "D:\\Documents\\NashTech\\FinalAssignment\\project\\NT-RK-MentorPlatform\\be\\src\\MentorPlatform.API\\appsettings.json",
+              "RelativeToolTip": "src\\MentorPlatform.API\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-05-14T12:03:03.184Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "MentorPlatform.Application.csproj",
+              "DocumentMoniker": "D:\\Documents\\NashTech\\FinalAssignment\\project\\NT-RK-MentorPlatform\\be\\src\\MentorPlatform.Application\\MentorPlatform.Application.csproj",
+              "RelativeDocumentMoniker": "src\\MentorPlatform.Application\\MentorPlatform.Application.csproj",
+              "ToolTip": "D:\\Documents\\NashTech\\FinalAssignment\\project\\NT-RK-MentorPlatform\\be\\src\\MentorPlatform.Application\\MentorPlatform.Application.csproj",
+              "RelativeToolTip": "src\\MentorPlatform.Application\\MentorPlatform.Application.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-05-14T11:25:05.636Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
               "Title": "DependencyInjection.cs",
               "DocumentMoniker": "D:\\Documents\\NashTech\\FinalAssignment\\project\\NT-RK-MentorPlatform\\be\\src\\MentorPlatform.Application\\Extensions\\DependencyInjection.cs",
               "RelativeDocumentMoniker": "src\\MentorPlatform.Application\\Extensions\\DependencyInjection.cs",
               "ToolTip": "D:\\Documents\\NashTech\\FinalAssignment\\project\\NT-RK-MentorPlatform\\be\\src\\MentorPlatform.Application\\Extensions\\DependencyInjection.cs",
               "RelativeToolTip": "src\\MentorPlatform.Application\\Extensions\\DependencyInjection.cs",
-              "ViewState": "AgIAABMAAAAAAAAAAAAQwAIAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAABQAAAAAAAAAAAAQwAIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-14T10:58:56.206Z",
               "EditorCaption": ""

@@ -18,7 +18,17 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
     private IDbContextTransaction? _transaction;
 
     public DbSet<User> Users { get; set; } = default!;
+    public DbSet<CourseCategory> CourseCategories { get; set; } = default!;
+    public DbSet<Course> Courses { get; set; } = default!;
+    public DbSet<UserCourseCategory> UserCourseCategories { get; set; } = default!;
+    public DbSet<UserCourse> UserCourses { get; set; } = default!;
+    public DbSet<UserDetail> UserDetails { get; set; } = default!;
+    public DbSet<UserExpertise> UserExpertises { get; set; } = default!;
+
     public DbSet<RefreshToken> RefreshTokens { get; set; } = default!;
+    public DbSet<CourseResource> CourseResources { get; set; } = default!;
+    public DbSet<MentoringSession> MentoringSessions { get; set; } = default!;
+    public DbSet<Schedule> Schedules { get; set; } = default!;
     private bool HasActiveTransaction => _transaction != null;
 
 

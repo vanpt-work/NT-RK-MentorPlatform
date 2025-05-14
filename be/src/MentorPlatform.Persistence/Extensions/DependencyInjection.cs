@@ -25,8 +25,8 @@ public static class DependencyInjection
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
             var auditableInterceptor = sp.GetRequiredService<AuditableEntityInterceptor>();
-            options.UseSqlServer(config.GetConnectionString(nameof(ApplicationDbContext)))
-                .AddInterceptors(auditableInterceptor);
+            options.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=MentorPlatformV1;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
+            options.AddInterceptors(auditableInterceptor);
         });
 
         return services;    

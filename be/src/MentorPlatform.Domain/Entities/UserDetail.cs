@@ -15,6 +15,7 @@ public class UserDetail : AuditableEntity, IHasKey<Guid>
     public string? AvatarUrl { get; set; } = default;
     public string? Experience { get; set; } = default;
     public int CommunicationPreference { get; set; }
+    public string? ProfessionalSkill { get; set; } = default;
     public string? Goals { get; set; }
     public int Duration { get; set; }
     public int SessionFrequency { get; set; }

@@ -6,6 +6,7 @@ using MentorPlatform.Application.UseCases.Authentication;
 using MentorPlatform.Application.UseCases.CourseCategory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace MentorPlatform.Application.Extensions;
 
@@ -26,10 +27,9 @@ public static class DependencyInjection
     }
     public static IServiceCollection ConfigureFluentValidation(this IServiceCollection services)
     {
-        services.AddValidatorsFromAssemblyContaining(typeof(DependencyInjection));
-        services.AddFluentValidationAutoValidation(options =>
-        {
-            options.DisableDataAnnotationsValidation = true;
+        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+        services.AddFluentValidationAutoValidation(fv => {
+            fv.DisableDataAnnotationsValidation = true;
         });
         return services;
     }

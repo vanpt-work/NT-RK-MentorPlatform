@@ -1,4 +1,5 @@
-﻿namespace MentorPlatform.Domain.Constants;
+﻿
+namespace MentorPlatform.Domain.Constants;
 
 public static class CourseCategoryConstants
 {

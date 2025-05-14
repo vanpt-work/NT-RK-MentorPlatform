@@ -16,7 +16,7 @@ public class AuthsController : ApiControllerBase
         _authServices = authServices;
     }
 
-    [Route("login")]
+    [HttpPost("login")]
     public async Task<IActionResult> LoginAsync([FromBody] LoginRequest loginRequest)
     {
         var result = await _authServices.LoginAsync(loginRequest);
@@ -24,7 +24,7 @@ public class AuthsController : ApiControllerBase
         return ProcessResult(result);
     }
 
-    [Route("logout")]
+    [HttpPost("logout")]
     [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.Learner)},{nameof(Role.Mentor)}")]
     public async Task<IActionResult> LogoutAsync()
     {
