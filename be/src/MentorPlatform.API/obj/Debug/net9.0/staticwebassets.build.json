@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "/BVbSV2EIl0mkbzxhJKom54IBt1VX0TXfnaDlFU/QNw=",
+  "Source": "MentorPlatform.WebApi",
+  "BasePath": "_content/MentorPlatform.WebApi",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

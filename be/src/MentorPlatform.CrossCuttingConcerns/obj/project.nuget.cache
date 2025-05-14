@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "UOVfbYUtQmo=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\hieud\\source\\repos\\folder\\be\\src\\MentorPlatform.CrossCuttingConcerns\\MentorPlatform.CrossCuttingConcerns.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\hieud\\.nuget\\packages\\microsoft.net.sdk.compilers.toolset\\9.0.200\\microsoft.net.sdk.compilers.toolset.9.0.200.nupkg.sha512"
+  ],
+  "logs": []
+}

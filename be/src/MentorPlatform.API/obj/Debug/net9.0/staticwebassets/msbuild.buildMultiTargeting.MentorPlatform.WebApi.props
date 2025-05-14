@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\MentorPlatform.WebApi.props" />
+</Project>
