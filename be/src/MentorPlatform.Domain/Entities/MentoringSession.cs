@@ -13,7 +13,6 @@ public class MentoringSession : AuditableEntity, IHasKey<Guid>
     public Guid ScheduleId { get; set; }
     public Schedule Schedule { get; set; } = default!;
     public Guid? OldScheduleId { get; set; } = default;
-    public Schedule? OldSchedule { get; set; } = default;
     public string Title { get; set; } = default!;
     public string Description { get; set; } = default!;
     public int RequestStatus { get; set; }
