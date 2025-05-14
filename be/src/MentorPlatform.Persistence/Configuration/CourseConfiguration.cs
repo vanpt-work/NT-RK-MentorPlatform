@@ -12,6 +12,6 @@ public class CourseConfiguration : IEntityTypeConfiguration<Course>
         builder.HasOne(c => c.CourseCategory)
             .WithMany(cc => cc.Courses)
             .HasForeignKey(c => c.CourseCategoryId);
-
+        builder.HasQueryFilter(cc => !cc.IsDeleted);
     }
 }

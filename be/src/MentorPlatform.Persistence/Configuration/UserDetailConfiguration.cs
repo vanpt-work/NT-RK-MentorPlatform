@@ -33,5 +33,6 @@ public class UserDetailConfiguration : IEntityTypeConfiguration<UserDetail>
 
         builder.Property(ud => ud.LearningStyle)
             .HasMaxLength(UserConstants.MaxLengthLearningStyle);
+        builder.HasQueryFilter(cc => !cc.IsDeleted);
     }
 }

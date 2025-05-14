@@ -20,5 +20,6 @@ public class UserCourseCategoryConfiguartion : IEntityTypeConfiguration<UserCour
         builder.HasOne(ucc => ucc.Category)
             .WithMany(u => u.UserCourseCategories)
             .HasForeignKey(u => u.CategoryId);
+        builder.HasQueryFilter(cc => !cc.IsDeleted);
     }
 }

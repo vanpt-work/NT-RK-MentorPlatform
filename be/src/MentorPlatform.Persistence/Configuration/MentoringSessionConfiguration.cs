@@ -17,5 +17,6 @@ public class MentoringSessionConfiguration : IEntityTypeConfiguration<MentoringS
         builder.HasOne(u => u.Course)
             .WithMany(u => u.MentoringSessions)
             .HasForeignKey(u => u.CourseId);
+        builder.HasQueryFilter(cc => !cc.IsDeleted);
     }
 }

@@ -18,5 +18,6 @@ public class UserExpertiseConfiguration : IEntityTypeConfiguration<UserExpertise
         builder.HasOne(ue => ue.Expertise)
             .WithMany(e => e.UserExpertises)
             .HasForeignKey(ue => ue.ExpertiseId);
+        builder.HasQueryFilter(cc => !cc.IsDeleted);
     }
 }
