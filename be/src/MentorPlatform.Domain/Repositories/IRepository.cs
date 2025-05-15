@@ -20,4 +20,7 @@ where TEntity : IHasKey<TKey>
 
     Task<List<T>> ToListAsync<T>(IQueryable<T> query);
 
+    Task<int> CountAsync<T>(IQueryable<T> query);
+
+    Task<bool> AnyAsync<T>(IQueryable<T> query);
 }
