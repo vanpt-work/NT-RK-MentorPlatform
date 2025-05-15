@@ -40,6 +40,7 @@ where TEntity : class, IHasKey<TKey>
         }
     }
 
+
     public IQueryable<TEntity> GetQueryable()
     {
         return _dbContext.Set<TEntity>().AsNoTracking();
@@ -56,20 +57,31 @@ where TEntity : class, IHasKey<TKey>
         return entity.FirstOrDefaultAsync();
     }
 
+    public Task<List<TEntity>> GetByIdsAsync(List<TKey> ids, params string[] includes)
+    {
+        var entity = _dbContext.Set<TEntity>().Where(e => ids.Contains(e.Id));
+        foreach (var include in includes)
+        {
+            entity = entity.Include(include);
+        }
+
+        return ToListAsync(entity);
+    }
+
     public void Add(TEntity entity)
     {
-        _dbContext.Add(entity);
+        _dbContext.Set<TEntity>().Add(entity);
     }
 
 
     public void Remove(TEntity entity)
     {
-        _dbContext.Remove(entity);
+        _dbContext.Set<TEntity>().Remove(entity);
     }
 
     public void Update(TEntity entity)
     {
-        _dbContext.Update(entity);
+        _dbContext.Set<TEntity>().Update(entity);
     }
 
     public void AddRange(IEnumerable<TEntity> entities)
@@ -101,5 +113,15 @@ where TEntity : class, IHasKey<TKey>
     public Task<List<T>> ToListAsync<T>(IQueryable<T> query)
     {
         return query.ToListAsync();
+    }
+
+    public Task<int> CountAsync<T>(IQueryable<T> query)
+    {
+        return query.CountAsync();
+    }
+
+    public Task<bool> AnyAsync<T>(IQueryable<T> query)
+    {
+        return query.AnyAsync();
     }
 }

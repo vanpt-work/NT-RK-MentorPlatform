@@ -4,10 +4,12 @@ using MentorPlatform.Domain.Primitives;
 namespace MentorPlatform.Domain.Repositories;
 
 public interface IRepository<TEntity, TKey> : IConcurrencyHandler
-where TEntity : IHasKey<TKey>
+    where TEntity : IHasKey<TKey>
 {
+
     IQueryable<TEntity> GetQueryable();
     Task<TEntity?> GetByIdAsync(TKey id, params string[] includes);
+    Task<List<TEntity>> GetByIdsAsync(List<TKey> ids, params string[] includes);
     void Add(TEntity entity);
     void Remove(TEntity entity);
     void Update(TEntity entity);
@@ -20,4 +22,7 @@ where TEntity : IHasKey<TKey>
 
     Task<List<T>> ToListAsync<T>(IQueryable<T> query);
 
+    Task<int> CountAsync<T>(IQueryable<T> query);
+
+    Task<bool> AnyAsync<T>(IQueryable<T> query);
 }

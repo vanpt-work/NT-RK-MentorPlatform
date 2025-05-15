@@ -1,17 +1,33 @@
 using MentorPlatform.Application.Services.Security;
 using MentorPlatform.WebApi.Extensions;
 using MentorPlatform.WebApi.Middlewares;
+using MentorPlatform.WebApi.OpenApi;
 using MentorPlatform.WebApi.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.IdentityModel.Tokens;
+using RazorLight;
+using System.Reflection;
 using System.Security.Cryptography;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
+builder.Services.AddSwaggerGen(SwaggerGenOptionsConfig.ConfigureSwaggerGenOptions);
 builder.Services.AddOpenApi();
+
+
+
 builder.Services.AddControllers();
-builder.Services.ConfigureEntireLayers();
+builder.Services.ConfigureEntireLayers(builder.Configuration);
+
+var assembly = Assembly.GetExecutingAssembly();
+builder.Services.AddSingleton<IRazorLightEngine>(provider =>
+    new RazorLightEngineBuilder()
+        .UseEmbeddedResourcesProject(assembly, "MentorPlatform.WebApi")
+        .UseMemoryCachingProvider()
+        .Build()
+);
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -56,12 +72,16 @@ builder.Services.AddCors(opt =>
 });
 builder.Services.AddExceptionHandler<GlobalHandlingExceptionMiddleware>();
 builder.Services.AddMemoryCache();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 app.UseExceptionHandler((_) => { });
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
     await app.InitializeDatabaseAsync();
 }
 

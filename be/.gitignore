@@ -9,6 +9,7 @@ Logs/
 project.lock.json
 .vs/
 
+
 # mstest test results
 TestResults
 
