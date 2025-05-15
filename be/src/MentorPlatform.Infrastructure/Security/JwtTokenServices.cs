@@ -29,13 +29,12 @@ public class JwtTokenServices : IJwtTokenServices
         _jwtOptions = jwtOptions.Value;
     }
 
-    public string GenerateAccessToken(User user)
+    public string GenerateAccessToken(User user, Guid refreshTokenId)
     {
         RSA rsa = RSA.Create();
         rsa.ImportRSAPrivateKey(Convert.FromBase64String(_jwtOptions.PrivateKey), out _);
         RsaSecurityKey key = new(rsa);
         SigningCredentials credentials = new(key, SecurityAlgorithms.RsaSha256);
-        var refreshTokenId = user.RefreshTokens!.LastOrDefault()!.Id;
         ClaimsIdentity claimsList = new(new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sid, user.Id.ToString()),

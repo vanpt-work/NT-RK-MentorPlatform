@@ -5,7 +5,7 @@ namespace MentorPlatform.Application.Services.Security;
 
 public interface IJwtTokenServices
 {
-    string GenerateAccessToken(User user);
+    string GenerateAccessToken(User user, Guid refreshTokenId);
     string GenerateRefreshToken();
 
     ClaimsPrincipal ValidateAndDecode(string accessToken);

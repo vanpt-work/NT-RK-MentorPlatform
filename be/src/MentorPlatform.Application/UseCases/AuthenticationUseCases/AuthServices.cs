@@ -36,6 +36,7 @@ public class AuthServices: IAuthServices
     private readonly IUnitOfWork _unitOfWork;
     private readonly IExecutionContext _executionContext;
     private readonly IRazorLightEngine _razorLightEngine;
+    private readonly IRepository<RefreshToken, Guid> _refreshTokenRepository;
     private readonly IMemoryCache _memoryCache;
     private readonly IRepository<UserExpertise, Guid> _userExpertiseRepository;
     private readonly IBackgroundTaskQueue<Func<IServiceProvider, CancellationToken, ValueTask>> _mailQueue;
@@ -48,6 +49,7 @@ public class AuthServices: IAuthServices
         IOptions<JwtTokenOptions> jwtTokenOptions, 
         IExecutionContext executionContext,
         IRepository<Domain.Entities.CourseCategory, Guid> courseCategoryRepository,
+        IRepository<RefreshToken, Guid> refreshTokenRepository,
         IRepository<UserExpertise, Guid> userExpertiseRepository,
         IRazorLightEngine razorLightEngine,
         IMemoryCache memoryCache,
@@ -62,6 +64,7 @@ public class AuthServices: IAuthServices
         _unitOfWork = unitOfWork;
         _userExpertiseRepository = userExpertiseRepository;
         _razorLightEngine = razorLightEngine;
+        _refreshTokenRepository = refreshTokenRepository;
         _memoryCache = memoryCache;
         _fileStorageServices = fileStorageFactory.Get();
         _courseCategoryRepository = courseCategoryRepository;
@@ -96,16 +99,15 @@ public class AuthServices: IAuthServices
         }
 
         var refreshToken = _jwtServices.GenerateRefreshToken();
-
-        user.RefreshTokens!.Add(new RefreshToken
+        var freshTokenObject = new RefreshToken
         {
-            Value = refreshToken,
-            Expired = DateTime.UtcNow.AddDays(_jwtTokenOptions.ExpireRefreshTokenDays),
-        });
+            Value = refreshToken, Expired = DateTime.UtcNow.AddDays(_jwtTokenOptions.ExpireRefreshTokenDays),
+        };
+        _refreshTokenRepository.Add(freshTokenObject);
 
         await _unitOfWork.SaveChangesAsync();
 
-        var accessToken = _jwtServices.GenerateAccessToken(user);
+        var accessToken = _jwtServices.GenerateAccessToken(user, freshTokenObject.Id);
 
         return new LoginResponse { AccessToken = accessToken, RefreshToken = refreshToken };
     }
@@ -151,7 +153,7 @@ public class AuthServices: IAuthServices
     public async Task<Result<string>> LogoutAsync()
     {
         var userId = _executionContext.GetUserId();
-        var user = await _userRepository.GetByIdAsync(userId, nameof(User.RefreshTokens));
+        var user = await _userRepository.GetByIdAsync(userId);
         await RecallUserAccessAndRefreshTokenAsync(user!);
         return AuthCommandMessages.LogoutSuccessfully;
     }
@@ -357,8 +359,9 @@ public class AuthServices: IAuthServices
     private async Task RecallUserAccessAndRefreshTokenAsync(User user)
     {
         var refreshTokenId = _executionContext.GetIdentityTokenId();
-        var refreshToken = user.RefreshTokens!.Where(r => r.Id == refreshTokenId)!.FirstOrDefault();
-        user.RefreshTokens!.Remove(refreshToken!);
+        var refreshToken = await _refreshTokenRepository.GetByIdAsync(refreshTokenId);
+
+        _refreshTokenRepository.Remove(refreshToken!);
         _jwtServices.RecallAccessToken();
         await _unitOfWork.SaveChangesAsync();
     }
