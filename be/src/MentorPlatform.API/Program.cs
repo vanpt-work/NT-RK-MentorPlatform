@@ -17,7 +17,7 @@ builder.Services.AddOpenApi();
 
 
 builder.Services.AddControllers();
-builder.Services.ConfigureEntireLayers();
+builder.Services.ConfigureEntireLayers(builder.Configuration);
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

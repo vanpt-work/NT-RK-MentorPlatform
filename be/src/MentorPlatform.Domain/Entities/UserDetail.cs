@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace MentorPlatform.Domain.Entities;
 
-public class UserDetail : AuditableEntity, IHasKey<Guid>
+public class UserDetail : AuditableEntity, IHasKey<Guid>, ISoftDeleteEntity
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }
@@ -22,4 +22,5 @@ public class UserDetail : AuditableEntity, IHasKey<Guid>
     public string? LearningStyle { get; set; } = default!;
     public List<string>? TeachingStyles { get; set; } = default!;
 
+    public bool IsDeleted { get; set; }
 }

@@ -14,14 +14,14 @@ namespace MentorPlatform.WebApi.Extensions;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection ConfigureEntireLayers(this IServiceCollection services)
+    public static IServiceCollection ConfigureEntireLayers(this IServiceCollection services, IConfiguration config)
     {
         services.Configure<ApiBehaviorOptions>(options =>
         {
             options.SuppressModelStateInvalidFilter = true;
         });
         services.ConfigureApplicationLayer()
-            .ConfigurePersistenceLayer()
+            .ConfigurePersistenceLayer(config)
             .ConfigureInfrastructureLayer();
         return services;
     }

@@ -29,6 +29,8 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
     public DbSet<CourseResource> CourseResources { get; set; } = default!;
     public DbSet<MentoringSession> MentoringSessions { get; set; } = default!;
     public DbSet<Schedule> Schedules { get; set; } = default!;
+    public DbSet<ApplicationDocument> ApplicationDocuments { get; set; } = default!;
+    public DbSet<ApplicationRequest> ApplicationRequests { get; set; } = default!;
     private bool HasActiveTransaction => _transaction != null;
 
 

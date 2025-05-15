@@ -20,5 +20,6 @@ public class UserCourseConfiguration : IEntityTypeConfiguration<UserCourse>
         builder.HasOne(uc => uc.Course)
             .WithMany(c => c.UserCourses)
             .HasForeignKey(uc => uc.CourseId);
+        builder.HasQueryFilter(cc => !cc.IsDeleted);
     }
 }

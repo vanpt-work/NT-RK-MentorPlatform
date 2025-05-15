@@ -20,6 +20,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .WithOne()
             .HasForeignKey(u => u.UserId)
             .OnDelete(DeleteBehavior.NoAction);
-        
+        builder.HasQueryFilter(cc => !cc.IsDeleted);
     }
 }

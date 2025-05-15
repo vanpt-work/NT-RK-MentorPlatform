@@ -45,6 +45,9 @@ namespace MentorPlatform.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
@@ -55,7 +58,7 @@ namespace MentorPlatform.Persistence.Migrations
 
                     b.HasIndex("ApplicationRequestId");
 
-                    b.ToTable("ApplicationDocument");
+                    b.ToTable("ApplicationDocuments");
                 });
 
             modelBuilder.Entity("MentorPlatform.Domain.Entities.ApplicationRequest", b =>
@@ -81,6 +84,9 @@ namespace MentorPlatform.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
@@ -102,7 +108,7 @@ namespace MentorPlatform.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ApplicationRequest");
+                    b.ToTable("ApplicationRequests");
                 });
 
             modelBuilder.Entity("MentorPlatform.Domain.Entities.Course", b =>
@@ -211,6 +217,9 @@ namespace MentorPlatform.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
@@ -239,6 +248,9 @@ namespace MentorPlatform.Persistence.Migrations
 
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
@@ -273,6 +285,9 @@ namespace MentorPlatform.Persistence.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<Guid>("LearnerId")
                         .HasColumnType("uniqueidentifier");
@@ -325,6 +340,9 @@ namespace MentorPlatform.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
@@ -357,6 +375,9 @@ namespace MentorPlatform.Persistence.Migrations
 
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<Guid>("MentorId")
                         .HasColumnType("uniqueidentifier");
@@ -454,6 +475,9 @@ namespace MentorPlatform.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("JoinDate")
                         .HasColumnType("datetime2");
 
@@ -489,6 +513,9 @@ namespace MentorPlatform.Persistence.Migrations
 
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
@@ -542,6 +569,9 @@ namespace MentorPlatform.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LearningStyle")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -587,6 +617,9 @@ namespace MentorPlatform.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
@@ -616,7 +649,7 @@ namespace MentorPlatform.Persistence.Migrations
                     b.HasOne("MentorPlatform.Domain.Entities.User", "User")
                         .WithMany("ApplicationRequests")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("User");

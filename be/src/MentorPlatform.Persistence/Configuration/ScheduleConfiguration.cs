@@ -18,6 +18,7 @@ public class ScheduleConfiguration : IEntityTypeConfiguration<Schedule>
             .WithOne(s => s.Schedule)
             .HasForeignKey<MentoringSession>(ms => ms.ScheduleId)
             .OnDelete(DeleteBehavior.NoAction);
+        builder.HasQueryFilter(cc => !cc.IsDeleted);
 
     }
 }

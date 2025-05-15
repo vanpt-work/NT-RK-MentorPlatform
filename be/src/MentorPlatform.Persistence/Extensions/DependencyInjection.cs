@@ -10,22 +10,20 @@ namespace MentorPlatform.Persistence.Extensions;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection ConfigurePersistenceLayer(this IServiceCollection services)
+    public static IServiceCollection ConfigurePersistenceLayer(this IServiceCollection services, IConfiguration config)
     {
-        services.ConfigureApplicationDbContext()
+        services.ConfigureApplicationDbContext(config)
             .ConfigureRepositories();
         return services;
     }
 
-    public static IServiceCollection ConfigureApplicationDbContext(this IServiceCollection services)
+    public static IServiceCollection ConfigureApplicationDbContext(this IServiceCollection services, IConfiguration config)
     {
-        using var serviceProvider = services.BuildServiceProvider();
-        var config = serviceProvider.GetRequiredService<IConfiguration>();
         services.AddScoped<AuditableEntityInterceptor>();
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
             var auditableInterceptor = sp.GetRequiredService<AuditableEntityInterceptor>();
-            options.UseSqlServer("Data Source=(Localdb)\\MSSQLLocalDB;Initial Catalog=MentorPlatformV2;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
+            options.UseSqlServer(config.GetConnectionString(nameof(ApplicationDbContext)));
             options.AddInterceptors(auditableInterceptor);
         });
 

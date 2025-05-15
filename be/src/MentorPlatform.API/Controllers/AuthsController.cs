@@ -32,4 +32,12 @@ public class AuthsController : ApiControllerBase
 
         return ProcessResult(result);
     }
+
+    [HttpPost("register")]
+    public async Task<IActionResult> RegisterAsync([FromForm] RegisterRequest registerRequest)
+    {
+        var result = await _authServices.RegisterAsync(registerRequest);
+
+        return ProcessResult(result);
+    }
 }
