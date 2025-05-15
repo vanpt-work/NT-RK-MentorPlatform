@@ -26,7 +26,7 @@ jobs:
 
     - name: restore dependencies
       run: |
-        cd be/src
+        cd be
         dotnet restore MentorPlatform.sln MentorPlatform.sln
 
     - name: run roslyn
