@@ -27,6 +27,11 @@ public class Result
         return new(statusCode, false, errors);
     }
 
+    public static Result Failure(params Error[] errors)
+    {
+        return new(400, false, errors);
+    }
+
     public static Result Success(int statusCode = 200)
     {
         return new(statusCode, true);

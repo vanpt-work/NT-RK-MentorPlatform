@@ -62,11 +62,14 @@ builder.Services.AddCors(opt =>
 });
 builder.Services.AddExceptionHandler<GlobalHandlingExceptionMiddleware>();
 builder.Services.AddMemoryCache();
-  var app = builder.Build();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+var app = builder.Build();
 
 app.UseExceptionHandler((_) => { });
 if (app.Environment.IsDevelopment())
 {
+    app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
     await app.InitializeDatabaseAsync();
