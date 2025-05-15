@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
+	  <PreserveCompilationContext>true</PreserveCompilationContext>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
@@ -16,6 +17,14 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
   </ItemGroup>
 
+    <PackageReference Include="RazorLight" Version="2.3.1" />
+  </ItemGroup>
+		<ItemGroup>
+			<EmbeddedResource Include="Templates\*.cshtml" />
+		</ItemGroup>
+		<ItemGroup>
+		  <Content Remove="Templates\ForgotPasswordTemplate.cshtml" />
+		</ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MentorPlatform.Application\MentorPlatform.Application.csproj" />
     <ProjectReference Include="..\MentorPlatform.CrossCuttingConcerns\MentorPlatform.CrossCuttingConcerns.csproj" />

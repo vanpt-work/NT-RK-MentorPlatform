@@ -24,6 +24,21 @@ public class AuthsController : ApiControllerBase
         return ProcessResult(result);
     }
 
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPasswordAsync([FromBody] ForgotPasswordRequest loginRequest)
+    {
+        var result = await _authServices.ForgotPasswordAsync(loginRequest);
+
+        return ProcessResult(result);
+    }
+
+    [HttpPost("verify-email")]
+    public async Task<IActionResult> VerifyEmailAsync([FromBody] VerifyEmailModel verifyEmailModel)
+    {
+        var result = await _authServices.VerifyEmailAsync(verifyEmailModel);
+
+        return ProcessResult(result);
+    }
     [HttpPost("logout")]
     [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.Learner)},{nameof(Role.Mentor)}")]
     public async Task<IActionResult> LogoutAsync()
