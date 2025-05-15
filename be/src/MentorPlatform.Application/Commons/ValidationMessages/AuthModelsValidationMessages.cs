@@ -22,4 +22,6 @@ public static class AuthModelsValidationMessages
     public const string FormatEmailInvalid = "Email must be 8–50 characters and be valid format";
     public const string FormatPasswordInvalid = "Password must be 8–32 characters and include uppercase, lowercase, number & special characters.";
     public const string AvatarShouldLessThanMaxLength = "Image must less than or equal {maxLength} mb.";
+    public const string AccessTokenRequired = "Access token is required.";
+    public const string RefreshTokenRequired = "Refresh token is required";
 }

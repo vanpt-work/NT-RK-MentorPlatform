@@ -1,6 +1,6 @@
 ﻿using MentorPlatform.Domain.Enums;
 
-namespace MentorPlatform.Application.Commons.Models.Responses;
+namespace MentorPlatform.Application.Commons.Models.Responses.AuthResponses;
 public class UserResponse
 {
     public Guid Id { get; set; }

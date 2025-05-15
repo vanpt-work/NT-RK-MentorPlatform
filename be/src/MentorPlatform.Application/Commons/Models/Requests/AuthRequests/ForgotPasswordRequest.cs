@@ -3,7 +3,7 @@ using FluentValidation;
 using MentorPlatform.Application.Commons.ValidationMessages;
 using MentorPlatform.Domain.Constants;
 
-namespace MentorPlatform.Application.Commons.Models.Requests;
+namespace MentorPlatform.Application.Commons.Models.Requests.AuthRequests;
 
 public class ForgotPasswordRequest
 {

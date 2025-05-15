@@ -1,6 +1,6 @@
 ﻿using MentorPlatform.Application.Commons.Models;
 using MentorPlatform.Application.Commons.Models.Query;
-using MentorPlatform.Application.Commons.Models.Responses;
+using MentorPlatform.Application.Commons.Models.Responses.AuthResponses;
 using MentorPlatform.Domain.Enums;
 using MentorPlatform.Domain.Shared;
 

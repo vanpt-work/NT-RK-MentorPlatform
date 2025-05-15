@@ -5,7 +5,7 @@ using MentorPlatform.Domain.Constants;
 using MentorPlatform.Domain.Enums;
 using Microsoft.AspNetCore.Http;
 
-namespace MentorPlatform.Application.Commons.Models.Requests;
+namespace MentorPlatform.Application.Commons.Models.Requests.AuthRequests;
 
 public class RegisterRequest
 {
@@ -22,7 +22,7 @@ public class RegisterRequest
     public string? Goals { get; set; } = default;
     public List<int>? Availability { get; set; } = default;
     public List<Guid>? CourseCategoryIds { get; set; } = default;
-    public int SessionFrequency { get; set; } 
+    public int SessionFrequency { get; set; }
     public int Duration { get; set; }
     public int? LearningStyle { get; set; } = default!;
     public List<int>? TeachingStyles { get; set; } = default!;
@@ -100,8 +100,8 @@ public class RegisterRequestValidator : AbstractValidator<RegisterRequest>
             .WithMessage(AuthModelsValidationMessages.PreferredLearningStyleInvalid);
 
         RuleFor(x => x.TeachingStyles)
-            .Must(list => list == null || (list!.Distinct().Count() == list.Count &&
-                                           list!.All(id => Enum.IsDefined(typeof(TeachingStyle), id))))
+            .Must(list => list == null || list!.Distinct().Count() == list.Count &&
+                                           list!.All(id => Enum.IsDefined(typeof(TeachingStyle), id)))
             .WithMessage(AuthModelsValidationMessages.PreferredTeachingStyleInvalid);
     }
 }

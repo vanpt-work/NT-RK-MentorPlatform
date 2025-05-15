@@ -1,7 +1,7 @@
 ﻿using MentorPlatform.Application.Commons.Errors;
 using MentorPlatform.Application.Commons.Mappings;
 using MentorPlatform.Application.Commons.Models.Query;
-using MentorPlatform.Application.Commons.Models.Responses;
+using MentorPlatform.Application.Commons.Models.Responses.AuthResponses;
 using MentorPlatform.Domain.Repositories;
 using MentorPlatform.Domain.Shared;
 using System.Data;

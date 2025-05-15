@@ -1,4 +1,4 @@
-﻿namespace MentorPlatform.Application.Commons.Models.Responses;
+﻿namespace MentorPlatform.Application.Commons.Models.Responses.AuthResponses;
 public class UserDetailResponse
 {
     public Guid Id { get; set; }
