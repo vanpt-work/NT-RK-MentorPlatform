@@ -183,7 +183,7 @@ public class AuthServices: IAuthServices
             var mailServices = sp.GetRequiredService<IApplicationMailServices>();
             await mailServices.SendMailAsync(
                     user.Email,
-                    "",
+                    MailInformationConstants.TitleVerifyCodeEmail,
                     mailContent,
                     cancellationToken: cancellationToken
                 );
@@ -226,7 +226,6 @@ public class AuthServices: IAuthServices
 
     private async Task<string> GetVerifyEmailContentAsync(User user)
     {
-        var template = Path.Combine(Environment.CurrentDirectory, "Templates/VerifyMailTemplate.cshtml");
 
         var code = GenerateVerifyCode();
 
@@ -237,7 +236,7 @@ public class AuthServices: IAuthServices
             Code = code,
             RecipientName = user.UserDetail.FullName
         };
-        return await _razorLightEngine.CompileRenderAsync(template, emailVerificationModel);
+        return await _razorLightEngine.CompileRenderAsync("Templates.VerifyMailTemplate", emailVerificationModel);
     }
 
     private static string GenerateVerifyCode()

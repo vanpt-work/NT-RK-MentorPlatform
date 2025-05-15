@@ -20,6 +20,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection ConfigureInfrastructureLayer(this IServiceCollection services)
     {
+        services.AddTransient<IApplicationMailServices, ApplicationMailServices>();
         services.AddHostedService<MailSenderBackgroundService>();
         services.AddSingleton(typeof(IBackgroundTaskQueue<>), typeof(BackgroundTaskQueue<>));
         services.ConfigureInfrastructureServices()
@@ -35,7 +36,6 @@ public static class DependencyInjection
         services.Configure<FileStorageOptions>(config.GetSection(nameof(FileStorageOptions)));
 
         services.AddScoped<IJwtTokenServices, JwtTokenServices>();
-        services.AddScoped<IApplicationMailServices, ApplicationMailServices>();
         services
             .AddScoped<INamedFileStorageServices, CloudinaryStorageServices>((sp) =>
             {

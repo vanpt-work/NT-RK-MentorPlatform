@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
+	  <PreserveCompilationContext>true</PreserveCompilationContext>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
@@ -15,7 +16,9 @@
     </PackageReference>
     <PackageReference Include="RazorLight" Version="2.3.1" />
   </ItemGroup>
-
+		<ItemGroup>
+			<EmbeddedResource Include="Templates\*.cshtml" />
+		</ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MentorPlatform.Application\MentorPlatform.Application.csproj" />
     <ProjectReference Include="..\MentorPlatform.CrossCuttingConcerns\MentorPlatform.CrossCuttingConcerns.csproj" />

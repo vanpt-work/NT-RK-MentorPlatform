@@ -40,6 +40,7 @@ where TEntity : class, IHasKey<TKey>
         }
     }
 
+
     public IQueryable<TEntity> GetQueryable()
     {
         return _dbContext.Set<TEntity>().AsNoTracking();

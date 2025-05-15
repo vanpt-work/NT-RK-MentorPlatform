@@ -5,15 +5,22 @@ using MentorPlatform.WebApi.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using RazorLight;
+using System.Reflection;
 using System.Security.Cryptography;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.ConfigureEntireLayers(builder.Configuration);
-builder.Services.AddSingleton<IRazorLightEngine>();
+
+var assembly = Assembly.GetExecutingAssembly();
+builder.Services.AddSingleton<IRazorLightEngine>(provider =>
+    new RazorLightEngineBuilder()
+        .UseEmbeddedResourcesProject(assembly, "MentorPlatform.WebApi")
+        .UseMemoryCachingProvider()
+        .Build()
+);
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

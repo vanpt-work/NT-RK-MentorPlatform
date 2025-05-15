@@ -15,6 +15,7 @@ public class UserRepository : Repository<User, Guid>, IUserRepository
     {
         return _dbSet.Where(u => u.Email == email)
             .Include(u => u.RefreshTokens)
+            .Include(u => u.UserDetail)
             .FirstOrDefaultAsync();
     }
 }
