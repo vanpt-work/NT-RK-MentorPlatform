@@ -111,7 +111,7 @@ public class CourseCategoryServices : ICourseCategoryServices
     }
     public async Task<Result> DeleteAsync(Guid id)
     {
-        var selectedCategory = await _courseCategoryRepository.GetByIdAsync(id, nameof(Domain.Entities.CourseCategory), nameof(UserCourseCategory));
+        var selectedCategory = await _courseCategoryRepository.GetByIdAsync(id, nameof(Domain.Entities.CourseCategory.UserCourseCategories), nameof(Domain.Entities.CourseCategory.Courses));
         if (selectedCategory == null)
         {
             return Result.Failure(404, CourseCategoryErrors.CourseCategoryNotExists);
