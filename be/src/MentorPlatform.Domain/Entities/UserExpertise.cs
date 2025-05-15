@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace MentorPlatform.Domain.Entities;
 
-public class UserExpertise : AuditableEntity, IHasKey<Guid>
+public class UserExpertise : AuditableEntity, IHasKey<Guid>, ISoftDeleteEntity
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }
@@ -14,4 +14,6 @@ public class UserExpertise : AuditableEntity, IHasKey<Guid>
     public Guid ExpertiseId { get; set; }
     [JsonIgnore]
     public Expertise Expertise { get; set; } = default!;
+
+    public bool IsDeleted { get; set; }
 }

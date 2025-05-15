@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace MentorPlatform.Domain.Entities;
 
-public class ApplicationRequest : AuditableEntity, IHasKey<Guid>
+public class ApplicationRequest : AuditableEntity, IHasKey<Guid>, ISoftDeleteEntity
 {
     public Guid Id { get; set; }
     public string Education { get; set; } = default!;
@@ -18,4 +18,5 @@ public class ApplicationRequest : AuditableEntity, IHasKey<Guid>
     public User User { get; set; } = default!;
 
     public virtual ICollection<ApplicationDocument>? ApplicationDocuments { get; set; } = default;
+    public bool IsDeleted { get; set; }
 }

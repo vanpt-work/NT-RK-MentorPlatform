@@ -75,6 +75,11 @@ public class AuthServices: IAuthServices
         return new LoginResponse { AccessToken = accessToken, RefreshToken = refreshToken };
     }
 
+    public Task<Result<string>> RegisterAsync(RegisterRequest registerRequest)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<Result<string>> LogoutAsync()
     {
         var userId = _executionContext.GetUserId();
