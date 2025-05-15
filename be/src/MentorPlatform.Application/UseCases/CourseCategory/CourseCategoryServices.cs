@@ -38,7 +38,7 @@ public class CourseCategoryServices : ICourseCategoryServices
                                                                   pageIndex: queryParameters.PageNumber,
                                                                   pageSize: queryParameters.PageSize);
        
-        return Result<Result<PaginationResult<CourseCategoryResponse>>>.Success(res);
+        return Result<PaginationResult<CourseCategoryResponse>>.Success(res);
     }
 
     public async Task<Result> GetByIdAsync(Guid id)
@@ -73,9 +73,7 @@ public class CourseCategoryServices : ICourseCategoryServices
     public async Task<Result> CreateAsync(CreateCourseCategoryRequest createRequest)
     {
         var query = _courseCategoryRepository.GetQueryable().Where(x => x.Name.ToLower() == createRequest.Name.Trim().ToLower());
-        var test = await _courseCategoryRepository.ToListAsync(query);
-        var testAll = await _courseCategoryRepository.ToListAsync(_courseCategoryRepository.GetQueryable());
-            if (await _courseCategoryRepository.AnyAsync(query))
+       if (await _courseCategoryRepository.AnyAsync(query))
         {
             return Result.Failure(400, CourseCategoryErrors.CourseCategoryDuplicateName);
         }

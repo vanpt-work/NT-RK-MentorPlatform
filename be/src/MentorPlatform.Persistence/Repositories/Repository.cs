@@ -59,7 +59,6 @@ where TEntity : class, IHasKey<TKey>
     public void Add(TEntity entity)
     {
         _dbContext.Set<TEntity>().Add(entity);
-        var tmp = _dbContext.Entry(entity).State;
     }
 
 
