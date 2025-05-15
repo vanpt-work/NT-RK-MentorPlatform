@@ -26,23 +26,42 @@ public class UserRepository : Repository<User, Guid>, IUserRepository
             .ToListAsync();
     }
 
-    public Task<List<User>> GetUsersAsync(int offset, int count)
+    public Task<int> CountByRoleAsync(Role role = Role.All)
     {
-        return _dbSet
-            .OrderBy(u => u.Id)
-            .Skip(offset - 1)
-            .Take(count)
-            .ToListAsync();
+        if (role == Role.All)
+        {
+            return _dbSet.CountAsync();
+        }
+        else
+        {
+            return _dbSet.CountAsync(u => u.Role == role);
+        }
     }
 
-    public Task<List<User>> GetUsersByRoleAsync(Role role, int offset, int count)
+    public Task<List<User>> GetUsersByFullnameOrEmail(string keyword, Role role = Role.All, int offset = 1, int count = 10)
     {
-        return _dbSet
-            .Where(u => u.Role == role)
-            .OrderBy(u => u.Id)
-            .Skip(offset - 1)
-            .Take(count)
-            .ToListAsync();
+        if (role != Role.All)
+        {
+            return _dbSet
+                .Include(u => u.UserDetail)
+                .Where(u => u.Role == role)
+                .Where(u => EF.Functions.Like(u.UserDetail.FullName.ToLower(), $"%{keyword.ToLower()}%")
+                                || EF.Functions.Like(u.Email.ToLower(), $"%{keyword.ToLower()}%"))
+                .OrderBy(u => u.Id)
+                .Skip(offset - 1)
+                .Take(count)
+                .ToListAsync();
+        }
+        else
+        {
+            return _dbSet
+                .Include(u => u.UserDetail)
+                .Where(u => EF.Functions.Like(u.UserDetail.FullName.ToLower(), $"%{keyword.ToLower()}%")
+                                || EF.Functions.Like(u.Email.ToLower(), $"%{keyword.ToLower()}%"))
+                .OrderBy(u => u.Id)
+                .Skip(offset - 1)
+                .Take(count)
+                .ToListAsync();
+        }
     }
-
 }

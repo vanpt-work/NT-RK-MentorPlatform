@@ -1,6 +1,4 @@
-﻿using MentorPlatform.Domain.Entities;
-using MentorPlatform.Domain.Enums;
-using System.Text.Json.Serialization;
+﻿using MentorPlatform.Domain.Enums;
 
 namespace MentorPlatform.Application.Commons.Models.Responses;
 public class UserResponse
@@ -14,7 +12,7 @@ public class UserResponse
     public bool IsPrivateProfile { get; set; }
     public bool IsVerifyEmail { get; set; }
     public bool IsActive { get; set; }
-    public DateTime LastActiveDate { get; set; }
-    [JsonIgnore]
-    public UserDetail UserDetail { get; set; }
+    public DateTime LastActive { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public UserDetailResponse UserDetail { get; set; }
 }

@@ -7,7 +7,6 @@ namespace MentorPlatform.Domain.Repositories;
 public interface IUserRepository : IRepository<User, Guid>
 {
     Task<User?> GetByEmailAsync(string email);
-    Task<List<User>> GetAllUsersAsync();
-    Task<List<User>> GetUsersAsync(int offset, int count);
-    Task<List<User>> GetUsersByRoleAsync(Role role, int offset, int count);
+    Task<int> CountByRoleAsync(Role role = Role.All);
+    Task<List<User>> GetUsersByFullnameOrEmail(string keyword, Role role = Role.All, int offset = 1, int count = 10);
 }

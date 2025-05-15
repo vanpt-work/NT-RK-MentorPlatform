@@ -20,4 +20,5 @@ public static class UserErrors
         UserErrorMessages.UserIsDeactivated);
 
     public static Error PasswordIncorrect => new(nameof(PasswordIncorrect), UserErrorMessages.PasswordIncorrect);
+    public static Error UserNotExists => new(nameof(UserNotExists), UserErrorMessages.UserNotExists);
 }
