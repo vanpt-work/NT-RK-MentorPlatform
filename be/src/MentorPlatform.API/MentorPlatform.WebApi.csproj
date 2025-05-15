@@ -19,6 +19,9 @@
 		<ItemGroup>
 			<EmbeddedResource Include="Templates\*.cshtml" />
 		</ItemGroup>
+		<ItemGroup>
+		  <Content Remove="Templates\ForgotPasswordTemplate.cshtml" />
+		</ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MentorPlatform.Application\MentorPlatform.Application.csproj" />
     <ProjectReference Include="..\MentorPlatform.CrossCuttingConcerns\MentorPlatform.CrossCuttingConcerns.csproj" />

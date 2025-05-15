@@ -13,6 +13,7 @@ public static class UserErrorMessages
     public const string EmailAlreadyRegister = "Email already register.";
     public const string UserExpertiseInvalid = "Areas of expertise have invalid value.";
     public const string UserCourseCategoryInvalid = "Topics have invalid value.";
+    public const string VerifyEmailCodeIncorrect= "Verify email code incorrect";
 }
 public static class UserErrors
 {
@@ -29,4 +30,7 @@ public static class UserErrors
         UserErrorMessages.UserExpertiseInvalid);
     public static Error UserCourseCategoryInvalid => new(nameof(UserCourseCategoryInvalid), 
         UserErrorMessages.UserCourseCategoryInvalid);
+
+    public static Error VerifyEmailCodeIncorrect => new(nameof(VerifyEmailCodeIncorrect),
+        UserErrorMessages.VerifyEmailCodeIncorrect);
 }

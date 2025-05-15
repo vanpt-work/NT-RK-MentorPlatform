@@ -19,23 +19,20 @@ public class ApplicationMailServices : IApplicationMailServices
     }
 
     public async Task SendMailAsync(
-        string toEmail,
-        string subject,
-        string body,
-        bool isBodyHtml = true,
+        SendMailData sendMailData,
         CancellationToken cancellationToken = default)
     {
 
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress(_emailSettings.SenderName, _emailSettings.FromEmail));
-        message.To.Add(MailboxAddress.Parse(toEmail));
-        message.Subject = subject;
+        message.To.Add(MailboxAddress.Parse(sendMailData.ToEmail));
+        message.Subject = sendMailData.Subject;
 
         var builder = new BodyBuilder();
-        if (isBodyHtml)
-            builder.HtmlBody = body;
+        if (sendMailData.IsBodyHtml)
+            builder.HtmlBody = sendMailData.Body;
         else
-            builder.TextBody = body;
+            builder.TextBody = sendMailData.Body;
 
         message.Body = builder.ToMessageBody();
 

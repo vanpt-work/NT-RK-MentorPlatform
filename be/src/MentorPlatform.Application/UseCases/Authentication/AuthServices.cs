@@ -128,11 +128,11 @@ public class AuthServices: IAuthServices
             return Result.Failure(400, UserErrors.UserCourseCategoryInvalid);
         }
 
-        var userCouseCategories = GetUserCourseCategories(registerRequest);
+        var userCourseCategories = GetUserCourseCategories(registerRequest);
         var userExpertises = GetUserExpertises(registerRequest);
 
         var user = registerRequest.ToUser();
-        user.UserCourseCategories = userCouseCategories;
+        user.UserCourseCategories = userCourseCategories;
         user.UserExpertises = userExpertises;
             
         var userAvatarUrl =  await UploadImageAndGetAvatarUrlAsync(registerRequest.AvatarUrl);
@@ -154,6 +154,47 @@ public class AuthServices: IAuthServices
         var user = await _userRepository.GetByIdAsync(userId, nameof(User.RefreshTokens));
         await RecallUserAccessAndRefreshTokenAsync(user!);
         return AuthCommandMessages.LogoutSuccessfully;
+    }
+
+    public async Task<Result> ForgotPasswordAsync(ForgotPasswordRequest forgotPasswordRequest)
+    {
+        var user = await _userRepository.GetByEmailAsync(forgotPasswordRequest.Email);
+        if (user == null)
+        {
+            return Result.Failure(400, UserErrors.EmailNotAlreadyRegister);
+        }
+
+        await SendEmailForgotPasswordCodeUserAsync(user);
+        return Result.Success();
+    }
+
+    public async Task<Result> VerifyEmailAsync(VerifyEmailModel verifyEmailModel)
+    {
+        var user = await _userRepository.GetByEmailAsync(verifyEmailModel.Email);
+        if (user == null)
+        {
+            return Result.Failure(400, UserErrors.EmailNotAlreadyRegister);
+        }
+
+        var code = GetVerifyCodeEmailFromMemory(user);
+        if (code != verifyEmailModel.Code)
+        {
+            return Result.Failure(400, UserErrors.VerifyEmailCodeIncorrect);
+        }
+
+        user.IsVerifyEmail = true;
+        _userRepository.Update(user);
+
+        await _unitOfWork.SaveChangesAsync();
+
+        return Result<string>.Success(AuthCommandMessages.VerifyEmailSuccessfully);
+    }
+
+    private string GetVerifyCodeEmailFromMemory(User user)
+    {
+        var cacheKey = StringHelper.ReplacePlaceholders(CacheKeyConstants.VerifyEmailCode,
+            user.Id.ToString());
+        return _memoryCache.Get(cacheKey)?.ToString() ?? string.Empty;
     }
 
     private async Task<string> UploadImageAndGetAvatarUrlAsync(IFormFile? formFile)
@@ -178,16 +219,39 @@ public class AuthServices: IAuthServices
     {
         var mailContent = await GetVerifyEmailContentAsync(user);
 
+        var sendMailData = new SendMailData
+        {
+            ToEmail = user.Email, Subject = MailInformationConstants.TitleVerifyCodeEmail, Body = mailContent,
+        };
+
+        await AddEmailWorkItemIntoQueueAsync(sendMailData);
+    }
+
+    private async Task AddEmailWorkItemIntoQueueAsync(SendMailData sendMailData)
+    {
         await _mailQueue.QueueBackgroundWorkItemAsync(async (sp, cancellationToken) =>
         {
             var mailServices = sp.GetRequiredService<IApplicationMailServices>();
             await mailServices.SendMailAsync(
-                    user.Email,
-                    MailInformationConstants.TitleVerifyCodeEmail,
-                    mailContent,
-                    cancellationToken: cancellationToken
-                );
+                sendMailData,
+                cancellationToken: cancellationToken
+            );
         });
+    }
+
+    private async Task SendEmailForgotPasswordCodeUserAsync(User user)
+    {
+        var mailContent = await GetForgotPasswordMailAsync(user);
+
+
+        var sendMailData = new SendMailData
+        {
+            ToEmail = user.Email,
+            Subject = MailInformationConstants.TitleVerifyCodeEmail,
+            Body = mailContent,
+        };
+        await AddEmailWorkItemIntoQueueAsync(sendMailData);
+
     }
 
     private async Task<bool> ValidateCourseCategoryValidAsync(RegisterRequest registerRequest)
@@ -224,6 +288,21 @@ public class AuthServices: IAuthServices
         return true;
     }
 
+    private async Task<string> GetForgotPasswordMailAsync(User user)
+    {
+
+        var code = GenerateVerifyCode();
+
+        SetForgotPasswordCodeIntoMemory(user, code, EmailForgotPasswordModel.ExpireMinutesDefault);
+
+        var emailVerificationModel = new EmailForgotPasswordModel
+        {
+            Code = code,
+            RecipientName = user.UserDetail.FullName
+        };
+        return await _razorLightEngine.CompileRenderAsync("Templates.ForgotPasswordTemplate", emailVerificationModel);
+    }
+
     private async Task<string> GetVerifyEmailContentAsync(User user)
     {
 
@@ -250,11 +329,15 @@ public class AuthServices: IAuthServices
     private void SetVerifyCodeIntoMemory(User user, string code, int expireMinutes = 5)
     {
         var cacheKey = StringHelper.ReplacePlaceholders(CacheKeyConstants.VerifyEmailCode,
-                                                user.Id.ToString(), 
-                                                DateTime.UtcNow.ToString("hh:mm:ss dd-mm-yyyy"));
+                                                user.Id.ToString());
         _memoryCache.Set(cacheKey, code, TimeSpan.FromMinutes(expireMinutes));
     }
-
+    private void SetForgotPasswordCodeIntoMemory(User user, string code, int expireMinutes = 5)
+    {
+        var cacheKey = StringHelper.ReplacePlaceholders(CacheKeyConstants.ForgotPasswordCode,
+            user.Id.ToString());
+        _memoryCache.Set(cacheKey, code, TimeSpan.FromMinutes(expireMinutes));
+    }
 
     private static bool IsPasswordLoginMatchWithPassword(string passwordLogin, string password)
     {
