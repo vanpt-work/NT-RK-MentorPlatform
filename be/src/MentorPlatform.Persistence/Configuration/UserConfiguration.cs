@@ -16,10 +16,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.Password)
             .HasMaxLength(UserConstants.MaxLengthPasswordHash);
 
-        builder.HasMany(u => u.RefreshTokens)
-            .WithOne()
-            .HasForeignKey(u => u.UserId)
-            .OnDelete(DeleteBehavior.NoAction);
         builder.HasQueryFilter(cc => !cc.IsDeleted);
     }
 }
