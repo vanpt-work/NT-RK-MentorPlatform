@@ -10,16 +10,16 @@ public class UserCourseCategoryConfiguartion : IEntityTypeConfiguration<UserCour
     public void Configure(EntityTypeBuilder<UserCourseCategory> builder)
     {
         builder.HasKey(ucc => ucc.UserId);
-        builder.HasKey(ucc => ucc.CategoryId);
-        builder.HasKey(ucc => new { ucc.UserId, ucc.CategoryId });
+        builder.HasKey(ucc => ucc.CourseCategoryId);
+        builder.HasKey(ucc => new { ucc.UserId, ucc.CourseCategoryId });
 
         builder.HasOne(ucc => ucc.User)
             .WithMany(u => u.UserCourseCategories)
             .HasForeignKey(u => u.UserId);
 
-        builder.HasOne(ucc => ucc.Category)
+        builder.HasOne(ucc => ucc.CourseCategory)
             .WithMany(u => u.UserCourseCategories)
-            .HasForeignKey(u => u.CategoryId);
+            .HasForeignKey(u => u.CourseCategoryId);
         builder.HasQueryFilter(cc => !cc.IsDeleted);
     }
 }

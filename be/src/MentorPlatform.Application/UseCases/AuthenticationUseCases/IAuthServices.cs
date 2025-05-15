@@ -7,6 +7,8 @@ namespace MentorPlatform.Application.UseCases.Authentication;
 public interface IAuthServices
 {
     Task<Result<LoginResponse>> LoginAsync(LoginRequest loginRequest);
-    Task<Result<string>> RegisterAsync(RegisterRequest registerRequest);
+    Task<Result> RegisterAsync(RegisterRequest registerRequest);
     Task<Result<string>> LogoutAsync();
+    Task<Result> ForgotPasswordAsync(ForgotPasswordRequest  forgotPasswordRequest);
+    Task<Result> VerifyEmailAsync(VerifyEmailModel verifyEmailModel);
 }

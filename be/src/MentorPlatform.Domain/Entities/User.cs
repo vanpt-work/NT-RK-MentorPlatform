@@ -15,7 +15,7 @@ public class User : AuditableEntity, IHasKey<Guid>, ISoftDeleteEntity
     public bool IsNotification { get; set; } = true;
     public bool IsReceiveMessage { get; set; } = true;
     public bool IsPrivateProfile { get; set; } = false;
-    public bool IsVerifyEmail { get; set; } = true;
+    public bool IsVerifyEmail { get; set; } = false;
     public bool IsActive { get; set; } = true;
     public DateTime LastActive { get; set; } = default!;
     public Guid UserDetailId { get; set; }
