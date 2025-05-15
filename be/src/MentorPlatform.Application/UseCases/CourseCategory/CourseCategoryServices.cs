@@ -73,7 +73,7 @@ public class CourseCategoryServices : ICourseCategoryServices
     public async Task<Result> CreateAsync(CreateCourseCategoryRequest createRequest)
     {
         var query = _courseCategoryRepository.GetQueryable().Where(x => x.Name.ToLower() == createRequest.Name.Trim().ToLower());
-        if (!await _courseCategoryRepository.AnyAsync(query))
+        if (await _courseCategoryRepository.AnyAsync(query))
         {
             return Result.Failure(400, CourseCategoryErrors.CourseCategoryDuplicateName);
         }
