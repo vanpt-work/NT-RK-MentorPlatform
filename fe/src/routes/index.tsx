@@ -6,6 +6,7 @@ import Register from "@/modules/RegisterPage";
 import ForgotPassword from "@/modules/PasswordResetPage";
 import HomePage from "@/modules/HomePage";
 import ManageUsersPage from "@/modules/AdminPage/ManageUsersPage";
+import OTPVerificationPage from "@/modules/OTPVerificationPage";
 
 const router = createBrowserRouter([
   // Protected routes with layout
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
   {
     path: "/forgot-password",
     element: <ForgotPassword />,
+  },
+  {
+    path: "/verify-otp",
+    element: <OTPVerificationPage />,
   },
   {
     path: "/",

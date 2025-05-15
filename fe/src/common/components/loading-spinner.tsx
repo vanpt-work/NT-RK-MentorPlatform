@@ -1,6 +1,6 @@
 import { cn } from "../lib/utils";
 
-interface LoadingSpinnerProps {
+type LoadingSpinnerProps = {
     size?: "sm" | "md" | "lg" | "xl";
     className?: string;
     fullScreen?: boolean;

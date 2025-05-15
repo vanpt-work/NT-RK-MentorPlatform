@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import type { Resolver } from "react-hook-form";
 
 import { Button } from "@/common/components/ui/button";
 import {
@@ -21,14 +22,11 @@ import { PreferencesStep } from "./preferences-step";
 import { PrivacyDialog } from "./privacy-dialog";
 import { ProfileStep } from "./profile-step";
 import { TermsDialog } from "./terms-dialog";
-
-// Types
 import type {
     AccountFormValues,
     PreferencesFormValues,
     ProfileFormValues,
 } from "../types";
-// Schemas
 import {
     accountSchema,
     preferencesSchema,
@@ -52,6 +50,7 @@ export function RegisterForm() {
             confirmPassword: "",
             termsAgreed: false,
         },
+        mode: "onChange",
     });
 
     const profileForm = useForm<ProfileFormValues>({
@@ -68,10 +67,11 @@ export function RegisterForm() {
             communicationMethod: "Video call",
             goals: "",
         },
+        mode: "onChange",
     });
 
     const preferencesForm = useForm<PreferencesFormValues>({
-        resolver: zodResolver(preferencesSchema) as any,
+        resolver: zodResolver(preferencesSchema) as Resolver<PreferencesFormValues>,
         defaultValues: {
             topics: [],
             sessionFrequency: "Weekly",
@@ -83,14 +83,8 @@ export function RegisterForm() {
                 receiveNotifications: true,
             },
         },
+        mode: "onChange",
     });
-
-    // Handle checkbox selection for terms
-    const handleTermsChange = (checked: boolean) => {
-        accountForm.setValue("termsAgreed", checked, {
-            shouldValidate: true,
-        });
-    };
 
     // Handle file upload for avatar
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {

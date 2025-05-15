@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Github } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
 
 import { Button } from "@/common/components/ui/button";
 import {
@@ -18,13 +17,8 @@ import { Input } from "@/common/components/ui/input";
 import { Label } from "@/common/components/ui/label";
 import { loginSchema } from "../utils/schemas";
 import LoadingSpinner from "@/common/components/loading-spinner";
-
-// Define schema for form validation
-const formSchema = z.object({
-    email: z.string().email("Please enter a valid email address"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
-    rememberMe: z.boolean().optional().default(false),
-});
+import { toast } from "sonner";
+import type { z } from "zod";
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -49,6 +43,20 @@ export function LoginForm() {
       console.log("Login with:", values);
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
+
+       // Show success toast
+       toast.success(
+        "Login successful! Redirecting to email verification...",
+    );
+    
+    // Redirect to email verification page after a short delay
+    setTimeout(() => {
+        // Get email from form
+        const email = form.getValues().email;
+        // Redirect to verify-otp page with the email as parameter
+        window.location.href = `/verify-otp?email=${encodeURIComponent(email)}&purpose=login`;
+    }, 2000);
+
     } catch (err) {
       console.error("Login failed:", err);
       setError("Invalid email or password");

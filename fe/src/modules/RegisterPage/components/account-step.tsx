@@ -1,18 +1,10 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
-import type { UseFormReturn } from "react-hook-form";
-
 import { Checkbox } from "@/common/components/ui/checkbox";
 import { Input } from "@/common/components/ui/input";
 import { Label } from "@/common/components/ui/label";
 
-import type { AccountFormValues } from "../types";
-
-type AccountStepProps = {
-    form: UseFormReturn<AccountFormValues>;
-    onOpenTermsDialog: () => void;
-    onOpenPrivacyDialog: () => void;
-};
+import type { AccountStepProps } from "../types";
 
 export function AccountStep({
     form,
@@ -38,7 +30,9 @@ export function AccountStep({
                         id="email"
                         type="email"
                         placeholder="email@example.com"
-                        {...form.register("email")}
+                        {...form.register("email", {
+                            onChange: () => form.trigger("email"),
+                        })}
                     />
                     {form.formState.errors.email && (
                         <p className="text-sm text-red-500">
@@ -54,7 +48,14 @@ export function AccountStep({
                             id="password"
                             type={showPassword ? "text" : "password"}
                             placeholder="••••••••"
-                            {...form.register("password")}
+                            {...form.register("password", {
+                                onChange: () => {
+                                    form.trigger("password");
+                                    if (form.getValues("confirmPassword")) {
+                                        form.trigger("confirmPassword");
+                                    }
+                                }
+                            })}
                         />
                         <button
                             type="button"
@@ -86,7 +87,9 @@ export function AccountStep({
                             id="confirmPassword"
                             type={showConfirmPassword ? "text" : "password"}
                             placeholder="••••••••"
-                            {...form.register("confirmPassword")}
+                            {...form.register("confirmPassword", {
+                                onChange: () => form.trigger("confirmPassword"),
+                            })}
                         />
                         <button
                             type="button"
