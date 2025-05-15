@@ -27,17 +27,9 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: setup node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
       - name: check dotnet version
         run: dotnet --version
-
-      - name: list files in be directory
-        run: ls -la
-
+        
       - name: restore dependencies
         run: dotnet restore MentorPlatform.sln
 
@@ -45,7 +37,7 @@ jobs:
         run: dotnet build MentorPlatform.sln --no-restore
 
       - name: install dotnet-format tool
-        run: dotnet tool install -g dotnet-format --version
+        run: dotnet tool install -g dotnet-format
 
       - name: format check
         run: dotnet-format MentorPlatform.sln --check 
@@ -53,12 +45,6 @@ jobs:
 
       - name: format and fix C# code
         run: dotnet-format MentorPlatform.sln --fix-whitespace --fix-style warn
-
-      - name: install prettier
-        run: npm install --save-dev prettier
-
-      - name: format cshtml with prettier
-        run: npx prettier --write "**/*.cshtml"
 
       - name: commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
