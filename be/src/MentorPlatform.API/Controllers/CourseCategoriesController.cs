@@ -16,35 +16,35 @@ public class CourseCategoriesController : ApiControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] QueryParameters queryParameters)
+    public async Task<IActionResult> GetAllAsync([FromQuery] QueryParameters queryParameters)
     {
         var result = await _courseCategoryService.GetAllAsync(queryParameters);
         return ProcessResult(result);
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById(Guid id)
+    public async Task<IActionResult> GetByIdAsync(Guid id)
     {
         var result = await _courseCategoryService.GetByIdAsync(id);
         return ProcessResult(result);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateCourseCategoryRequest createRequest)
+    public async Task<IActionResult> CreateAsync([FromBody] CreateCourseCategoryRequest createRequest)
     {
         var result = await _courseCategoryService.CreateAsync(createRequest);
         return ProcessResult(result);
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCourseCategoryRequest updateRequest)
+    public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] UpdateCourseCategoryRequest updateRequest)
     {
         var result = await _courseCategoryService.UpdateAsync(id, updateRequest);
         return ProcessResult(result);
     }
 
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<IActionResult> DeleteAsync(Guid id)
     {
         var result = await _courseCategoryService.DeleteAsync(id);
         return ProcessResult(result);

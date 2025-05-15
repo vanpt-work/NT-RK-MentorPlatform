@@ -4,6 +4,7 @@ using MentorPlatform.Application.Commons.Models;
 using MentorPlatform.Application.Commons.Models.Requests.CourseCategory;
 using MentorPlatform.Application.Commons.Models.Responses.Course;
 using MentorPlatform.Application.Commons.Models.Responses.CourseCategory;
+using MentorPlatform.Domain.Entities;
 using MentorPlatform.Domain.Repositories;
 using MentorPlatform.Domain.Shared;
 
@@ -20,7 +21,7 @@ public class CourseCategoryServices : ICourseCategoryServices
 
     public async Task<Result> GetAllAsync(QueryParameters queryParameters)
     {
-        var queryAll = _courseCategoryRepository.GetQueryable().Where(x => !x.IsDeleted && x.Name.Contains(queryParameters.Search));
+        var queryAll = _courseCategoryRepository.GetQueryable().Where(x => x.Name.Contains(queryParameters.Search));
         var queryPagination = _courseCategoryRepository.GetQueryable()
                             .Skip(queryParameters.PageNumber - 1)
                             .Take(queryParameters.PageSize)
@@ -109,11 +110,17 @@ public class CourseCategoryServices : ICourseCategoryServices
     }
     public async Task<Result> DeleteAsync(Guid id)
     {
-        var selectedCategory = _courseCategoryRepository.GetQueryable().FirstOrDefault(x => !x.IsDeleted && x.Id == id);
+        var selectedCategory = await _courseCategoryRepository.GetByIdAsync(id, nameof(Domain.Entities.CourseCategory), nameof(UserCourseCategory));
         if (selectedCategory == null)
         {
             return Result.Failure(404, CourseCategoryErrors.CourseCategoryNotExists);
         }
+        if ((selectedCategory.Courses != null && selectedCategory.Courses.Count != 0) 
+            || (selectedCategory.UserCourseCategories != null && selectedCategory.UserCourseCategories.Count != 0))
+        {
+            return Result.Failure(400, CourseCategoryErrors.CourseCategoryIsUsed);
+        }
+
         selectedCategory.IsDeleted = true;
         _courseCategoryRepository.Update(selectedCategory);
         await _unitOfWork.SaveChangesAsync();
