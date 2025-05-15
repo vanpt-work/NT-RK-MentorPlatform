@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MentorPlatform.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250514173508_AddLastActiveToUser")]
-    partial class AddLastActiveToUser
+    [Migration("20250515095402_InitialDb")]
+    partial class InitialDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -415,8 +415,8 @@ namespace MentorPlatform.Persistence.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -508,7 +508,7 @@ namespace MentorPlatform.Persistence.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CategoryId")
+                    b.Property<Guid>("CourseCategoryId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -529,9 +529,9 @@ namespace MentorPlatform.Persistence.Migrations
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("UserId", "CategoryId");
+                    b.HasKey("UserId", "CourseCategoryId");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("CourseCategoryId");
 
                     b.ToTable("UserCourseCategories");
                 });
@@ -541,6 +541,9 @@ namespace MentorPlatform.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.PrimitiveCollection<string>("Availability")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AvatarUrl")
                         .HasMaxLength(100)
@@ -568,8 +571,8 @@ namespace MentorPlatform.Persistence.Migrations
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Goals")
                         .HasMaxLength(200)
@@ -578,9 +581,9 @@ namespace MentorPlatform.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("LearningStyle")
+                    b.Property<int?>("LearningStyle")
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
@@ -762,9 +765,9 @@ namespace MentorPlatform.Persistence.Migrations
 
             modelBuilder.Entity("MentorPlatform.Domain.Entities.UserCourseCategory", b =>
                 {
-                    b.HasOne("MentorPlatform.Domain.Entities.CourseCategory", "Category")
+                    b.HasOne("MentorPlatform.Domain.Entities.CourseCategory", "CourseCategory")
                         .WithMany("UserCourseCategories")
-                        .HasForeignKey("CategoryId")
+                        .HasForeignKey("CourseCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -774,7 +777,7 @@ namespace MentorPlatform.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Category");
+                    b.Navigation("CourseCategory");
 
                     b.Navigation("User");
                 });

@@ -1,6 +1,6 @@
 ﻿
 namespace MentorPlatform.Infrastructure.Options;
 
-public class CloudiaryStorageOptions
+public class CloudinaryStorageOptions
 {
 }

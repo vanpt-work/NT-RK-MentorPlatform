@@ -1,6 +1,7 @@
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "../constants/keys";
 import { PATH } from "../constants/paths";
-import type { Token } from "../types/token";
+import type { Token } from "../types/auth";
+
 
 
 export const isLoginPage = () => window.location.pathname == PATH.Login || window.location.pathname == PATH.Register;

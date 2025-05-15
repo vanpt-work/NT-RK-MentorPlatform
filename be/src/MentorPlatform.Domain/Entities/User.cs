@@ -15,7 +15,7 @@ public class User : AuditableEntity, IHasKey<Guid>, ISoftDeleteEntity
     public bool IsNotification { get; set; } = true;
     public bool IsReceiveMessage { get; set; } = true;
     public bool IsPrivateProfile { get; set; } = false;
-    public bool IsVerifyEmail { get; set; } = true;
+    public bool IsVerifyEmail { get; set; } = false;
     public bool IsActive { get; set; } = true;
     public DateTime LastActive { get; set; } = default!;
     public Guid UserDetailId { get; set; }
@@ -27,7 +27,6 @@ public class User : AuditableEntity, IHasKey<Guid>, ISoftDeleteEntity
     public virtual ICollection<Schedule>? Schedules { get; set; }
     public virtual ICollection<ApplicationRequest>? ApplicationRequests { get; set; }
     public virtual ICollection<UserCourseCategory>? UserCourseCategories { get; set; } = default;
-    public virtual ICollection<RefreshToken>? RefreshTokens { get; set; }
 
 
 }

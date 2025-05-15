@@ -13,6 +13,6 @@ public class UserDetailResponse
     public string? Goals { get; set; }
     public int Duration { get; set; }
     public int SessionFrequency { get; set; }
-    public string? LearningStyle { get; set; } = default!;
-    public List<string>? TeachingStyles { get; set; } = default!;
+    public int? LearningStyle { get; set; } = default!;
+    public List<int>? TeachingStyles { get; set; } = default!;
 }

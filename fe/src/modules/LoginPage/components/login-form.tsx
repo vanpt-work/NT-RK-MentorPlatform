@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Github } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
 
 import { Button } from "@/common/components/ui/button";
 import {
@@ -18,18 +17,14 @@ import { Input } from "@/common/components/ui/input";
 import { Label } from "@/common/components/ui/label";
 import { loginSchema } from "../utils/schemas";
 import LoadingSpinner from "@/common/components/loading-spinner";
-
-// Define schema for form validation
-const formSchema = z.object({
-    email: z.string().email("Please enter a valid email address"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
-    rememberMe: z.boolean().optional().default(false),
-});
+import { useAuthContext } from "@/common/context/auth-context";
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const {login} = useAuthContext();
 
   // Form state
   const form = useForm({
@@ -47,6 +42,10 @@ export function LoginForm() {
     try {
       // TODO: Implement API call to login
       console.log("Login with:", values);
+      login({
+        email: values.email,
+        password: values.password
+      });
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
     } catch (err) {

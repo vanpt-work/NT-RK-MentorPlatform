@@ -40,6 +40,7 @@ where TEntity : class, IHasKey<TKey>
         }
     }
 
+
     public IQueryable<TEntity> GetQueryable()
     {
         return _dbContext.Set<TEntity>().AsNoTracking();
@@ -54,6 +55,17 @@ where TEntity : class, IHasKey<TKey>
         }
 
         return entity.FirstOrDefaultAsync();
+    }
+
+    public Task<List<TEntity>> GetByIdsAsync(List<TKey> ids, params string[] includes)
+    {
+        var entity = _dbContext.Set<TEntity>().Where(e => ids.Contains(e.Id));
+        foreach (var include in includes)
+        {
+            entity = entity.Include(include);
+        }
+
+        return ToListAsync(entity);
     }
 
     public void Add(TEntity entity)

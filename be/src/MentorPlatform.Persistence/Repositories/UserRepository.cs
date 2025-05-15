@@ -15,7 +15,7 @@ public class UserRepository : Repository<User, Guid>, IUserRepository
     public Task<User?> GetByEmailAsync(string email)
     {
         return _dbSet.Where(u => u.Email == email)
-            .Include(u => u.RefreshTokens)
+            .Include(u => u.UserDetail)
             .FirstOrDefaultAsync();
     }
 
