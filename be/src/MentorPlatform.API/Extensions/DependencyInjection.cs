@@ -46,7 +46,7 @@ public static class DependencyInjection
             {
                 new()
                 {
-                    Role = (int)Role.Admin, Email = "admin@mentor.com", Password = HashingHelper.HashData("admin123A@"), 
+                    Role = (int)Role.Admin, IsVerifyEmail = true, Email = "admin@mentor.com", Password = HashingHelper.HashData("admin123A@"), 
                     UserDetail = new()
                     {
                         FullName = "Admin Vipro Luxyry",

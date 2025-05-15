@@ -8,6 +8,7 @@ where TEntity : IHasKey<TKey>
 {
     IQueryable<TEntity> GetQueryable();
     Task<TEntity?> GetByIdAsync(TKey id, params string[] includes);
+    Task<List<TEntity>> GetByIdsAsync(List<TKey> ids, params string[] includes);
     void Add(TEntity entity);
     void Remove(TEntity entity);
     void Update(TEntity entity);

@@ -41,7 +41,7 @@ public class JwtTokenServices : IJwtTokenServices
             new(JwtRegisteredClaimNames.Sid, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Jti, refreshTokenId.ToString()),
-            new(ClaimTypes.Role, Enum.GetName(typeof(Role), user.Role)!),
+            new(ClaimTypes.Role, Enum.GetName(typeof(Role), (int)user.Role)!),
         });
 
         SecurityTokenDescriptor tokenDescriptor = new()

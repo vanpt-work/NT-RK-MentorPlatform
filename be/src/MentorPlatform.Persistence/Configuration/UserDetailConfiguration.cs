@@ -23,10 +23,10 @@ public class UserDetailConfiguration : IEntityTypeConfiguration<UserDetail>
             .HasMaxLength(UserConstants.MaxLengthAvatarUrl);
 
         builder.Property(ud => ud.ProfessionalSkill)
-            .HasMaxLength(UserConstants.MaxLengthProfessionalSkill);
+            .HasMaxLength(UserConstants.MaxLengthProfessionalSkills);
 
         builder.Property(ud => ud.Experience)
-            .HasMaxLength(UserConstants.IndustryExperience);
+            .HasMaxLength(UserConstants.MaxLengthIndustryExperience);
 
         builder.Property(ud => ud.Goals)
             .HasMaxLength(UserConstants.MaxLengthGoals);
