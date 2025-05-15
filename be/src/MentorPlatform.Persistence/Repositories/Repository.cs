@@ -100,27 +100,32 @@ where TEntity : class, IHasKey<TKey>
         }
     }
 
-    public Task<T?> FirstOrDefaultAsync<T>(IQueryable<T> query)
+    public Task<TEntity?> FirstOrDefaultAsync(IQueryable<TEntity> query)
     {
         return query.FirstOrDefaultAsync();
     }
 
-    public Task<T?> SingleOrDefaultAsync<T>(IQueryable<T> query)
+    public Task<TEntity?> SingleOrDefaultAsync(IQueryable<TEntity> query)
     {
         return query.SingleOrDefaultAsync();
     }
 
-    public Task<List<T>> ToListAsync<T>(IQueryable<T> query)
+    public Task<List<TEntity>> ToListAsync(IQueryable<TEntity> query, params string[] includes)
     {
+        foreach (var include in includes)
+        {
+            query = query.Include(include);
+        }
         return query.ToListAsync();
     }
 
-    public Task<int> CountAsync<T>(IQueryable<T> query)
+
+    public Task<int> CountAsync(IQueryable<TEntity> query)
     {
         return query.CountAsync();
     }
 
-    public Task<bool> AnyAsync<T>(IQueryable<T> query)
+    public Task<bool> AnyAsync(IQueryable<TEntity> query)
     {
         return query.AnyAsync();
     }
