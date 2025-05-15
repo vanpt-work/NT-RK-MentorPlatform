@@ -29,12 +29,12 @@ jobs:
         cd be
         dotnet restore
 
-    - name: run roslyn
+    - name: install dotnet-format tool
       run: |
         cd be
-        dotnet build --no-restore --configuration Release
-
-    - name: run code analysis
+        dotnet tool install -g dotnet-format
+    
+    - name: format check
       run: |
         cd be
-        dotnet analyze --configuration Release
+        dotnet format --check
