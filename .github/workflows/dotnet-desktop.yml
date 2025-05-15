@@ -46,7 +46,16 @@ jobs:
       - name: format and fix C# code
         run: dotnet-format MentorPlatform.sln --fix-whitespace --fix-style warn
 
+      - name: setup gituser
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: add changes
+        run: git add .
+
       - name: commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Apply dotnet-format and prettier fixes"
+          commit_message: "format code by dotnet-format"
+          skip_no_changes: true
