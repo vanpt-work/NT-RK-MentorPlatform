@@ -10,8 +10,8 @@ import {
     SelectValue,
 } from "@/common/components/ui/select";
 
-import type { PreferencesFormValues } from "../types/Account";
-import { expertiseAreas, interestTopics } from "../types/Account";
+import type { PreferencesFormValues } from "../types";
+import { expertiseAreas, interestTopics } from "../types";
 import { BookOpen, Ear, Eye, GraduationCap, Hammer, Lightbulb, MessagesSquare, X } from "lucide-react";
 
 type PreferencesStepProps = {
@@ -271,11 +271,14 @@ export function PreferencesStep({
                                     <SelectItem value="Weekly">
                                         Weekly
                                     </SelectItem>
-                                    <SelectItem value="Bi-weekly">
-                                        Bi-weekly
+                                    <SelectItem value="Every two weeks">
+                                        Every two weeks
                                     </SelectItem>
                                     <SelectItem value="Monthly">
                                         Monthly
+                                    </SelectItem>
+                                    <SelectItem value="As Needed">
+                                        As Needed
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
@@ -314,11 +317,17 @@ export function PreferencesStep({
                                     <SelectItem value="30 minutes">
                                         30 minutes
                                     </SelectItem>
-                                    <SelectItem value="1 hour">
-                                        60 minutes
+                                    <SelectItem value="45 minutes">
+                                        45 minutes
                                     </SelectItem>
-                                    <SelectItem value="90 minutes">
-                                        90 minutes
+                                    <SelectItem value="1 hour">
+                                        1 hour
+                                    </SelectItem>
+                                    <SelectItem value="1.5 hours">
+                                        1.5 hours
+                                    </SelectItem>
+                                    <SelectItem value="2 hours">
+                                        2 hours
                                     </SelectItem>
                                 </SelectContent>
                             </Select>

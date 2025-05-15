@@ -33,11 +33,11 @@ import {
 } from "@/common/components/ui/select";
 import { Textarea } from "@/common/components/ui/textarea";
 
-import type { ProfileFormValues } from "../types/Account";
+import type { ProfileFormValues } from "../types";
 import {
     availabilitySlots,
     expertiseAreas,
-} from "../types/Account";
+} from "../types";
 
 type ProfileStepProps = {
     form: UseFormReturn<ProfileFormValues>;

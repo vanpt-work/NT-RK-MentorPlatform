@@ -27,7 +27,7 @@ import type {
     AccountFormValues,
     PreferencesFormValues,
     ProfileFormValues,
-} from "../types/Account";
+} from "../types";
 // Schemas
 import {
     accountSchema,
@@ -106,7 +106,7 @@ export function RegisterForm() {
         }
     };
 
-    // Final submission
+    // Final submission after step 3 (preferences)
     const onFinalSubmit = async () => {
         setIsLoading(true);
         try {
@@ -116,21 +116,24 @@ export function RegisterForm() {
                 ...profileForm.getValues(),
                 ...preferencesForm.getValues(),
             };
-
-            // TODO: Send data to API
-            console.log("Registration data:", formData);
-
+            
+            // TODO: Replace with actual API call to register user
+            console.log("Registering user with:", formData);
+            
             // Simulate API call
             await new Promise((resolve) => setTimeout(resolve, 1500));
-
+            
             // Show success toast
             toast.success(
-                "Account created successfully! Redirecting to login...",
+                "Account created successfully! Redirecting to email verification...",
             );
-
-            // Redirect to login after a short delay
+            
+            // Redirect to email verification page after a short delay
             setTimeout(() => {
-                window.location.href = "/login";
+                // Get email from form
+                const email = accountForm.getValues().email;
+                // Redirect to verify-otp page with the email as parameter
+                window.location.href = `/verify-otp?email=${encodeURIComponent(email)}&purpose=registration`;
             }, 2000);
         } catch (error) {
             console.error("Registration failed:", error);
@@ -155,14 +158,41 @@ export function RegisterForm() {
         }
     };
 
+    // Get step title and description
+    const getStepTitle = () => {
+        switch (step) {
+            case 1:
+                return "Create an account";
+            case 2:
+                return "Create your profile";
+            case 3:
+                return "Set your preferences";
+            default:
+                return "Create an account";
+        }
+    };
+    
+    const getStepDescription = () => {
+        switch (step) {
+            case 1:
+                return "Complete the steps below to create your account";
+            case 2:
+                return "Tell us more about yourself";
+            case 3:
+                return "Customize your experience";
+            default:
+                return "Complete the steps below to create your account";
+        }
+    };
+
     return (
         <Card className="mx-auto w-full max-w-4xl">
             <CardHeader className="space-y-1">
                 <CardTitle className="text-center text-2xl">
-                    Create an account
+                    {getStepTitle()}
                 </CardTitle>
                 <CardDescription className="text-center">
-                    Complete the steps below to create your account
+                    {getStepDescription()}
                 </CardDescription>
                 <div className="my-4">
                     <Progress value={step * 33.33} className="h-2" />

@@ -6,7 +6,7 @@ import { Checkbox } from "@/common/components/ui/checkbox";
 import { Input } from "@/common/components/ui/input";
 import { Label } from "@/common/components/ui/label";
 
-import type { AccountFormValues } from "../types/Account";
+import type { AccountFormValues } from "../types";
 
 type AccountStepProps = {
     form: UseFormReturn<AccountFormValues>;

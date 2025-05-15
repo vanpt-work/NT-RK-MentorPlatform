@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { accountSchema, profileSchema, preferencesSchema } from "../utils/schemas";
+import type { z } from "zod";
+import type { accountSchema, profileSchema, preferencesSchema } from "../utils/schemas";
 
 // Define types from schemas
 export type AccountFormValues = z.infer<typeof accountSchema>;
