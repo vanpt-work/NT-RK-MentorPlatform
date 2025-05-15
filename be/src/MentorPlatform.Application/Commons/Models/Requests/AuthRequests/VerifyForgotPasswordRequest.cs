@@ -3,20 +3,17 @@ using FluentValidation;
 using MentorPlatform.Application.Commons.ValidationMessages;
 using MentorPlatform.Domain.Constants;
 
-namespace MentorPlatform.Application.Commons.Models.Requests;
+namespace MentorPlatform.Application.Commons.Models.Requests.AuthRequests;
 
-
-
-public class VerifyEmailModel
+public class VerifyForgotPasswordRequest
 {
-    public string Email { get; set; } = default;
-    public string Code { get; set; } = default;
+    public string Email { get; set; } = default!;
+    public string Code { get; set; } = default!;
 }
 
-
-public class VerifyEmailModalValidator : AbstractValidator<VerifyEmailModel>
+public class VerifyForgotPasswordRequestValidator : AbstractValidator<VerifyForgotPasswordRequest>
 {
-    public VerifyEmailModalValidator()
+    public VerifyForgotPasswordRequestValidator()
     {
         RuleFor(u => u.Email)
             .NotEmpty()
@@ -29,4 +26,3 @@ public class VerifyEmailModalValidator : AbstractValidator<VerifyEmailModel>
             .WithMessage("Code must consist of exactly 6 digits.");
     }
 }
-

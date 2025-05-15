@@ -1,4 +1,4 @@
-﻿using MentorPlatform.Application.Commons.Models.Requests;
+﻿using MentorPlatform.Application.Commons.Models.Requests.AuthRequests;
 using MentorPlatform.Application.UseCases.Authentication;
 using MentorPlatform.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
@@ -31,11 +31,31 @@ public class AuthsController : ApiControllerBase
 
         return ProcessResult(result);
     }
+    [HttpPost("verify-forgot-password")]
+    public async Task<IActionResult> VerifyForgotPasswordAsync([FromBody] VerifyForgotPasswordRequest verifyForgotPasswordRequest)
+    {
+        var result = await _authServices.VerifyForgotPasswordAsync(verifyForgotPasswordRequest);
 
+        return ProcessResult(result);
+    }
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshTokenAsync([FromBody] RefreshTokenRequest refresTokenRequest)
+    {
+        var result = await _authServices.RefreshTokenAsync(refresTokenRequest);
+
+        return ProcessResult(result);
+    }
     [HttpPost("verify-email")]
     public async Task<IActionResult> VerifyEmailAsync([FromBody] VerifyEmailModel verifyEmailModel)
     {
         var result = await _authServices.VerifyEmailAsync(verifyEmailModel);
+
+        return ProcessResult(result);
+    }
+    [HttpPost("resend-verify-email")]
+    public async Task<IActionResult> ResendVerifyEmailAsync([FromBody] ResendVerifyEmailRequest resendVerifyEmailRequest)
+    {
+        var result = await _authServices.ResendVerifyEmailAsync(resendVerifyEmailRequest);
 
         return ProcessResult(result);
     }

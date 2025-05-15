@@ -3,8 +3,8 @@ using MentorPlatform.Application.Commons.CommandMessages;
 using MentorPlatform.Application.Commons.Errors;
 using MentorPlatform.Application.Commons.Mappings;
 using MentorPlatform.Application.Commons.Models.Mail;
-using MentorPlatform.Application.Commons.Models.Requests;
-using MentorPlatform.Application.Commons.Models.Responses;
+using MentorPlatform.Application.Commons.Models.Requests.AuthRequests;
+using MentorPlatform.Application.Commons.Models.Responses.AuthResponses;
 using MentorPlatform.Application.Identity;
 using MentorPlatform.Application.Services.File;
 using MentorPlatform.Application.Services.FileStorage;
@@ -12,6 +12,7 @@ using MentorPlatform.Application.Services.HostedServices;
 using MentorPlatform.Application.Services.Mail;
 using MentorPlatform.Application.Services.Security;
 using MentorPlatform.CrossCuttingConcerns.Caching;
+using MentorPlatform.CrossCuttingConcerns.Exceptions;
 using MentorPlatform.CrossCuttingConcerns.Helpers;
 using MentorPlatform.Domain.Constants;
 using MentorPlatform.Domain.Entities;
@@ -22,7 +23,9 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.JsonWebTokens;
 using RazorLight;
+using System.Security.Claims;
 
 namespace MentorPlatform.Application.UseCases.Authentication;
 
@@ -94,7 +97,8 @@ public class AuthServices: IAuthServices
             return new LoginResponse
             {
                 AccessToken = string.Empty,
-                RefreshToken = string.Empty
+                RefreshToken = string.Empty, 
+                IsVerifyEmail = false
             };
         }
 
@@ -185,20 +189,125 @@ public class AuthServices: IAuthServices
         }
 
         user.IsVerifyEmail = true;
+        var refreshToken = _jwtServices.GenerateRefreshToken();
+        var freshTokenObject = new RefreshToken
+        {
+            Value = HashingHelper.HashData(refreshToken),
+            Expired = DateTime.UtcNow.AddDays(_jwtTokenOptions.ExpireRefreshTokenDays),
+        };
+        _refreshTokenRepository.Add(freshTokenObject);
+
+        await _unitOfWork.SaveChangesAsync();
+
+        var accessToken = _jwtServices.GenerateAccessToken(user, freshTokenObject.Id);
         _userRepository.Update(user);
 
         await _unitOfWork.SaveChangesAsync();
 
-        return Result<string>.Success(AuthCommandMessages.VerifyEmailSuccessfully);
+        return Result<VerifyEmailResponse>.Success(new VerifyEmailResponse
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
+        });
     }
 
+    public async Task<Result> ResendVerifyEmailAsync(ResendVerifyEmailRequest resendVerifyEmailRequest)
+    { 
+        var userByEmail = await _userRepository.GetByEmailAsync(resendVerifyEmailRequest.Email);
+        if (userByEmail != null)
+        {
+            return Result.Failure(400, UserErrors.EmailAlreadyRegister);
+        }
+        return Result.Success();
+    }
+
+    public async Task<Result> RefreshTokenAsync(RefreshTokenRequest refreshTokenRequest)
+    {
+        var claimPrincipal = _jwtServices.ValidateAndDecode(refreshTokenRequest.AccessToken);
+
+        var userId = GetUserIdFromTokenClaims(claimPrincipal);
+        var refreshTokenId = GetRefreshTokenIdFromTokenClaims(claimPrincipal);
+        var user = await _userRepository.GetByIdAsync(userId);
+
+        ValidateUserNotNull(user);
+
+        await ValidateAndRevokeRefreshTokenAsync(user!, refreshTokenRequest.RefreshToken, refreshTokenId);
+        var refreshToken = _jwtServices.GenerateRefreshToken();
+        var freshTokenObject = new RefreshToken
+        {
+            Value = HashingHelper.HashData(refreshToken),
+            Expired = DateTime.UtcNow.AddDays(_jwtTokenOptions.ExpireRefreshTokenDays),
+        };
+        _refreshTokenRepository.Add(freshTokenObject);
+
+        await _unitOfWork.SaveChangesAsync();
+        var accessToken = _jwtServices.GenerateAccessToken(user!, freshTokenObject.Id);
+
+        return Result<RefreshTokenResponse>.Success(new RefreshTokenResponse
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken,
+        });
+    }
+
+    public async Task<Result> VerifyForgotPasswordAsync(VerifyForgotPasswordRequest verifyForgotPasswordRequest)
+    {
+        var user = await _userRepository.GetByEmailAsync(verifyForgotPasswordRequest.Email);
+        if (user == null)
+        {
+            return Result.Failure(400, UserErrors.EmailNotAlreadyRegister);
+        }
+
+        var code = GetForgotPasswordCodeFromMemory(user);
+        if (code != verifyForgotPasswordRequest.Code)
+        {
+            return Result.Failure(400, UserErrors.VerifyEmailCodeIncorrect);
+        }
+        return Result<string>.Success(AuthCommandMessages.VerifyForgotPasswordCodeSuccessfully);
+    }
+
+    private async Task ValidateAndRevokeRefreshTokenAsync(User user, string refreshToken, Guid refreshTokenId)
+    {
+        var refreshTokenObject = await _refreshTokenRepository.GetByIdAsync(refreshTokenId);
+
+        if (refreshTokenObject == null || refreshTokenObject.UserId != user.Id || !HashingHelper.VerifyData(refreshToken, refreshTokenObject!.Value)
+            || refreshTokenObject.Expired < DateTime.UtcNow)
+        {
+            throw new BadRequestException(ApplicationExceptionMessage.RefreshTokenNotExists);
+        }
+
+        _refreshTokenRepository.Remove(refreshTokenObject);
+        await _unitOfWork.SaveChangesAsync();
+    }
     private string GetVerifyCodeEmailFromMemory(User user)
     {
         var cacheKey = StringHelper.ReplacePlaceholders(CacheKeyConstants.VerifyEmailCode,
             user.Id.ToString());
         return _memoryCache.Get(cacheKey)?.ToString() ?? string.Empty;
     }
+    private string GetForgotPasswordCodeFromMemory(User user)
+    {
+        var cacheKey = StringHelper.ReplacePlaceholders(CacheKeyConstants.ForgotPasswordCode,
+            user.Id.ToString());
+        return _memoryCache.Get(cacheKey)?.ToString() ?? string.Empty;
+    }
+    private static Guid GetUserIdFromTokenClaims(ClaimsPrincipal claimsPrincipal)
+    {
+        if (Guid.TryParse(claimsPrincipal.FindFirst(JwtRegisteredClaimNames.Sid)!.Value, out Guid userId))
+        {
+            throw new BadRequestException(ApplicationExceptionMessage.UserIdInExecutionContextInvalid);
+        }
+        return userId;
+    }
 
+    private static Guid GetRefreshTokenIdFromTokenClaims(ClaimsPrincipal claimsPrincipal)
+    {
+        if (Guid.TryParse(claimsPrincipal.FindFirst(JwtRegisteredClaimNames.Jti)!.Value, out Guid userId))
+        {
+            throw new BadRequestException(ApplicationExceptionMessage.RefreshTokenIdInExecutionContextInvalid);
+        }
+        return userId;
+    }
     private async Task<string> UploadImageAndGetAvatarUrlAsync(IFormFile? formFile)
     {
         var imageUrl = UserConstants.ImageUrlDefault;
@@ -229,6 +338,13 @@ public class AuthServices: IAuthServices
         await AddEmailWorkItemIntoQueueAsync(sendMailData);
     }
 
+    private static void ValidateUserNotNull(User? user)
+    {
+        if (user == null)
+        {
+            throw new BadRequestException(ApplicationExceptionMessage.UserNotExists);
+        }
+    }
     private async Task AddEmailWorkItemIntoQueueAsync(SendMailData sendMailData)
     {
         await _mailQueue.QueueBackgroundWorkItemAsync(async (sp, cancellationToken) =>

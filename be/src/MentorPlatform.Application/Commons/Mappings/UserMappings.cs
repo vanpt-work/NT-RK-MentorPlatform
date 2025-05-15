@@ -1,5 +1,5 @@
-﻿using MentorPlatform.Application.Commons.Models.Requests;
-using MentorPlatform.Application.Commons.Models.Responses;
+﻿using MentorPlatform.Application.Commons.Models.Requests.AuthRequests;
+using MentorPlatform.Application.Commons.Models.Responses.AuthResponses;
 using MentorPlatform.CrossCuttingConcerns.Helpers;
 using MentorPlatform.Domain.Entities;
 using MentorPlatform.Domain.Enums;
