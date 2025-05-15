@@ -73,7 +73,9 @@ public class CourseCategoryServices : ICourseCategoryServices
     public async Task<Result> CreateAsync(CreateCourseCategoryRequest createRequest)
     {
         var query = _courseCategoryRepository.GetQueryable().Where(x => x.Name.ToLower() == createRequest.Name.Trim().ToLower());
-        if (await _courseCategoryRepository.AnyAsync(query))
+        var test = await _courseCategoryRepository.ToListAsync(query);
+        var testAll = await _courseCategoryRepository.ToListAsync(_courseCategoryRepository.GetQueryable());
+            if (await _courseCategoryRepository.AnyAsync(query))
         {
             return Result.Failure(400, CourseCategoryErrors.CourseCategoryDuplicateName);
         }
@@ -84,6 +86,7 @@ public class CourseCategoryServices : ICourseCategoryServices
             IsActive = true,
         };
         _courseCategoryRepository.Add(newEntity);
+        
         await _unitOfWork.SaveChangesAsync();
         return Result<string>.Success(CourseCategoryCommandMessages.CreatedSuccessfully, 201);
     }
