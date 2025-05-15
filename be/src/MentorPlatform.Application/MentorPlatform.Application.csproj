@@ -24,4 +24,8 @@
     <ProjectReference Include="..\MentorPlatform.Domain\MentorPlatform.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Commons\Mapping\" />
+  </ItemGroup>
+
 </Project>

@@ -1,7 +1,7 @@
 ﻿
 using MentorPlatform.Application.Commons.CommandMessages;
 using MentorPlatform.Application.Commons.Errors;
-using MentorPlatform.Application.Commons.Mapping;
+using MentorPlatform.Application.Commons.Mappings;
 using MentorPlatform.Application.Commons.Models.Mail;
 using MentorPlatform.Application.Commons.Models.Requests;
 using MentorPlatform.Application.Commons.Models.Responses;
@@ -31,7 +31,7 @@ public class AuthServices: IAuthServices
     private readonly IJwtTokenServices _jwtServices;
     private readonly IUserRepository _userRepository;
     private readonly JwtTokenOptions _jwtTokenOptions;
-    private readonly IRepository<CourseCategory, Guid> _courseCategoryRepository;
+    private readonly IRepository<Domain.Entities.CourseCategory, Guid> _courseCategoryRepository;
     private readonly IFileStorageServices _fileStorageServices;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IExecutionContext _executionContext;
@@ -47,7 +47,7 @@ public class AuthServices: IAuthServices
         IFileStorageFactory fileStorageFactory,
         IOptions<JwtTokenOptions> jwtTokenOptions, 
         IExecutionContext executionContext,
-        IRepository<CourseCategory, Guid> courseCategoryRepository,
+        IRepository<Domain.Entities.CourseCategory, Guid> courseCategoryRepository,
         IRepository<UserExpertise, Guid> userExpertiseRepository,
         IRazorLightEngine razorLightEngine,
         IMemoryCache memoryCache,
