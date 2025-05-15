@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MentorPlatform.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialDatabaseV : Migration
+    public partial class InitialDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -36,6 +36,7 @@ namespace MentorPlatform.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -52,7 +53,7 @@ namespace MentorPlatform.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FullName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Bio = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
                     AvatarUrl = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Experience = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
@@ -61,8 +62,10 @@ namespace MentorPlatform.Persistence.Migrations
                     Goals = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     Duration = table.Column<int>(type: "int", nullable: false),
                     SessionFrequency = table.Column<int>(type: "int", nullable: false),
-                    LearningStyle = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    LearningStyle = table.Column<int>(type: "int", maxLength: 200, nullable: true),
                     TeachingStyles = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Availability = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -105,7 +108,7 @@ namespace MentorPlatform.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     Role = table.Column<int>(type: "int", nullable: false),
                     IsNotification = table.Column<bool>(type: "bit", nullable: false),
@@ -113,6 +116,7 @@ namespace MentorPlatform.Persistence.Migrations
                     IsPrivateProfile = table.Column<bool>(type: "bit", nullable: false),
                     IsVerifyEmail = table.Column<bool>(type: "bit", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    LastActive = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserDetailId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
@@ -140,6 +144,7 @@ namespace MentorPlatform.Persistence.Migrations
                     FilePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -157,7 +162,7 @@ namespace MentorPlatform.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ApplicationRequest",
+                name: "ApplicationRequests",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -167,6 +172,7 @@ namespace MentorPlatform.Persistence.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Note = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -174,13 +180,12 @@ namespace MentorPlatform.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ApplicationRequest", x => x.Id);
+                    table.PrimaryKey("PK_ApplicationRequests", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ApplicationRequest_Users_UserId",
+                        name: "FK_ApplicationRequests_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -191,6 +196,7 @@ namespace MentorPlatform.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Expired = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -215,6 +221,7 @@ namespace MentorPlatform.Persistence.Migrations
                     DateAvailable = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
                     EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -235,8 +242,9 @@ namespace MentorPlatform.Persistence.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CourseCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -244,10 +252,10 @@ namespace MentorPlatform.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserCourseCategories", x => new { x.UserId, x.CategoryId });
+                    table.PrimaryKey("PK_UserCourseCategories", x => new { x.UserId, x.CourseCategoryId });
                     table.ForeignKey(
-                        name: "FK_UserCourseCategories_CourseCategories_CategoryId",
-                        column: x => x.CategoryId,
+                        name: "FK_UserCourseCategories_CourseCategories_CourseCategoryId",
+                        column: x => x.CourseCategoryId,
                         principalTable: "CourseCategories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -268,6 +276,7 @@ namespace MentorPlatform.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     JoinDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -297,6 +306,7 @@ namespace MentorPlatform.Persistence.Migrations
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ExpertiseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -320,13 +330,14 @@ namespace MentorPlatform.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ApplicationDocument",
+                name: "ApplicationDocuments",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FilePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ApplicationRequestId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -334,11 +345,11 @@ namespace MentorPlatform.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ApplicationDocument", x => x.Id);
+                    table.PrimaryKey("PK_ApplicationDocuments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ApplicationDocument_ApplicationRequest_ApplicationRequestId",
+                        name: "FK_ApplicationDocuments_ApplicationRequests_ApplicationRequestId",
                         column: x => x.ApplicationRequestId,
-                        principalTable: "ApplicationRequest",
+                        principalTable: "ApplicationRequests",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -355,6 +366,7 @@ namespace MentorPlatform.Persistence.Migrations
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RequestStatus = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ModifiedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -383,13 +395,13 @@ namespace MentorPlatform.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ApplicationDocument_ApplicationRequestId",
-                table: "ApplicationDocument",
+                name: "IX_ApplicationDocuments_ApplicationRequestId",
+                table: "ApplicationDocuments",
                 column: "ApplicationRequestId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ApplicationRequest_UserId",
-                table: "ApplicationRequest",
+                name: "IX_ApplicationRequests_UserId",
+                table: "ApplicationRequests",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -424,9 +436,9 @@ namespace MentorPlatform.Persistence.Migrations
                 column: "MentorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserCourseCategories_CategoryId",
+                name: "IX_UserCourseCategories_CourseCategoryId",
                 table: "UserCourseCategories",
-                column: "CategoryId");
+                column: "CourseCategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserCourses_CourseId",
@@ -449,7 +461,7 @@ namespace MentorPlatform.Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ApplicationDocument");
+                name: "ApplicationDocuments");
 
             migrationBuilder.DropTable(
                 name: "CourseResources");
@@ -470,7 +482,7 @@ namespace MentorPlatform.Persistence.Migrations
                 name: "UserExpertises");
 
             migrationBuilder.DropTable(
-                name: "ApplicationRequest");
+                name: "ApplicationRequests");
 
             migrationBuilder.DropTable(
                 name: "Schedules");

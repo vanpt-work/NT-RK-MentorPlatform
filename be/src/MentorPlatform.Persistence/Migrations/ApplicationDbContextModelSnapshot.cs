@@ -58,7 +58,7 @@ namespace MentorPlatform.Persistence.Migrations
 
                     b.HasIndex("ApplicationRequestId");
 
-                    b.ToTable("ApplicationDocuments", (string)null);
+                    b.ToTable("ApplicationDocuments");
                 });
 
             modelBuilder.Entity("MentorPlatform.Domain.Entities.ApplicationRequest", b =>
@@ -108,7 +108,7 @@ namespace MentorPlatform.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ApplicationRequests", (string)null);
+                    b.ToTable("ApplicationRequests");
                 });
 
             modelBuilder.Entity("MentorPlatform.Domain.Entities.Course", b =>
@@ -150,7 +150,7 @@ namespace MentorPlatform.Persistence.Migrations
 
                     b.HasIndex("CourseCategoryId");
 
-                    b.ToTable("Courses", (string)null);
+                    b.ToTable("Courses");
                 });
 
             modelBuilder.Entity("MentorPlatform.Domain.Entities.CourseCategory", b =>
@@ -187,7 +187,7 @@ namespace MentorPlatform.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CourseCategories", (string)null);
+                    b.ToTable("CourseCategories");
                 });
 
             modelBuilder.Entity("MentorPlatform.Domain.Entities.CourseResource", b =>
@@ -234,7 +234,7 @@ namespace MentorPlatform.Persistence.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("CourseResources", (string)null);
+                    b.ToTable("CourseResources");
                 });
 
             modelBuilder.Entity("MentorPlatform.Domain.Entities.Expertise", b =>
@@ -264,7 +264,7 @@ namespace MentorPlatform.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Expertise", (string)null);
+                    b.ToTable("Expertise");
                 });
 
             modelBuilder.Entity("MentorPlatform.Domain.Entities.MentoringSession", b =>
@@ -320,12 +320,13 @@ namespace MentorPlatform.Persistence.Migrations
                     b.HasIndex("ScheduleId")
                         .IsUnique();
 
-                    b.ToTable("MentoringSessions", (string)null);
+                    b.ToTable("MentoringSessions");
                 });
 
             modelBuilder.Entity("MentorPlatform.Domain.Entities.RefreshToken", b =>
                 {
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -337,9 +338,6 @@ namespace MentorPlatform.Persistence.Migrations
                     b.Property<DateTime>("Expired")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -349,13 +347,16 @@ namespace MentorPlatform.Persistence.Migrations
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId");
+                    b.HasKey("Id");
 
-                    b.ToTable("RefreshTokens", (string)null);
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("MentorPlatform.Domain.Entities.Schedule", b =>
@@ -395,7 +396,7 @@ namespace MentorPlatform.Persistence.Migrations
 
                     b.HasIndex("MentorId");
 
-                    b.ToTable("Schedules", (string)null);
+                    b.ToTable("Schedules");
                 });
 
             modelBuilder.Entity("MentorPlatform.Domain.Entities.User", b =>
@@ -458,7 +459,7 @@ namespace MentorPlatform.Persistence.Migrations
                     b.HasIndex("UserDetailId")
                         .IsUnique();
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("MentorPlatform.Domain.Entities.UserCourse", b =>
@@ -497,7 +498,7 @@ namespace MentorPlatform.Persistence.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("UserCourses", (string)null);
+                    b.ToTable("UserCourses");
                 });
 
             modelBuilder.Entity("MentorPlatform.Domain.Entities.UserCourseCategory", b =>
@@ -530,7 +531,7 @@ namespace MentorPlatform.Persistence.Migrations
 
                     b.HasIndex("CourseCategoryId");
 
-                    b.ToTable("UserCourseCategories", (string)null);
+                    b.ToTable("UserCourseCategories");
                 });
 
             modelBuilder.Entity("MentorPlatform.Domain.Entities.UserDetail", b =>
@@ -603,7 +604,7 @@ namespace MentorPlatform.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserDetails", (string)null);
+                    b.ToTable("UserDetails");
                 });
 
             modelBuilder.Entity("MentorPlatform.Domain.Entities.UserExpertise", b =>
@@ -636,7 +637,7 @@ namespace MentorPlatform.Persistence.Migrations
 
                     b.HasIndex("ExpertiseId");
 
-                    b.ToTable("UserExpertises", (string)null);
+                    b.ToTable("UserExpertises");
                 });
 
             modelBuilder.Entity("MentorPlatform.Domain.Entities.ApplicationDocument", b =>
@@ -708,15 +709,6 @@ namespace MentorPlatform.Persistence.Migrations
                     b.Navigation("Learner");
 
                     b.Navigation("Schedule");
-                });
-
-            modelBuilder.Entity("MentorPlatform.Domain.Entities.RefreshToken", b =>
-                {
-                    b.HasOne("MentorPlatform.Domain.Entities.User", null)
-                        .WithMany("RefreshTokens")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("MentorPlatform.Domain.Entities.Schedule", b =>
@@ -834,8 +826,6 @@ namespace MentorPlatform.Persistence.Migrations
                     b.Navigation("ApplicationRequests");
 
                     b.Navigation("MentoringSessions");
-
-                    b.Navigation("RefreshTokens");
 
                     b.Navigation("Schedules");
 
