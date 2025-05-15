@@ -75,6 +75,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 var app = builder.Build();
+app.UseCors(corsOptions.PolicyName);
 
 app.UseExceptionHandler((_) => { });
 if (app.Environment.IsDevelopment())
@@ -84,6 +85,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     await app.InitializeDatabaseAsync();
 }
+
+
 
 app.UseHttpsRedirection();
 

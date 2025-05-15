@@ -3,7 +3,7 @@ import React, { createContext, useContext, useEffect, useState, type ReactNode }
 import type { Result } from "../types/result";
 import { getClientToken, getRefreshToken, isLoginPage, removeClientToken, setClientToken } from "../lib/token";
 import authService from "../services/authServices";
-import type { LoginRequest, Token, UserInfo, VerifyEmailRequest } from "../types/auth";
+import type { LoginRequest, Token, UserInfo, VerifyEmailRequest, VerifyEmailResponse } from "../types/auth";
 
 type AuthContextType = {
     isAuthenticated: boolean;
@@ -11,9 +11,9 @@ type AuthContextType = {
     user: UserInfo | undefined,
     setUser: React.Dispatch<React.SetStateAction<UserInfo | undefined>>
     logout: () => void
-    login: (data: LoginRequest) => void;
+    login: (data: LoginRequest) => Promise<string>;
     loading: boolean;
-    verify: (data: VerifyEmailRequest) => Promise<Result<Token>>;
+    verify: (data: VerifyEmailRequest) => Promise<Result<VerifyEmailResponse>>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -22,9 +22,9 @@ const AuthContext = createContext<AuthContextType>({
     user: undefined,
     setUser: () => { },
     logout: () => { },
-    login: async () => {},
+    login: async () => { return {} as string;},
     loading: false,
-    verify: async () => { return {} as Result<Token>; },
+    verify: async () => { return {} as Result<VerifyEmailResponse>; },
 })
 
 export const useAuthContext = () => useContext(AuthContext);
@@ -59,15 +59,19 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         setUser(undefined);
     };
 
-    const login =  async (data: LoginRequest) => {
+    const login =  async (data: LoginRequest) : Promise<string> => {
+        console.log("OKOKOK")
         const res = await authService.login(data);
-        if(res.data && res.data == true){
-            window.location.href = '/verify-email';
+        if(res.data && res.data.isVerifyEmail == true){
+             return '/verify-email';
         }
-        
+        else{
+            return '/verify-failure';
+        }
+       
     };
 
-    const verify = async (data: VerifyEmailRequest): Promise<Result<Token>> => {
+    const verify = async (data: VerifyEmailRequest): Promise<Result<VerifyEmailResponse>> => {
         const res = await authService.verifyEmail(data);
         const token: Token = {
             accessToken: res.data?.accessToken ?? "",

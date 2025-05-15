@@ -13,22 +13,15 @@ export type VerifyEmailRequest = {
     code: string;
 };
 
-export type VerifyEmailResponse = {
-    accessToken: string;
-    refreshToken: string;
-};
+export type RefreshTokenRequest = Token;
 
-export type RegisterRequest = {
-    email: string;
-    password: string;
-    name: string;
-};
+export type VerifyEmailResponse = Token;
 
-export type LoginResponse = {
-    accessToken: string;
-    refreshToken: string;
-};
+export type RefreshTokenResponse = Token;
 
+export type LoginResponse = Token & {
+    isVerifyEmail: boolean;
+};
 
 export enum Role {
     Admin = 0,
