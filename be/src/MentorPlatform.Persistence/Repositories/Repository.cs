@@ -119,6 +119,15 @@ where TEntity : class, IHasKey<TKey>
         return query.ToListAsync();
     }
 
+    public Task<List<T>> ToListAsync<T>(IQueryable<T> query)
+    {
+        return query.ToListAsync();
+    }
+
+    public Task<T?> FirstOrDefaultAsync<T>(IQueryable<T> query)
+    {
+        return query.FirstOrDefaultAsync();
+    }
 
     public Task<int> CountAsync(IQueryable<TEntity> query)
     {

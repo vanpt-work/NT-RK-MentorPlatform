@@ -17,11 +17,11 @@ public interface IRepository<TEntity, TKey> : IConcurrencyHandler
     void UpdateRange(IEnumerable<TEntity> entities); 
 
     Task<TEntity?> FirstOrDefaultAsync(IQueryable<TEntity> query);
-
+    Task<T?> FirstOrDefaultAsync<T>(IQueryable<T> query);
     Task<TEntity?> SingleOrDefaultAsync(IQueryable<TEntity> query);
 
     Task<List<TEntity>> ToListAsync(IQueryable<TEntity> query, params string[] includes);
-
+    Task<List<T>> ToListAsync<T>(IQueryable<T> query);
     Task<int> CountAsync(IQueryable<TEntity> query);
 
     Task<bool> AnyAsync(IQueryable<TEntity> query);
