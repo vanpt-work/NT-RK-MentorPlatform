@@ -32,8 +32,9 @@ public static class DependencyInjection
 
     public static IServiceCollection ConfigureRepositories(this IServiceCollection services)
     {
-        services.AddScoped<IUnitOfWork, ApplicationDbContext>();
+        services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ICourseCategoryRepository, CourseCategoryRepository>();
         return services;
     }
 }
