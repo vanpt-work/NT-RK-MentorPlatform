@@ -12,29 +12,26 @@ on:
 jobs:
   analyze:
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: be
     steps:
-    - name: checkout the pull request branch
-      uses: actions/checkout@v3
-      with:
-        ref: ${{ github.event.pull_request.base.ref }} 
+      - name: checkout the pull request branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
 
-    - name: setup .net sdk
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '9.0.x'
+      - name: setup .net sdk
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
 
-    - name: restore dependencies
-      run: |
-        cd be
-        dotnet restore
+      - name: restore dependencies
+        run: dotnet restore
 
-    - name: install dotnet-format tool
-      run: |
-        cd be
-        dotnet tool install -g dotnet-format
-    
-    - name: format check
-      run: |
-        cd be
-        dotnet format --check
+      - name: install dotnet-format tool
+        run: dotnet tool install -g dotnet-format
+
+      - name: format check
+        run: dotnet format --check
