@@ -20,7 +20,7 @@ public class UserServices : IUserServices
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result> ChangeUserActive(Guid userId, bool isActive = true)
+    public async Task<Result> ChangeUserActiveAsync(Guid userId, bool isActive = true)
     {
         var dbUser = await _userRepository.GetByIdAsync(userId);
         if (dbUser == null)
@@ -34,7 +34,7 @@ public class UserServices : IUserServices
         return Result.Success();
     }
 
-    public async Task<Result<PaginationResult<UserResponse>>> Search(HasRoleQueryParameters query)
+    public async Task<Result<PaginationResult<UserResponse>>> GetUsersByQueryAsync(HasRoleQueryParameters query)
     {
         var keyword = query.Search.Trim().ToLower();
         var dbQuery = _userRepository

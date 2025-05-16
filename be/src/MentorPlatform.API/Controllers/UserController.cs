@@ -20,21 +20,21 @@ public class UserController : ApiControllerBase
     [HttpGet]
     public async Task<IActionResult> SearchUsersAsync([FromQuery] HasRoleQueryParameters query)
     {
-        var result = await _userService.Search(query);
+        var result = await _userService.GetUsersByQueryAsync(query);
         return ProcessResult(result);
     }
 
     [HttpPatch("{userId}/activate")]
     public async Task<IActionResult> ActivateUserAsync([FromRoute] Guid userId)
     {
-        var result = await _userService.ChangeUserActive(userId);
+        var result = await _userService.ChangeUserActiveAsync(userId);
         return ProcessResult(result);
     }
 
     [HttpPatch("{userId}/deactivate")]
     public async Task<IActionResult> DeactivateUserAsync([FromRoute] Guid userId)
     {
-        var result = await _userService.ChangeUserActive(userId, false);
+        var result = await _userService.ChangeUserActiveAsync(userId, false);
         return ProcessResult(result);
     }
 }

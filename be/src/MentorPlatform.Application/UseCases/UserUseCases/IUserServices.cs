@@ -5,6 +5,6 @@ using MentorPlatform.Domain.Shared;
 namespace MentorPlatform.Application.UseCases.UserManagement;
 public interface IUserServices
 {
-    public Task<Result> ChangeUserActive(Guid userId, bool isActive = true);
-    public Task<Result<PaginationResult<UserResponse>>> Search(HasRoleQueryParameters query);
+    public Task<Result> ChangeUserActiveAsync(Guid userId, bool isActive = true);
+    public Task<Result<PaginationResult<UserResponse>>> GetUsersByQueryAsync(HasRoleQueryParameters query);
 }
