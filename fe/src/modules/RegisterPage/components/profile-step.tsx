@@ -12,6 +12,10 @@ import {
     Users,
     Video,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
+import LoadingSpinner from "@/common/components/loading-spinner";
 import {
     Avatar,
     AvatarFallback,
@@ -21,15 +25,12 @@ import { Button } from "@/common/components/ui/button";
 import { Input } from "@/common/components/ui/input";
 import { Label } from "@/common/components/ui/label";
 import { Textarea } from "@/common/components/ui/textarea";
-import { useEffect, useState } from "react";
+
+import { registerService } from "../services/registerServices";
 import {
-    availabilitySlots,
     type Expertise,
     type ProfileStepProps,
 } from "../types";
-import { toast } from "sonner";
-import LoadingSpinner from "@/common/components/loading-spinner";
-import { registerService } from "../services/registerServices";
 
 export function ProfileStep({
     form,
@@ -46,14 +47,16 @@ export function ProfileStep({
             try {
                 setIsLoading(true);
                 const response = await registerService.getAllExpertises();
-                if (response.data) {
-                    setExpertises(response.data.items);
+                if (response && response.data) {
+                    setExpertises(response.data);
                 } else {
                     setExpertises([]);
                 }
             } catch (error) {
                 console.error("Failed to fetch expertises:", error);
-                toast.error("Failed to fetch areas of expertise. Please try again!");
+                toast.error(
+                    "Failed to fetch areas of expertise. Please try again!",
+                );
             } finally {
                 setIsLoading(false);
             }
@@ -77,33 +80,33 @@ export function ProfileStep({
     // Get icon for expertise
     const getExpertiseIcon = (name: string) => {
         switch (name.toLowerCase()) {
-            case "software development":
+            case "leadership":
+                return Users;
+            case "programming":
                 return Code;
-            case "data science":
-                return Database;
-            case "business & management":
-                return Briefcase;
-            case "design & creativity":
+            case "design":
                 return Palette;
             case "marketing":
                 return BarChart4;
-            case "engineering":
-                return Lightbulb;
-            case "education":
+            case "data science":
+                return Database;
+            case "business":
+                return Briefcase;
+            case "project management":
                 return GraduationCap;
-            case "finance":
-                return LineChart;
+            case "communication":
+                return MessageSquare;
             default:
                 return Lightbulb;
         }
     };
 
     // Handle availability selection
-    const handleAvailabilityChange = (slot: string) => {
+    const handleAvailabilityChange = (availability: "Weekdays" | "Weekends" | "Mornings" | "Afternoons" | "Evenings") => {
         const currentAvailability = form.getValues("availability") || [];
-        const updatedAvailability = currentAvailability.includes(slot)
-            ? currentAvailability.filter((a) => a !== slot)
-            : [...currentAvailability, slot];
+        const updatedAvailability = currentAvailability.includes(availability)
+            ? currentAvailability.filter((a) => a !== availability)
+            : [...currentAvailability, availability];
 
         form.setValue("availability", updatedAvailability, {
             shouldValidate: true,
@@ -111,7 +114,9 @@ export function ProfileStep({
     };
 
     // Handle communication method selection
-    const handleCommunicationChange = (method: "Video call" | "Audio call" | "Text chat") => {
+    const handleCommunicationChange = (
+        method: "Video call" | "Audio call" | "Text chat",
+    ) => {
         form.setValue("communicationPreference", method, {
             shouldValidate: true,
         });
@@ -142,7 +147,9 @@ export function ProfileStep({
         <form className="space-y-8">
             {!hideRoleSelection && (
                 <div className="mb-6 pt-2">
-                    <h3 className="mb-2 text-lg font-medium">I am joining as:</h3>
+                    <h3 className="mb-2 text-lg font-medium">
+                        I am joining as:
+                    </h3>
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div
                             className={`flex cursor-pointer flex-col items-center rounded-lg border p-4 text-center transition-all ${
@@ -164,7 +171,7 @@ export function ProfileStep({
                                 I want to find mentors
                             </p>
                         </div>
-                        
+
                         <div
                             className={`flex cursor-pointer flex-col items-center rounded-lg border p-4 text-center transition-all ${
                                 form.getValues("role") === "Mentor"
@@ -218,7 +225,7 @@ export function ProfileStep({
                         <div className="space-y-3">
                             <div className="flex justify-between">
                                 <Label htmlFor="bio">Bio</Label>
-                                <span className="text-xs text-muted-foreground">
+                                <span className="text-muted-foreground text-xs">
                                     {getBioCharCount()}/2000
                                 </span>
                             </div>
@@ -269,7 +276,7 @@ export function ProfileStep({
                                         Upload Photo
                                     </Button>
                                 </div>
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-muted-foreground text-xs">
                                     Maximum file size: 5MB
                                 </p>
                             </div>
@@ -287,34 +294,48 @@ export function ProfileStep({
                         <div className="space-y-3">
                             <Label>Areas of Expertise</Label>
                             {isLoading ? (
-                                <div className="flex items-center justify-center border rounded-lg p-8">
+                                <div className="flex items-center justify-center rounded-lg border p-8">
                                     <LoadingSpinner size="sm" />
-                                    <span className="ml-2 text-sm text-muted-foreground">Loading areas of expertise...</span>
+                                    <span className="text-muted-foreground ml-2 text-sm">
+                                        Loading areas of expertise...
+                                    </span>
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-2 gap-2">
                                     {expertises.map((expertise) => {
-                                        const Icon = getExpertiseIcon(expertise.name);
+                                        const Icon = getExpertiseIcon(
+                                            expertise.name,
+                                        );
                                         return (
                                             <div
                                                 key={expertise.id}
                                                 className={`flex cursor-pointer items-center rounded-lg border p-2 transition-all ${
-                                                    (form.getValues("expertises") || []).includes(expertise.id)
+                                                    (
+                                                        form.getValues(
+                                                            "expertises",
+                                                        ) || []
+                                                    ).includes(expertise.id)
                                                         ? "border-primary bg-primary/5"
                                                         : "hover:border-gray-400"
                                                 }`}
-                                                onClick={() => handleExpertiseChange(expertise.id)}
+                                                onClick={() =>
+                                                    handleExpertiseChange(
+                                                        expertise.id,
+                                                    )
+                                                }
                                             >
                                                 <div className="flex h-6 w-6 items-center justify-center">
-                                                    <Icon className="h-4 w-4 text-primary" />
+                                                    <Icon className="text-primary h-4 w-4" />
                                                 </div>
-                                                <span className="ml-2 text-sm">{expertise.name}</span>
+                                                <span className="ml-2 text-sm">
+                                                    {expertise.name}
+                                                </span>
                                             </div>
                                         );
                                     })}
                                 </div>
                             )}
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-muted-foreground text-xs">
                                 Select areas that best represent your expertise
                             </p>
                             {form.formState.errors.expertises && (
@@ -328,7 +349,7 @@ export function ProfileStep({
                             <div className="space-y-3">
                                 <div className="flex justify-between">
                                     <Label>Professional Skills</Label>
-                                    <span className="text-xs text-muted-foreground">
+                                    <span className="text-muted-foreground text-xs">
                                         {getProfessionalSkillsCharCount()}/200
                                     </span>
                                 </div>
@@ -342,8 +363,8 @@ export function ProfileStep({
                                 {form.formState.errors.professionalSkill && (
                                     <p className="text-sm text-red-500">
                                         {
-                                            form.formState.errors.professionalSkill
-                                                .message
+                                            form.formState.errors
+                                                .professionalSkill.message
                                         }
                                     </p>
                                 )}
@@ -351,8 +372,10 @@ export function ProfileStep({
 
                             <div className="space-y-3">
                                 <div className="flex justify-between">
-                                    <Label htmlFor="industryExperience">Industry Experience</Label>
-                                    <span className="text-xs text-muted-foreground">
+                                    <Label htmlFor="industryExperience">
+                                        Industry Experience
+                                    </Label>
+                                    <span className="text-muted-foreground text-xs">
                                         {getIndustryExperienceCharCount()}/200
                                     </span>
                                 </div>
@@ -365,7 +388,10 @@ export function ProfileStep({
                                 />
                                 {form.formState.errors.experience && (
                                     <p className="text-sm text-red-500">
-                                        {form.formState.errors.experience.message}
+                                        {
+                                            form.formState.errors.experience
+                                                .message
+                                        }
                                     </p>
                                 )}
                             </div>
@@ -377,7 +403,7 @@ export function ProfileStep({
                         <div className="space-y-3">
                             <div className="flex justify-between">
                                 <Label htmlFor="goals">Goals</Label>
-                                <span className="text-xs text-muted-foreground">
+                                <span className="text-muted-foreground text-xs">
                                     {getGoalsCharCount()}/200
                                 </span>
                             </div>
@@ -411,52 +437,70 @@ export function ProfileStep({
                         <div className="grid grid-cols-3 gap-2">
                             <div
                                 className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                    form.getValues("communicationPreference") === "Video call"
+                                    form.getValues(
+                                        "communicationPreference",
+                                    ) === "Video call"
                                         ? "border-primary bg-primary/5"
                                         : "hover:border-gray-400"
                                 }`}
-                                onClick={() => handleCommunicationChange("Video call")}
+                                onClick={() =>
+                                    handleCommunicationChange("Video call")
+                                }
                             >
                                 <div className="flex h-6 w-6 items-center justify-center">
-                                    <Video className="h-4 w-4 text-primary" />
+                                    <Video className="text-primary h-4 w-4" />
                                 </div>
-                                <span className="text-sm font-medium">Video Call</span>
+                                <span className="text-sm font-medium">
+                                    Video Call
+                                </span>
                             </div>
                             <div
                                 className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                    form.getValues("communicationPreference") === "Audio call"
+                                    form.getValues(
+                                        "communicationPreference",
+                                    ) === "Audio call"
                                         ? "border-primary bg-primary/5"
                                         : "hover:border-gray-400"
                                 }`}
-                                onClick={() => handleCommunicationChange("Audio call")}
+                                onClick={() =>
+                                    handleCommunicationChange("Audio call")
+                                }
                             >
                                 <div className="flex h-6 w-6 items-center justify-center">
-                                    <Phone className="h-4 w-4 text-primary" />
+                                    <Phone className="text-primary h-4 w-4" />
                                 </div>
-                                <span className="text-sm font-medium">Audio Call</span>
+                                <span className="text-sm font-medium">
+                                    Audio Call
+                                </span>
                             </div>
                             <div
                                 className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                    form.getValues("communicationPreference") === "Text chat"
+                                    form.getValues(
+                                        "communicationPreference",
+                                    ) === "Text chat"
                                         ? "border-primary bg-primary/5"
                                         : "hover:border-gray-400"
                                 }`}
-                                onClick={() => handleCommunicationChange("Text chat")}
+                                onClick={() =>
+                                    handleCommunicationChange("Text chat")
+                                }
                             >
                                 <div className="flex h-6 w-6 items-center justify-center">
-                                    <MessageSquare className="h-4 w-4 text-primary" />
+                                    <MessageSquare className="text-primary h-4 w-4" />
                                 </div>
-                                <span className="text-sm font-medium">Text Chat</span>
+                                <span className="text-sm font-medium">
+                                    Text Chat
+                                </span>
                             </div>
                         </div>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-muted-foreground text-xs">
                             Select your preferred method for mentorship sessions
                         </p>
                         {form.formState.errors.communicationPreference && (
                             <p className="text-sm text-red-500">
                                 {
-                                    form.formState.errors.communicationPreference
-                                        .message
+                                    form.formState.errors
+                                        .communicationPreference.message
                                 }
                             </p>
                         )}
@@ -465,29 +509,68 @@ export function ProfileStep({
                     <div className="space-y-3">
                         <Label>Your Availability</Label>
                         <div className="grid grid-cols-3 gap-2">
-                            {availabilitySlots.map((slot) => (
-                                <div
-                                    key={slot}
-                                    className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                        (
-                                            form.getValues(
-                                                "availability",
-                                            ) || []
-                                        ).includes(slot)
-                                            ? "border-primary bg-primary/5"
-                                            : "hover:border-gray-400"
-                                    }`}
-                                    onClick={() =>
-                                        handleAvailabilityChange(slot)
-                                    }
-                                >
-                                    <span className="text-sm font-medium">
-                                        {slot}
-                                    </span>
-                                </div>
-                            ))}
+                            <div
+                                className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
+                                    (form.getValues("availability") || []).includes("Weekdays")
+                                        ? "border-primary bg-primary/5"
+                                        : "hover:border-gray-400"
+                                }`}
+                                onClick={() => handleAvailabilityChange("Weekdays")}
+                            >
+                                <span className="text-sm font-medium">
+                                    Weekdays
+                                </span>
+                            </div>
+                            <div
+                                className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
+                                    (form.getValues("availability") || []).includes("Weekends")
+                                        ? "border-primary bg-primary/5"
+                                        : "hover:border-gray-400"
+                                }`}
+                                onClick={() => handleAvailabilityChange("Weekends")}
+                            >
+                                <span className="text-sm font-medium">
+                                    Weekends
+                                </span>
+                            </div>
+                            <div
+                                className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
+                                    (form.getValues("availability") || []).includes("Mornings")
+                                        ? "border-primary bg-primary/5"
+                                        : "hover:border-gray-400"
+                                }`}
+                                onClick={() => handleAvailabilityChange("Mornings")}
+                            >
+                                <span className="text-sm font-medium">
+                                    Mornings
+                                </span>
+                            </div>
+                            <div
+                                className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
+                                    (form.getValues("availability") || []).includes("Afternoons")
+                                        ? "border-primary bg-primary/5"
+                                        : "hover:border-gray-400"
+                                }`}
+                                onClick={() => handleAvailabilityChange("Afternoons")}
+                            >
+                                <span className="text-sm font-medium">
+                                    Afternoons
+                                </span>
+                            </div>
+                            <div
+                                className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
+                                    (form.getValues("availability") || []).includes("Evenings")
+                                        ? "border-primary bg-primary/5"
+                                        : "hover:border-gray-400"
+                                }`}
+                                onClick={() => handleAvailabilityChange("Evenings")}
+                            >
+                                <span className="text-sm font-medium">
+                                    Evenings
+                                </span>
+                            </div>
                         </div>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-muted-foreground text-xs">
                             Select when you're typically available for sessions
                         </p>
                         {form.formState.errors.availability && (
@@ -501,4 +584,3 @@ export function ProfileStep({
         </form>
     );
 }
-

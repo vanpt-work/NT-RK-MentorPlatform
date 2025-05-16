@@ -44,6 +44,7 @@ public class AuthServices: IAuthServices
     private readonly IRepository<UserExpertise, Guid> _userExpertiseRepository;
     private readonly IBackgroundTaskQueue<Func<IServiceProvider, CancellationToken, ValueTask>> _mailQueue;
     private readonly ILogger<AuthServices> _logger;
+    private readonly IRepository<Domain.Entities.Expertise, Guid> _expertiseRepository;
     public AuthServices(IJwtTokenServices jwtServices,
         ILogger<AuthServices> logger,
         IUnitOfWork unitOfWork,
@@ -54,10 +55,12 @@ public class AuthServices: IAuthServices
         IRepository<Domain.Entities.CourseCategory, Guid> courseCategoryRepository,
         IRepository<RefreshToken, Guid> refreshTokenRepository,
         IRepository<UserExpertise, Guid> userExpertiseRepository,
+        IRepository<Domain.Entities.Expertise, Guid> expertiseRepository,
         IRazorLightEngine razorLightEngine,
         IMemoryCache memoryCache,
         IBackgroundTaskQueue<Func<IServiceProvider, CancellationToken, ValueTask>> mailQueue)
     {
+        _expertiseRepository = expertiseRepository;
         _mailQueue = mailQueue;
         _logger = logger;
         _executionContext = executionContext;
@@ -455,7 +458,7 @@ public class AuthServices: IAuthServices
     }
     private async Task<bool> ValidateExpertiseValidAsync(List<Guid> expertiseIds)
     {
-        var expertise = await _userExpertiseRepository.GetByIdsAsync(expertiseIds);
+        var expertise = await _expertiseRepository.GetByIdsAsync(expertiseIds);
         if (expertise.Count != expertiseIds.Count)
         {
             return false;

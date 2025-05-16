@@ -7,7 +7,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/common/components/ui/select";
-
 import { useEffect, useState } from "react";
 import { type CourseCategory, type PreferencesStepProps, type SessionDurationType, type SessionFrequencyType } from "../types";
 import { BookOpen, Ear, Eye, GraduationCap, Hammer, Lightbulb, MessagesSquare, X } from "lucide-react";
@@ -44,9 +43,6 @@ export function PreferencesStep({
         fetchCategories();
     }, []);
 
-    console.log(categories)
-
-    // Handle topics selection
     const handleTopicChange = (categoryId: string) => {
         const currentTopics = form.getValues("courseCategoryIds") || [];
         const updatedTopics = currentTopics.includes(categoryId)
@@ -58,7 +54,6 @@ export function PreferencesStep({
         });
     };
 
-    // Find category name by ID
     const getCategoryName = (id: string) => {
         const category = categories.find(cat => cat.id === id);
         return category ? category.name : id;
@@ -145,11 +140,10 @@ export function PreferencesStep({
                             </Label>
                             <div className="grid grid-cols-2 gap-2">
                                 <div
-                                    className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                        form.getValues("learningStyle") === "Visual"
+                                    className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${form.getValues("learningStyle") === "Visual"
                                             ? "border-primary bg-primary/5"
                                             : "hover:border-gray-400"
-                                    }`}
+                                        }`}
                                     onClick={() => {
                                         form.setValue("learningStyle", "Visual", { shouldValidate: true });
                                         form.trigger("learningStyle");
@@ -161,11 +155,10 @@ export function PreferencesStep({
                                     <span className="text-sm font-medium">Visual</span>
                                 </div>
                                 <div
-                                    className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                        form.getValues("learningStyle") === "Auditory"
+                                    className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${form.getValues("learningStyle") === "Auditory"
                                             ? "border-primary bg-primary/5"
                                             : "hover:border-gray-400"
-                                    }`}
+                                        }`}
                                     onClick={() => {
                                         form.setValue("learningStyle", "Auditory", { shouldValidate: true });
                                         form.trigger("learningStyle");
@@ -177,11 +170,10 @@ export function PreferencesStep({
                                     <span className="text-sm font-medium">Auditory</span>
                                 </div>
                                 <div
-                                    className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                        form.getValues("learningStyle") === "Reading/Writing"
+                                    className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${form.getValues("learningStyle") === "Reading/Writing"
                                             ? "border-primary bg-primary/5"
                                             : "hover:border-gray-400"
-                                    }`}
+                                        }`}
                                     onClick={() => {
                                         form.setValue("learningStyle", "Reading/Writing", { shouldValidate: true });
                                         form.trigger("learningStyle");
@@ -193,11 +185,10 @@ export function PreferencesStep({
                                     <span className="text-sm font-medium">Reading/Writing</span>
                                 </div>
                                 <div
-                                    className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                        form.getValues("learningStyle") === "Kinesthetic"
+                                    className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${form.getValues("learningStyle") === "Kinesthetic"
                                             ? "border-primary bg-primary/5"
                                             : "hover:border-gray-400"
-                                    }`}
+                                        }`}
                                     onClick={() => {
                                         form.setValue("learningStyle", "Kinesthetic", { shouldValidate: true });
                                         form.trigger("learningStyle");
@@ -229,11 +220,10 @@ export function PreferencesStep({
                                 </Label>
                                 <div className="grid grid-cols-2 gap-2">
                                     <div
-                                        className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                            form.getValues("teachingStyles") === "handson"
+                                        className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${form.getValues("teachingStyles") === "handson"
                                                 ? "border-primary bg-primary/5"
                                                 : "hover:border-gray-400"
-                                        }`}
+                                            }`}
                                         onClick={() => {
                                             form.setValue("teachingStyles", "handson", { shouldValidate: true });
                                             form.trigger("teachingStyles");
@@ -245,11 +235,10 @@ export function PreferencesStep({
                                         <span className="text-sm font-medium">Hands-on Practice</span>
                                     </div>
                                     <div
-                                        className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                            form.getValues("teachingStyles") === "discussion"
+                                        className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${form.getValues("teachingStyles") === "discussion"
                                                 ? "border-primary bg-primary/5"
                                                 : "hover:border-gray-400"
-                                        }`}
+                                            }`}
                                         onClick={() => {
                                             form.setValue("teachingStyles", "discussion", { shouldValidate: true });
                                             form.trigger("teachingStyles");
@@ -261,11 +250,10 @@ export function PreferencesStep({
                                         <span className="text-sm font-medium">Discussion Base</span>
                                     </div>
                                     <div
-                                        className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                            form.getValues("teachingStyles") === "project"
+                                        className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${form.getValues("teachingStyles") === "project"
                                                 ? "border-primary bg-primary/5"
                                                 : "hover:border-gray-400"
-                                        }`}
+                                            }`}
                                         onClick={() => {
                                             form.setValue("teachingStyles", "project", { shouldValidate: true });
                                             form.trigger("teachingStyles");
@@ -277,11 +265,10 @@ export function PreferencesStep({
                                         <span className="text-sm font-medium">Project Based</span>
                                     </div>
                                     <div
-                                        className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                            form.getValues("teachingStyles") === "lecture"
+                                        className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${form.getValues("teachingStyles") === "lecture"
                                                 ? "border-primary bg-primary/5"
                                                 : "hover:border-gray-400"
-                                        }`}
+                                            }`}
                                         onClick={() => {
                                             form.setValue("teachingStyles", "lecture", { shouldValidate: true });
                                             form.trigger("teachingStyles");
