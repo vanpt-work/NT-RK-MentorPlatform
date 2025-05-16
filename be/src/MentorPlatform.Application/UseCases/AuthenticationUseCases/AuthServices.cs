@@ -33,7 +33,6 @@ public class AuthServices: IAuthServices
 {
     private readonly IJwtTokenServices _jwtServices;
     private readonly IUserRepository _userRepository;
-    private readonly IRepository<UserDetail, Guid> _userDetailRepository;
     private readonly JwtTokenOptions _jwtTokenOptions;
     private readonly IRepository<Domain.Entities.CourseCategory, Guid> _courseCategoryRepository;
     private readonly IFileStorageServices _fileStorageServices;
@@ -49,7 +48,6 @@ public class AuthServices: IAuthServices
         ILogger<AuthServices> logger,
         IUnitOfWork unitOfWork,
         IUserRepository userRepository,
-        IRepository<UserDetail, Guid> userDetailRepository,
         IFileStorageFactory fileStorageFactory,
         IOptions<JwtTokenOptions> jwtTokenOptions, 
         IExecutionContext executionContext,
@@ -65,7 +63,6 @@ public class AuthServices: IAuthServices
         _executionContext = executionContext;
         _jwtServices = jwtServices;
         _userRepository = userRepository;
-        _userDetailRepository = userDetailRepository;
         _jwtTokenOptions = jwtTokenOptions.Value;
         _unitOfWork = unitOfWork;
         _userExpertiseRepository = userExpertiseRepository;
