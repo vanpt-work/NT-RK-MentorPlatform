@@ -136,7 +136,7 @@ export const preferencesSchema = z.object({
         ["30 minutes", "45 minutes", "1 hour", "1.5 hours", "2 hours"],
         {
             required_error: PREFERRED_SESSION_DURATION_IS_INVALID,
-        }
+        },
     ),
 
     learningStyle: z

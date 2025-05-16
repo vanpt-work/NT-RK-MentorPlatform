@@ -11,31 +11,31 @@ export const isLoginPage = () =>
     window.location.pathname == PATH.Register;
 
 export const setClientToken = (token: Token) => {
-  const storage =
-    localStorage.getItem(REMEMBER_ME_KEY) === "true"
-      ? localStorage
-      : sessionStorage;
+    const storage =
+        localStorage.getItem(REMEMBER_ME_KEY) === "true"
+            ? localStorage
+            : sessionStorage;
 
-  storage.setItem(ACCESS_TOKEN_KEY, JSON.stringify(token.accessToken));
-  storage.setItem(REFRESH_TOKEN_KEY, JSON.stringify(token.refreshToken));
+    storage.setItem(ACCESS_TOKEN_KEY, JSON.stringify(token.accessToken));
+    storage.setItem(REFRESH_TOKEN_KEY, JSON.stringify(token.refreshToken));
 };
 
 export const getClientToken = (): Token | undefined => {
-  const storage =
-    localStorage.getItem(REMEMBER_ME_KEY) === "true"
-      ? localStorage
-      : sessionStorage;
+    const storage =
+        localStorage.getItem(REMEMBER_ME_KEY) === "true"
+            ? localStorage
+            : sessionStorage;
 
-  const accessToken = storage.getItem(ACCESS_TOKEN_KEY);
-  const refreshToken = storage.getItem(REFRESH_TOKEN_KEY);
+    const accessToken = storage.getItem(ACCESS_TOKEN_KEY);
+    const refreshToken = storage.getItem(REFRESH_TOKEN_KEY);
 
-  if (accessToken && refreshToken) {
-    return {
-      accessToken: JSON.parse(accessToken),
-      refreshToken: JSON.parse(refreshToken),
-    };
-  }
-  return undefined;
+    if (accessToken && refreshToken) {
+        return {
+            accessToken: JSON.parse(accessToken),
+            refreshToken: JSON.parse(refreshToken),
+        };
+    }
+    return undefined;
 };
 
 export const removeClientToken = () => {

@@ -16,11 +16,10 @@ export type CourseCategoryDetailResponse = CourseCategoryResponse & {
 };
 
 export const defaultCourseCategoryDetail: CourseCategoryDetailResponse = {
-    id: '',
-    name: '',
-    description: '',
+    id: "",
+    name: "",
+    description: "",
     courseCount: 0,
     isActive: false,
     courses: [],
 };
-

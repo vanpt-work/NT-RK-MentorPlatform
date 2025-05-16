@@ -16,5 +16,4 @@ export type PaginationResult<T> = {
 export type Error = {
     code: string;
     message: string;
-}
-
+};

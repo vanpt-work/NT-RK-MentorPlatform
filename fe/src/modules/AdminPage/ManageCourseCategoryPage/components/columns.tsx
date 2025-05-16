@@ -21,14 +21,18 @@ export const columnBase: ColumnDef<CourseCategoryResponse>[] = [
         accessorKey: "description",
         header: "Description",
         cell: ({ row }) => (
-            <div className="dark:text-gray-200">{row.getValue("description")}</div>
+            <div className="dark:text-gray-200">
+                {row.getValue("description")}
+            </div>
         ),
     },
     {
         accessorKey: "courseCount",
         header: "Courses",
         cell: ({ row }) => (
-            <div className="dark:text-gray-200">{row.getValue("courseCount")}</div>
+            <div className="dark:text-gray-200">
+                {row.getValue("courseCount")}
+            </div>
         ),
     },
     {
@@ -39,7 +43,7 @@ export const columnBase: ColumnDef<CourseCategoryResponse>[] = [
             return (
                 <span
                     className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                        status 
+                        status
                             ? "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100"
                             : "bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100"
                     }`}
@@ -48,5 +52,5 @@ export const columnBase: ColumnDef<CourseCategoryResponse>[] = [
                 </span>
             );
         },
-    }
+    },
 ];
