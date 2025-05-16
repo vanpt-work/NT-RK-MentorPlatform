@@ -266,6 +266,23 @@ public class AuthServices: IAuthServices
         return Result<string>.Success(AuthCommandMessages.VerifyForgotPasswordCodeSuccessfully);
     }
 
+    public async Task<Result> GetCurrentUserAsync()
+    {
+        var userId = _executionContext.GetUserId();
+        var user = await _userRepository.GetByIdAsync(userId, nameof(User.UserDetail));
+        ValidateUserNotNull(user);
+        var currentUser = new CurrentUserResponse
+        {
+            Id = user!.Id,
+            Email = user.Email,
+            Role = user.Role,
+            FullName = user.UserDetail.FullName,
+            AvatarUrl = user.UserDetail.AvatarUrl
+        };
+        return Result<CurrentUserResponse>.Success(currentUser);
+    }
+
+
     public async Task<Result> EditingProfileUserAsync(EditingUserProfileRequest editingUserProfileRequest)
     {
         var userId = _executionContext.GetUserId();
@@ -306,6 +323,7 @@ public class AuthServices: IAuthServices
 
         return Result<string>.Success(AuthCommandMessages.EditingUserProfileSuccessfully);
     }
+
 
     private async Task ValidateAndRevokeRefreshTokenAsync(User user, string refreshToken, Guid refreshTokenId)
     {
@@ -384,6 +402,7 @@ public class AuthServices: IAuthServices
             throw new BadRequestException(ApplicationExceptionMessage.UserNotExists);
         }
     }
+
     private async Task AddEmailWorkItemIntoQueueAsync(SendMailData sendMailData)
     {
         await _mailQueue.QueueBackgroundWorkItemAsync(async (sp, cancellationToken) =>

@@ -30,9 +30,10 @@ export enum Role {
 }
 
 
-export type UserInfo = {
+export type CurrentUser = {
     id: string;
-    name: string;
+    fullName: string;
     email: string;
+    avatarUrl : string;
     role: Role;
 }
