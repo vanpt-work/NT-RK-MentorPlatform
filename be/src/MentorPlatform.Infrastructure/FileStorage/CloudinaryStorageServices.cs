@@ -1,6 +1,7 @@
 ﻿using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using MentorPlatform.Application.Services.File;
+using MentorPlatform.CrossCuttingConcerns.Exceptions;
 using MentorPlatform.Infrastructure.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -37,7 +38,7 @@ public class CloudinaryStorageServices : INamedFileStorageServices
         
         if (uploadResult.Error != null)
         {
-            throw new Exception($"Error when upload: {uploadResult.Error.Message}");
+            throw new Exception(string.Format(ApplicationExceptionMessage.ErrorWhenUpload, uploadResult.Error.Message));
         }
         
         return uploadResult.SecureUrl.ToString();
@@ -47,7 +48,7 @@ public class CloudinaryStorageServices : INamedFileStorageServices
     {
         if (file == null || file.Length == 0)
         {
-            throw new ArgumentException("Invalid file");
+            throw new ArgumentException(ApplicationExceptionMessage.InvalidFile);
         }
     }
 
@@ -82,7 +83,7 @@ public class CloudinaryStorageServices : INamedFileStorageServices
         
         if (result.Error != null)
         {
-            throw new Exception($"Error when deleting file: {result.Error.Message}");
+            throw new Exception(string.Format(ApplicationExceptionMessage.ErrorWhenDeletingFile, result.Error.Message));
         }
     }
     
@@ -90,7 +91,7 @@ public class CloudinaryStorageServices : INamedFileStorageServices
     {
         if (string.IsNullOrEmpty(filePath))
         {
-            throw new ArgumentException("Invalid file path");
+            throw new ArgumentException(ApplicationExceptionMessage.InvalidFilePath);
         }
     }
     
@@ -133,10 +134,10 @@ public class CloudinaryStorageServices : INamedFileStorageServices
         }
         catch (Exception ex)
         {
-            throw new ArgumentException($"Could not extract Public ID from URL: {url}", ex);
+            throw new ArgumentException(string.Format(ApplicationExceptionMessage.CouldNotExtractPublicId, url), ex);
         }
         
-        throw new ArgumentException($"Could not extract Public ID from URL: {url}");
+        throw new ArgumentException(string.Format(ApplicationExceptionMessage.CouldNotExtractPublicId, url));
     }
 
     public string ServiceName => nameof(CloudinaryStorageServices);
