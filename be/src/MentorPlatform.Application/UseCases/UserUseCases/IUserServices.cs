@@ -6,5 +6,5 @@ namespace MentorPlatform.Application.UseCases.UserManagement;
 public interface IUserServices
 {
     public Task<Result> ChangeUserActiveAsync(Guid userId, bool isActive = true);
-    public Task<Result<PaginationResult<UserResponse>>> GetUsersByQueryAsync(HasRoleQueryParameters query);
+    public Task<Result<PaginationResult<UserResponse>>> GetUsersByQueryAsync(UserQueryParameters query);
 }
