@@ -66,6 +66,11 @@ const adminMenuItems = [
     path: "/admin/manage-courses"
   },
   {
+    name: "Manage Categories",
+    icon: <Book size={20} />,
+    path: "/admin/manage-course-categories"
+  },
+  {
     name: "Mentor Approvals",
     icon: <CheckSquare size={20} />,
     path: "/admin/mentor-approvals"
@@ -132,7 +137,7 @@ const mentorMenuItems = [
     path: "/mentor/availability"
   },
   {
-    name: "Manage Courses",
+    name: "Course Category",
     icon: <Book size={20} />,
     path: "/mentor/manage-courses"
   },

@@ -1,0 +1,197 @@
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+
+import { Button } from "@/common/components/ui/button";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/common/components/ui/form";
+import { Input } from "@/common/components/ui/input";
+import {
+    Sheet,
+    SheetClose,
+    SheetContent,
+    SheetDescription,
+    SheetFooter,
+    SheetHeader,
+    SheetTitle,
+} from "@/common/components/ui/sheet";
+import {
+    FormMode,
+    type FormSetting,
+    formSettingDefault,
+} from "@/common/types/ui";
+
+import type { CourseCategoryRequest } from "../types/course-request";
+import type {
+    CourseCategoryDetailResponse,
+    CourseCategoryResponse,
+} from "../types/course-response";
+import { Textarea } from "@/common/components/ui/textarea";
+
+type FormDetailProps = {
+    formSetting: FormSetting;
+    setFormSetting: (setting: FormSetting) => void;
+    data?: CourseCategoryDetailResponse;
+    title?: string;
+    onSubmit?: (data: CourseCategoryRequest) => void;
+};
+
+export default function FormDetails(props: FormDetailProps) {
+    const {
+        formSetting = formSettingDefault,
+        setFormSetting = () => {},
+        data,
+        onSubmit = () => {},
+        title = "Details",
+    } = props;
+    const form = useForm<CourseCategoryResponse>({
+        defaultValues: data ?? {
+            id: "",
+            name: "",
+        },
+    });
+
+    useEffect(() => {
+        if (data) form.reset(data);
+    }, [data]);
+
+    const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        console.log("OKOK");
+        form.handleSubmit(onSubmit)();
+    };
+
+    return (
+        <Sheet
+            open={formSetting.open}
+            onOpenChange={(v: boolean) => {
+                setFormSetting({ ...formSetting, open: v });
+                form.reset();
+            }}
+        >
+            <SheetContent
+                onInteractOutside={(event: Event) => event.preventDefault()}
+                className="flex flex-col"
+            >
+                <SheetHeader className="text-left">
+                    <SheetTitle>
+                        {formSetting.mode} {title}
+                    </SheetTitle>
+                    <SheetDescription>
+                        {formSetting.mode == FormMode.EDIT &&
+                            "Update details by providing necessary info."}
+                        {formSetting.mode == FormMode.ADD &&
+                            "Add a new record by providing necessary info."}
+                        Click save when you&apos;re done.
+                    </SheetDescription>
+                </SheetHeader>
+                <Form {...form}>
+                    <form
+                        id="tasks-form"
+                        onSubmit={handleFormSubmit}
+                        className="flex-1 space-y-5 px-4"
+                    >
+                        <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                                <FormItem className="space-y-1">
+                                    <FormLabel>Name</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            placeholder="Enter a name"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="description"
+                            render={({ field }) => (
+                                <FormItem className="space-y-1">
+                                    <FormLabel>Description</FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            {...field}
+                                            placeholder="Enter description"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        {formSetting.mode == FormMode.EDIT && (
+                            <div>
+                                <FormField
+                                    control={form.control}
+                                    name="isActive"
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-1 flex my-3 border rounded-md p-2 items-center shadow-sm">
+                                            <FormLabel className="mb-0">Active</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    type="checkbox"
+                                                    checked={field.value}
+                                                    onChange={e => field.onChange(e.target.checked)}
+                                                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                                                    name={field.name}
+                                                    ref={field.ref}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <div>
+                                    {data?.courses.length ? (
+                                        <div className="space-y-2">
+                                            <div className="mb-2 font-semibold text-gray-700">
+                                                Courses in this category:
+                                            </div>
+                                            <div className="max-h-[20vh] space-y-2 overflow-y-auto pr-1 md:max-h-[30vh] lg:max-h-[40vh]">
+                                                {" "}
+                                                {data.courses.map((course) => (
+                                                    <div
+                                                        key={course.id}
+                                                        className="flex flex-col rounded-md border border-gray-200 bg-white p-3 shadow-sm transition hover:shadow"
+                                                    >
+                                                        <div className="text-primary truncate font-medium">
+                                                            {course.title}
+                                                        </div>
+                                                        <div className="mt-1 line-clamp-2 text-sm text-gray-500">
+                                                            {course.description}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="text-gray-400 italic">
+                                            No courses in this category.
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </form>
+                </Form>
+                <SheetFooter className="gap-2">
+                    <SheetClose asChild>
+                        <Button variant="outline">Close</Button>
+                    </SheetClose>
+                    <Button form="tasks-form" type="submit">
+                        Save changes
+                    </Button>
+                </SheetFooter>
+            </SheetContent>
+        </Sheet>
+    );
+}

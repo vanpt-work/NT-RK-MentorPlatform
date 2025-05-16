@@ -39,6 +39,7 @@ public static class DependencyInjection
         await SeedUserDataAsync(context);
         await SeedCourseCategoryDataAsync(context);
         await SeedExpertiseDataAsync(context);
+        await SeedCourseDataAsync(context);
     }
     private static async Task SeedUserDataAsync(ApplicationDbContext context)
     {
@@ -645,6 +646,31 @@ new() {
             };
 
             context.AddRange(courseCategories);
+            await context.SaveChangesAsync();
+        }
+    }
+
+    private static async Task SeedCourseDataAsync(ApplicationDbContext context)
+    {
+        if (!await context.Courses.AnyAsync())
+        {
+            var categories = await context.CourseCategories.ToListAsync();
+            var courses = new List<Course>();
+            foreach (var category in categories)
+            {
+                for (int i = 1; i <= 10; i++)
+                {
+                    courses.Add(new Course
+                    {
+                        Title = $"{category.Name} Course {i}",
+                        Description = $"This is {category.Name} Course {i} description.",
+                        Level = i % 3 + 1, // Levels: 1, 2, 3
+                        CourseCategoryId = category.Id,
+                        IsDeleted = false
+                    });
+                }
+            }
+            context.Courses.AddRange(courses);
             await context.SaveChangesAsync();
         }
     }
