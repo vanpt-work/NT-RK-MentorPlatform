@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import type { AccountFormValues, PreferencesFormValues, ProfileFormValues } from "../RegisterPage/types/Account";
+import type { AccountFormValues, PreferencesFormValues, ProfileFormValues } from "../RegisterPage/types";
 import { accountSchema, preferencesSchema, profileSchema } from "../RegisterPage/utils/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";

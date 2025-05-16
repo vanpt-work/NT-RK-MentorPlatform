@@ -14,8 +14,6 @@ import {
     Users,
     Video,
 } from "lucide-react";
-import type { UseFormReturn } from "react-hook-form";
-
 import {
     Avatar,
     AvatarFallback,
@@ -24,27 +22,12 @@ import {
 import { Button } from "@/common/components/ui/button";
 import { Input } from "@/common/components/ui/input";
 import { Label } from "@/common/components/ui/label";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/common/components/ui/select";
 import { Textarea } from "@/common/components/ui/textarea";
-
-import type { ProfileFormValues } from "../types/Account";
 import {
     availabilitySlots,
     expertiseAreas,
-} from "../types/Account";
-
-type ProfileStepProps = {
-    form: UseFormReturn<ProfileFormValues>;
-    avatarPreview: string | null;
-    onAvatarChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    hideRoleSelection?: boolean;
-};
+    type ProfileStepProps,
+} from "../types";
 
 export function ProfileStep({
     form,
@@ -64,29 +47,6 @@ export function ProfileStep({
         });
     };
 
-    // Handle professional skills selection
-    const handleSkillChange = (skill: string) => {
-        // Get current skills as string
-        const currentSkillsStr = form.getValues("professionalSkills") || "";
-        const currentSkills = currentSkillsStr ? currentSkillsStr.split(", ") : [];
-        
-        // Check if skill is already included
-        const hasSkill = currentSkills.includes(skill);
-        
-        // Create new skills array
-        let updatedSkills;
-        if (hasSkill) {
-            updatedSkills = currentSkills.filter(s => s !== skill);
-        } else {
-            updatedSkills = [...currentSkills, skill];
-        }
-        
-        // Join back to string
-        form.setValue("professionalSkills", updatedSkills.join(", "), {
-            shouldValidate: true,
-        });
-    };
-
     // Handle availability selection
     const handleAvailabilityChange = (slot: string) => {
         const currentAvailability = form.getValues("availability") || [];
@@ -99,18 +59,32 @@ export function ProfileStep({
         });
     };
 
-    // Check if a skill is selected
-    const isSkillSelected = (skill: string) => {
-        const currentSkillsStr = form.getValues("professionalSkills") || "";
-        const currentSkills = currentSkillsStr ? currentSkillsStr.split(", ") : [];
-        return currentSkills.includes(skill);
-    };
-
     // Handle communication method selection
     const handleCommunicationChange = (method: "Video call" | "Audio call" | "Text chat") => {
         form.setValue("communicationMethod", method, {
             shouldValidate: true,
         });
+    };
+
+    // Character count functions
+    const getBioCharCount = () => {
+        const bio = form.watch("bio") || "";
+        return bio.length;
+    };
+
+    const getProfessionalSkillsCharCount = () => {
+        const skills = form.watch("professionalSkills") || "";
+        return skills.length;
+    };
+
+    const getIndustryExperienceCharCount = () => {
+        const experience = form.watch("industryExperience") || "";
+        return experience.length;
+    };
+
+    const getGoalsCharCount = () => {
+        const goals = form.watch("goals") || "";
+        return goals.length;
     };
 
     return (
@@ -191,11 +165,17 @@ export function ProfileStep({
                         </div>
 
                         <div className="space-y-3">
-                            <Label htmlFor="bio">Bio</Label>
+                            <div className="flex justify-between">
+                                <Label htmlFor="bio">Bio</Label>
+                                <span className="text-xs text-muted-foreground">
+                                    {getBioCharCount()}/2000
+                                </span>
+                            </div>
                             <Textarea
                                 id="bio"
                                 placeholder="Tell us about yourself..."
                                 className="min-h-24"
+                                maxLength={2000}
                                 {...form.register("bio")}
                             />
                             {form.formState.errors.bio && (
@@ -319,11 +299,17 @@ export function ProfileStep({
 
                         <div className="space-y-6">
                             <div className="space-y-3">
-                                <Label>Professional Skills</Label>
+                                <div className="flex justify-between">
+                                    <Label>Professional Skills</Label>
+                                    <span className="text-xs text-muted-foreground">
+                                        {getProfessionalSkillsCharCount()}/200
+                                    </span>
+                                </div>
                                 <Textarea
                                     id="professionalSkills"
                                     placeholder="e.g. JavaScript, Project Management, Research"
                                     className="min-h-16"
+                                    maxLength={200}
                                     {...form.register("professionalSkills")}
                                 />
                                 {form.formState.errors.professionalSkills && (
@@ -337,11 +323,17 @@ export function ProfileStep({
                             </div>
 
                             <div className="space-y-3">
-                                <Label htmlFor="industryExperience">Industry Experience</Label>
+                                <div className="flex justify-between">
+                                    <Label htmlFor="industryExperience">Industry Experience</Label>
+                                    <span className="text-xs text-muted-foreground">
+                                        {getIndustryExperienceCharCount()}/200
+                                    </span>
+                                </div>
                                 <Textarea
                                     id="industryExperience"
                                     placeholder="e.g. 5 years in Tech, 3 years in Finance"
                                     className="min-h-16"
+                                    maxLength={200}
                                     {...form.register("industryExperience")}
                                 />
                                 {form.formState.errors.industryExperience && (
@@ -356,11 +348,17 @@ export function ProfileStep({
                     {/* Goals row */}
                     <div className="grid grid-cols-1">
                         <div className="space-y-3">
-                            <Label htmlFor="goals">Goals</Label>
+                            <div className="flex justify-between">
+                                <Label htmlFor="goals">Goals</Label>
+                                <span className="text-xs text-muted-foreground">
+                                    {getGoalsCharCount()}/200
+                                </span>
+                            </div>
                             <Textarea
                                 id="goals"
                                 placeholder="What do you want to achieve?"
                                 className="min-h-16"
+                                maxLength={200}
                                 {...form.register("goals")}
                             />
                             {form.formState.errors.goals && (

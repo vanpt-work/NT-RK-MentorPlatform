@@ -34,14 +34,11 @@ public static class DependencyInjection
         var config = GetConfiguration(services);
 
         services.Configure<FileStorageOptions>(config.GetSection(nameof(FileStorageOptions)));
+        services.Configure<CloudinaryStorageOptions>(config.GetSection($"{nameof(FileStorageOptions)}:CloudiaryStorageOptions"));
 
         services.AddScoped<IJwtTokenServices, JwtTokenServices>();
         services
-            .AddScoped<INamedFileStorageServices, CloudinaryStorageServices>((sp) =>
-            {
-                var options = sp.GetRequiredService<IOptions<FileStorageOptions>>().Value;
-                return new CloudinaryStorageServices(options.CloudinaryStorageOptions!);
-            })
+            .AddScoped<INamedFileStorageServices, CloudinaryStorageServices>()
             .AddScoped<INamedFileStorageServices, AWSS3StorageServices>((sp) =>
             {
                 var options = sp.GetRequiredService<IOptions<FileStorageOptions>>().Value;

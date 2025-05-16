@@ -114,12 +114,12 @@ export const preferencesSchema = z.object({
     ),
   
   sessionFrequency: z
-    .enum(["Weekly"], { 
+    .enum(["Weekly", "Every two weeks", "Monthly", "As Needed"], { 
       required_error: "Preferred session frequency invalid." 
     }),
   
   sessionDuration: z
-    .enum(["1 hour"], { 
+    .enum(["30 minutes", "45 minutes", "1 hour", "1.5 hours", "2 hours"], { 
       required_error: "Preferred session duration invalid." 
     }),
   
