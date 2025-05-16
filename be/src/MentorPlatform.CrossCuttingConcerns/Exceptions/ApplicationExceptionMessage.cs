@@ -1,5 +1,4 @@
-﻿
-namespace MentorPlatform.CrossCuttingConcerns.Exceptions;
+﻿namespace MentorPlatform.CrossCuttingConcerns.Exceptions;
 
 public static class ApplicationExceptionMessage
 {
@@ -12,4 +11,9 @@ public static class ApplicationExceptionMessage
     public const string UserNotExists = "User not exists";
     public const string RefreshTokenIdInExecutionContextInvalid = "Refresh token id in execution context invalid";
     public const string RefreshTokenNotExists = "Refresh token of user not exists";
+    public const string InvalidFile = "Invalid file";
+    public const string ErrorWhenUpload = "Error when upload: {0}";
+    public const string InvalidFilePath = "Invalid file path";
+    public const string ErrorWhenDeletingFile = "Error when deleting file: {0}";
+    public const string CouldNotExtractPublicId = "Could not extract Public ID from URL: {0}";
 }
