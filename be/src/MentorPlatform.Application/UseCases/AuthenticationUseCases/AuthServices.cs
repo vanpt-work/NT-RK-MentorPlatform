@@ -124,18 +124,18 @@ public class AuthServices: IAuthServices
             return Result.Failure(400, UserErrors.EmailAlreadyRegister);
         }
 
-        if (registerRequest.Expertises != null && !await ValidateExpertiseValidAsync(registerRequest))
+        if (registerRequest.Expertises != null && !await ValidateExpertiseValidAsync(registerRequest.Expertises))
         {
             return Result.Failure(400, UserErrors.UserExpertiseInvalid);
         }
 
-        if (registerRequest.CourseCategoryIds != null && !await ValidateCourseCategoryValidAsync(registerRequest))
+        if (registerRequest.CourseCategoryIds != null && !await ValidateCourseCategoryValidAsync(registerRequest.CourseCategoryIds))
         {
             return Result.Failure(400, UserErrors.UserCourseCategoryInvalid);
         }
 
-        var userCourseCategories = GetUserCourseCategories(registerRequest);
-        var userExpertises = GetUserExpertises(registerRequest);
+        var userCourseCategories = GetUserCourseCategories(registerRequest.CourseCategoryIds);
+        var userExpertises = GetUserExpertises(registerRequest.Expertises);
 
         var user = registerRequest.ToUser();
         user.UserCourseCategories = userCourseCategories;
@@ -283,6 +283,48 @@ public class AuthServices: IAuthServices
     }
 
 
+    public async Task<Result> EditingProfileUserAsync(EditingUserProfileRequest editingUserProfileRequest)
+    {
+        var userId = _executionContext.GetUserId();
+        var userByEmail = await _userRepository.GetByIdAsync(userId);
+        if (userByEmail != null)
+        {
+            return Result.Failure(400, UserErrors.UserNotExists);
+        }
+
+        if (editingUserProfileRequest.Expertises != null && !await ValidateExpertiseValidAsync(editingUserProfileRequest.Expertises))
+        {
+            return Result.Failure(400, UserErrors.UserExpertiseInvalid);
+        }
+
+        if (editingUserProfileRequest.CourseCategoryIds != null && !await ValidateCourseCategoryValidAsync(editingUserProfileRequest.CourseCategoryIds))
+        {
+            return Result.Failure(400, UserErrors.UserCourseCategoryInvalid);
+        }
+
+        var userCourseCategories = GetUserCourseCategories(editingUserProfileRequest.CourseCategoryIds);
+        var userExpertises = GetUserExpertises(editingUserProfileRequest.Expertises);
+
+        var user = editingUserProfileRequest.ToUser();
+        user.UserCourseCategories = userCourseCategories;
+        user.UserExpertises = userExpertises;
+
+        if (editingUserProfileRequest.AvatarUrl != null)
+        {
+            var userAvatarUrl = await UploadImageAndGetAvatarUrlAsync(editingUserProfileRequest.AvatarUrl);
+            user.UserDetail.AvatarUrl = userAvatarUrl;
+        }
+
+
+        _userRepository.Update(user);
+
+        await _unitOfWork.SaveChangesAsync();
+
+
+        return Result<string>.Success(AuthCommandMessages.EditingUserProfileSuccessfully);
+    }
+
+
     private async Task ValidateAndRevokeRefreshTokenAsync(User user, string refreshToken, Guid refreshTokenId)
     {
         var refreshTokenObject = await _refreshTokenRepository.GetByIdAsync(refreshTokenId);
@@ -327,8 +369,7 @@ public class AuthServices: IAuthServices
     }
     private async Task<string> UploadImageAndGetAvatarUrlAsync(IFormFile? formFile)
     {
-        var imageUrl = UserConstants.ImageUrlDefault;
-
+        var imageUrl = string.Empty;
         if (formFile != null)
         {
             try
@@ -340,7 +381,6 @@ public class AuthServices: IAuthServices
                 _logger.LogError(ex, ex.Message);
             }
         }
-
         return imageUrl;
     }
     private async Task SendVerifyEmailCodeUserAsync(User user)
@@ -390,10 +430,10 @@ public class AuthServices: IAuthServices
 
     }
 
-    private async Task<bool> ValidateCourseCategoryValidAsync(RegisterRequest registerRequest)
+    private async Task<bool> ValidateCourseCategoryValidAsync(List<Guid> courseCategoryIds)
     {
-        var courseCategory = await _courseCategoryRepository.GetByIdsAsync(registerRequest.CourseCategoryIds!);
-        if (courseCategory.Count != registerRequest.CourseCategoryIds!.Count)
+        var courseCategory = await _courseCategoryRepository.GetByIdsAsync(courseCategoryIds);
+        if (courseCategory.Count != courseCategoryIds.Count)
         {
             return false;
         }
@@ -401,22 +441,22 @@ public class AuthServices: IAuthServices
         return true;
     }
 
-    private static List<UserExpertise>? GetUserExpertises(RegisterRequest registerRequest)
+    private static List<UserExpertise>? GetUserExpertises(List<Guid>? expertiseIds)
     {
-        return registerRequest.Expertises?
+        return expertiseIds?
             .Select(id => new UserExpertise { ExpertiseId = id })
             .ToList();
     }
-    private static List<UserCourseCategory>? GetUserCourseCategories(RegisterRequest registerRequest)
+    private static List<UserCourseCategory>? GetUserCourseCategories(List<Guid>? courseCategoryIds)
     {
-        return registerRequest.CourseCategoryIds?
+        return courseCategoryIds?
             .Select(id => new UserCourseCategory { CourseCategoryId = id })
             .ToList();
     }
-    private async Task<bool> ValidateExpertiseValidAsync(RegisterRequest registerRequest)
+    private async Task<bool> ValidateExpertiseValidAsync(List<Guid> expertiseIds)
     {
-        var expertise = await _userExpertiseRepository.GetByIdsAsync(registerRequest.Expertises!);
-        if (expertise.Count != registerRequest.Expertises!.Count)
+        var expertise = await _userExpertiseRepository.GetByIdsAsync(expertiseIds);
+        if (expertise.Count != expertiseIds.Count)
         {
             return false;
         }

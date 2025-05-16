@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿
+using FluentValidation;
 using MentorPlatform.Application.Commons.ValidationMessages;
 using MentorPlatform.CrossCuttingConcerns.Helpers;
 using MentorPlatform.Domain.Constants;
@@ -7,20 +8,17 @@ using Microsoft.AspNetCore.Http;
 
 namespace MentorPlatform.Application.Commons.Models.Requests.AuthRequests;
 
-public class RegisterRequest
+public class EditingUserProfileRequest
 {
-    public string Email { get; set; } = default!;
-    public string Password { get; set; } = default!;
     public IFormFile? AvatarUrl { get; set; } = default;
     public string FullName { get; set; } = default!;
-    public int Role { get; set; } = default!;
     public string? Bio { get; set; } = default;
-    public bool IsNotification { get; set; } = true;
-    public bool IsReceiveMessage { get; set; } = true;
-    public bool IsPrivateProfile { get; set; } = false;
     public List<Guid>? Expertises { get; set; } = default;
     public string? ProfessionalSkill { get; set; } = default;
     public string? Experience { get; set; } = default;
+    public bool IsNotification { get; set; } = true;
+    public bool IsReceiveMessage { get; set; } = true;
+    public bool IsPrivateProfile { get; set; } = false;
     public int? CommunicationPreference { get; set; }
     public string? Goals { get; set; } = default;
     public List<int>? Availability { get; set; } = default;
@@ -32,21 +30,10 @@ public class RegisterRequest
 }
 
 
-public class RegisterRequestValidator : AbstractValidator<RegisterRequest>
+public class EditingUserProfileRequestValidator : AbstractValidator<EditingUserProfileRequest>
 {
-    public RegisterRequestValidator()
+    public EditingUserProfileRequestValidator()
     {
-        RuleFor(u => u.Email)
-            .NotEmpty()
-            .WithMessage(AuthModelsValidationMessages.FormatEmailInvalid)
-            .Matches(UserConstants.EmailRegexPattern)
-            .WithMessage(AuthModelsValidationMessages.FormatEmailInvalid);
-
-        RuleFor(u => u.Password)
-            .NotEmpty()
-            .WithMessage(AuthModelsValidationMessages.PasswordNotEmpty)
-            .Matches(UserConstants.PasswordRegexPattern)
-            .WithMessage(AuthModelsValidationMessages.FormatPasswordInvalid);
 
         RuleFor(u => u.AvatarUrl)
             .Must(u => u!.Length <= 5 * 1024 * 1024)
@@ -65,9 +52,6 @@ public class RegisterRequestValidator : AbstractValidator<RegisterRequest>
         RuleFor(x => x.Expertises)
             .Must(list => list == null || list.Distinct().Count() == list.Count)
             .WithMessage(AuthModelsValidationMessages.UserExpertiseInvalid);
-        RuleFor(u => u.Role)
-            .Must(u => Enum.GetName(typeof(Role), u) != null)
-            .WithMessage(AuthModelsValidationMessages.RoleIsInvalid);
         RuleFor(u => u.Bio)
             .Must(u => u!.Length <= UserConstants.MaxLengthBio)
             .When(u => !string.IsNullOrEmpty(u.Bio))

@@ -1,4 +1,4 @@
-﻿using MentorPlatform.Application.Commons.Models;
+﻿using MentorPlatform.Application.Commons.Models.Query;
 using MentorPlatform.Application.Commons.Models.Requests.CourseCategory;
 using MentorPlatform.Domain.Shared;
 using System;

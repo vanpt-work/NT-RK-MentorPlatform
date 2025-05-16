@@ -4,6 +4,7 @@ using MentorPlatform.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MentorPlatform.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250516044039_UpdateRelationShipBetweenUserVsUserDetail")]
+    partial class UpdateRelationShipBetweenUserVsUserDetail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -451,7 +454,16 @@ namespace MentorPlatform.Persistence.Migrations
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("UserDetailId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -598,9 +610,6 @@ namespace MentorPlatform.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
                     b.ToTable("UserDetails");
                 });
 
@@ -719,6 +728,17 @@ namespace MentorPlatform.Persistence.Migrations
                     b.Navigation("Mentor");
                 });
 
+            modelBuilder.Entity("MentorPlatform.Domain.Entities.User", b =>
+                {
+                    b.HasOne("MentorPlatform.Domain.Entities.UserDetail", "UserDetail")
+                        .WithOne("User")
+                        .HasForeignKey("MentorPlatform.Domain.Entities.User", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserDetail");
+                });
+
             modelBuilder.Entity("MentorPlatform.Domain.Entities.UserCourse", b =>
                 {
                     b.HasOne("MentorPlatform.Domain.Entities.Course", "Course")
@@ -753,17 +773,6 @@ namespace MentorPlatform.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("CourseCategory");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MentorPlatform.Domain.Entities.UserDetail", b =>
-                {
-                    b.HasOne("MentorPlatform.Domain.Entities.User", "User")
-                        .WithOne("UserDetail")
-                        .HasForeignKey("MentorPlatform.Domain.Entities.UserDetail", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -830,10 +839,13 @@ namespace MentorPlatform.Persistence.Migrations
 
                     b.Navigation("UserCourses");
 
-                    b.Navigation("UserDetail")
-                        .IsRequired();
-
                     b.Navigation("UserExpertises");
+                });
+
+            modelBuilder.Entity("MentorPlatform.Domain.Entities.UserDetail", b =>
+                {
+                    b.Navigation("User")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

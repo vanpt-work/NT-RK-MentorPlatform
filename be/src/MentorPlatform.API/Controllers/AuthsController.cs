@@ -83,4 +83,14 @@ public class AuthsController : ApiControllerBase
 
         return ProcessResult(result);
     }
+
+    [HttpPost("me")]
+    [Authorize]
+    public async Task<IActionResult> EditingProfileUserAsync(
+        [FromForm] EditingUserProfileRequest editUserProfileRequest)
+    {
+        var result = await _authServices.EditingProfileUserAsync(editUserProfileRequest);
+
+        return ProcessResult(result);
+    }
 }
