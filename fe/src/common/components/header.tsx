@@ -8,7 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { useAuthContext } from "../context/auth-context";
 
 const Header = () => {
-  const { logout } = useAuthContext();
+  const { logout, user } = useAuthContext();
   return (
     <header className="fixed top-0 left-0 w-full h-16 border-b border-gray-200 dark:border-gray-800 z-40 px-4 flex items-center justify-between">
       <div className="flex items-center gap-2 md:gap-4">
@@ -38,8 +38,8 @@ const Header = () => {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <div className="px-2 py-1.5">
-              <p className="text-sm font-medium">User Name</p>
-              <p className="text-xs text-muted-foreground">user@email.com</p>
+              <p className="text-sm font-medium">{user&&user.fullName}</p>
+              <p className="text-xs text-muted-foreground">{user&&user.email}</p>
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>

@@ -16,6 +16,14 @@ public class AuthsController : ApiControllerBase
         _authServices = authServices;
     }
 
+    [HttpGet("me")]
+    [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.Learner)},{nameof(Role.Mentor)}")]
+    public async Task<IActionResult> GetCurrentUserAsync()
+    {
+        var result = await _authServices.GetCurrentUserAsync();
+        return ProcessResult(result);
+    }
+
     [HttpPost("login")]
     public async Task<IActionResult> LoginAsync([FromBody] LoginRequest loginRequest)
     {
