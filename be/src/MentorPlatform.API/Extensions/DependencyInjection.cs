@@ -38,6 +38,7 @@ public static class DependencyInjection
     {
         await SeedUserDataAsync(context);
         await SeedCourseCategoryDataAsync(context);
+        await SeedExpertiseDataAsync(context);
     }
     private static async Task SeedUserDataAsync(ApplicationDbContext context)
     {
@@ -75,6 +76,26 @@ public static class DependencyInjection
 
     }
 
+    private static async Task SeedExpertiseDataAsync(ApplicationDbContext context)
+    {
+        if (!await context.Expertises.AnyAsync())
+        {
+            var expertiseList = new List<Expertise>
+            {
+                new Expertise { Name = "Leadership" },
+                new Expertise { Name = "Programming" },
+                new Expertise { Name = "Design" },
+                new Expertise { Name = "Marketing" },
+                new Expertise { Name = "Data Science" },
+                new Expertise { Name = "Business" },
+                new Expertise { Name = "Project Management" },
+                new Expertise { Name = "Communication" }
+            };
+
+            context.Expertises.AddRange(expertiseList);
+            await context.SaveChangesAsync();
+        }
+    }
     private static async Task SeedCourseCategoryDataAsync(ApplicationDbContext context)
     {
         if (!await context.CourseCategories.AnyAsync())
