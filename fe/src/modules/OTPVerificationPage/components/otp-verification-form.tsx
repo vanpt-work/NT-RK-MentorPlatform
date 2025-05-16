@@ -1,10 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowLeft } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { ArrowLeft } from "lucide-react";
 
+import LoadingSpinner from "@/common/components/loading-spinner";
 import { Button } from "@/common/components/ui/button";
 import {
     Card,
@@ -16,16 +17,18 @@ import {
 } from "@/common/components/ui/card";
 import { Input } from "@/common/components/ui/input";
 import { Label } from "@/common/components/ui/label";
-import LoadingSpinner from "@/common/components/loading-spinner";
-import { otpSchema } from "../utils/schemas";
+import { useAuthContext } from "@/common/context/auth-context";
+
 import type { OTPFormValues } from "../types";
+import { otpSchema } from "../utils/schemas";
+import { useNavigate } from "react-router-dom";
 
 type OTPVerificationFormProps = {
     email: string;
     onVerificationSuccess: () => void;
     onBack?: () => void;
     purpose: "registration" | "login";
-}
+};
 
 export function OTPVerificationForm({
     email,
@@ -39,7 +42,8 @@ export function OTPVerificationForm({
     const [canResendOtp, setCanResendOtp] = useState(false);
     const [resendCountdown, setResendCountdown] = useState(60);
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-
+    const { verify } = useAuthContext();
+    const navigate = useNavigate();
     // Form state for OTP verification
     const otpForm = useForm<OTPFormValues>({
         resolver: zodResolver(otpSchema),
@@ -71,7 +75,10 @@ export function OTPVerificationForm({
     };
 
     // Handle keyboard navigation between OTP inputs
-    const handleKeyDown = (index: number, e: KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyDown = (
+        index: number,
+        e: KeyboardEvent<HTMLInputElement>,
+    ) => {
         if (e.key === "Backspace") {
             if (!otpValues[index] && index > 0) {
                 // If current input is empty and backspace is pressed, focus previous input
@@ -92,7 +99,7 @@ export function OTPVerificationForm({
 
         const digits = pastedData.slice(0, 6).split("");
         const newOtpValues = [...otpValues];
-        
+
         digits.forEach((digit, index) => {
             if (index < 6) {
                 newOtpValues[index] = digit;
@@ -100,7 +107,7 @@ export function OTPVerificationForm({
         });
 
         setOtpValues(newOtpValues);
-        
+
         // Focus the input after the last filled position
         if (digits.length < 6) {
             inputRefs.current[digits.length]?.focus();
@@ -110,7 +117,7 @@ export function OTPVerificationForm({
     // Resend OTP countdown timer
     useEffect(() => {
         let timer: NodeJS.Timeout;
-        
+
         if (!canResendOtp) {
             timer = setInterval(() => {
                 setResendCountdown((prev) => {
@@ -123,7 +130,7 @@ export function OTPVerificationForm({
                 });
             }, 1000);
         }
-        
+
         return () => clearInterval(timer);
     }, [canResendOtp]);
 
@@ -132,17 +139,15 @@ export function OTPVerificationForm({
         setIsLoading(true);
         setError(null);
         try {
-            // TODO: Replace with actual API call to send OTP
-            console.log("Sending OTP to:", email);
-            
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            
-            // Reset countdown for resend button
-            setCanResendOtp(false);
-            setResendCountdown(60);
+            await verify({
+                email: email,
+                code: otpValues.join(""),
+            });
             
             toast.success("OTP has been sent! Please check your email.");
+            setCanResendOtp(false);
+            setResendCountdown(60);
+            navigate("/home");
         } catch (error) {
             console.error("Failed to send OTP:", error);
             setError("Failed to send OTP. Please try again.");
@@ -150,37 +155,29 @@ export function OTPVerificationForm({
             setIsLoading(false);
         }
     };
-    
-    // Automatically send OTP on first mount
-    useEffect(() => {
-        sendOtpVerification();
-    }, []);
-    
+
     // Resend OTP
     const resendOtp = async () => {
         if (!canResendOtp) return;
         await sendOtpVerification();
     };
-    
+
     // Verify OTP
     const verifyOtp = async (values: OTPFormValues) => {
         setIsLoading(true);
         setError(null);
         try {
-            // TODO: Replace with actual API call to verify OTP
-            console.log("Verifying OTP:", values.otp);
-            
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 1500));
-            
+            await verify({
+                email: email,
+                code: values.otp,
+            });
             // Call success callback
-            onVerificationSuccess();
-            
             toast.success(
-                purpose === "registration" 
-                    ? "Email verification successful! Completing registration..." 
-                    : "Email verification successful! Redirecting to home page..."
+                purpose === "registration"
+                    ? "Email verification successful! Completing registration..."
+                    : "Email verification successful! Redirecting to home page...",
             );
+            onVerificationSuccess();
         } catch (error) {
             console.error("OTP verification failed:", error);
             setError("OTP verification failed. Please try again.");
@@ -200,11 +197,17 @@ export function OTPVerificationForm({
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <form onSubmit={otpForm.handleSubmit(verifyOtp)} className="space-y-4">
+                <form
+                    onSubmit={otpForm.handleSubmit(verifyOtp)}
+                    className="space-y-4"
+                >
                     <div className="space-y-2">
                         <Label htmlFor="otp-inputs">OTP</Label>
-                        
-                        <div className="flex justify-center mx-auto" onPaste={handleOtpPaste}>
+
+                        <div
+                            className="mx-auto flex justify-center"
+                            onPaste={handleOtpPaste}
+                        >
                             {[0, 1, 2, 3, 4, 5].map((index) => (
                                 <Input
                                     key={index}
@@ -214,31 +217,37 @@ export function OTPVerificationForm({
                                     }}
                                     type="text"
                                     maxLength={1}
-                                    className="w-12 h-12 text-center text-xl font-semibold m-2 p-0"
+                                    className="m-2 h-12 w-12 p-0 text-center text-xl font-semibold"
                                     value={otpValues[index]}
-                                    onChange={(e) => handleOtpChange(index, e.target.value)}
+                                    onChange={(e) =>
+                                        handleOtpChange(index, e.target.value)
+                                    }
                                     onKeyDown={(e) => handleKeyDown(index, e)}
                                     autoFocus={index === 0}
                                 />
                             ))}
                         </div>
-                        
+
                         <input
                             type="hidden"
                             {...otpForm.register("otp")}
                             value={otpValues.join("")}
                         />
-                        
+
                         {otpForm.formState.errors.otp && (
-                            <p className="text-sm text-red-500">{otpForm.formState.errors.otp.message}</p>
+                            <p className="text-sm text-red-500">
+                                {otpForm.formState.errors.otp.message}
+                            </p>
                         )}
-                        
+
                         {error && (
-                            <p className="text-sm text-red-500 text-center">{error}</p>
+                            <p className="text-center text-sm text-red-500">
+                                {error}
+                            </p>
                         )}
-                        
-                        <div className="text-center mt-4">
-                            <p className="text-sm text-muted-foreground mb-2">
+
+                        <div className="mt-4 text-center">
+                            <p className="text-muted-foreground mb-2 text-sm">
                                 Didn't receive the OTP?
                             </p>
                             <Button
@@ -253,8 +262,12 @@ export function OTPVerificationForm({
                             </Button>
                         </div>
                     </div>
-                    
-                    <Button disabled={isLoading} type="submit" className="w-full">
+
+                    <Button
+                        disabled={isLoading}
+                        type="submit"
+                        className="w-full"
+                    >
                         {isLoading ? (
                             <div className="flex items-center justify-center gap-2">
                                 <LoadingSpinner size="sm" />
@@ -268,9 +281,9 @@ export function OTPVerificationForm({
             </CardContent>
             <CardFooter>
                 {onBack && (
-                    <Button 
-                        type="button" 
-                        variant="outline" 
+                    <Button
+                        type="button"
+                        variant="outline"
                         onClick={onBack}
                         className="w-full"
                     >

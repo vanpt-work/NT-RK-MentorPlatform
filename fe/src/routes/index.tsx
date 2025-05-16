@@ -7,17 +7,21 @@ import ForgotPassword from "@/modules/PasswordResetPage";
 import HomePage from "@/modules/HomePage";
 import ManageUsersPage from "@/modules/AdminPage/ManageUsersPage";
 import OTPVerificationPage from "@/modules/OTPVerificationPage";
+import PrivateRoute from "@/common/components/routes/PrivateRoute";
 
 const router = createBrowserRouter([
   // Protected routes with layout
   {
-    path: "/home",
-    element: <MainLayout />,
+    element: <PrivateRoute><MainLayout /></PrivateRoute>,
     children: [
       {
-        path: "profile",
+        path: "/profile",
         element: <ProfilePage />,
       },
+      {
+        path: "/home",
+        element: <div>Home</div>,
+      }
     ],
   },
   {
