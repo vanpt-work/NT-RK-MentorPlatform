@@ -40,7 +40,7 @@ import {
     TableRow,
 } from "@/common/components/ui/table";
 
-interface DataTableProps<TData, TValue> {
+type DataTableProps<TData, TValue> = {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
 }
@@ -84,30 +84,6 @@ export function DataTable<TData, TValue>({
     if (pageNumber !== currentPage) {
         setPageNumber(currentPage);
     }
-
-    // Handle page number input change
-    const handlePageNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = parseInt(e.target.value);
-        if (!isNaN(value)) {
-            setPageNumber(value);
-        } else {
-            setPageNumber(currentPage);
-        }
-    };
-
-    // Handle go to page on blur or enter key
-    const handleGoToPage = () => {
-        const pageCount = table.getPageCount();
-        if (pageNumber < 1) {
-            table.setPageIndex(0);
-            setPageNumber(1);
-        } else if (pageNumber > pageCount) {
-            table.setPageIndex(pageCount - 1);
-            setPageNumber(pageCount);
-        } else {
-            table.setPageIndex(pageNumber - 1);
-        }
-    };
 
     return (
         <div>

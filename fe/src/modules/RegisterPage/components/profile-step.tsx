@@ -37,12 +37,12 @@ export function ProfileStep({
 }: ProfileStepProps) {
     // Handle expertise selection
     const handleExpertiseChange = (expertise: string) => {
-        const currentExpertise = form.getValues("expertise") || [];
+        const currentExpertise = form.getValues("expertises") || [];
         const updatedExpertise = currentExpertise.includes(expertise)
             ? currentExpertise.filter((e) => e !== expertise)
             : [...currentExpertise, expertise];
 
-        form.setValue("expertise", updatedExpertise, {
+        form.setValue("expertises", updatedExpertise, {
             shouldValidate: true,
         });
     };
@@ -61,7 +61,7 @@ export function ProfileStep({
 
     // Handle communication method selection
     const handleCommunicationChange = (method: "Video call" | "Audio call" | "Text chat") => {
-        form.setValue("communicationMethod", method, {
+        form.setValue("communicationPreference", method, {
             shouldValidate: true,
         });
     };
@@ -73,12 +73,12 @@ export function ProfileStep({
     };
 
     const getProfessionalSkillsCharCount = () => {
-        const skills = form.watch("professionalSkills") || "";
+        const skills = form.watch("professionalSkill") || "";
         return skills.length;
     };
 
     const getIndustryExperienceCharCount = () => {
-        const experience = form.watch("industryExperience") || "";
+        const experience = form.watch("experience") || "";
         return experience.length;
     };
 
@@ -218,6 +218,9 @@ export function ProfileStep({
                                         Upload Photo
                                     </Button>
                                 </div>
+                                <p className="text-xs text-muted-foreground">
+                                    Maximum file size: 5MB
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -270,7 +273,7 @@ export function ProfileStep({
                                             className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
                                                 (
                                                     form.getValues(
-                                                        "expertise",
+                                                        "expertises",
                                                     ) || []
                                                 ).includes(expertise)
                                                     ? "border-primary bg-primary/5"
@@ -290,9 +293,12 @@ export function ProfileStep({
                                     );
                                 })}
                             </div>
-                            {form.formState.errors.expertise && (
+                            <p className="text-xs text-muted-foreground">
+                                Select areas that best represent your expertise
+                            </p>
+                            {form.formState.errors.expertises && (
                                 <p className="text-sm text-red-500">
-                                    {form.formState.errors.expertise.message}
+                                    {form.formState.errors.expertises.message}
                                 </p>
                             )}
                         </div>
@@ -310,12 +316,12 @@ export function ProfileStep({
                                     placeholder="e.g. JavaScript, Project Management, Research"
                                     className="min-h-16"
                                     maxLength={200}
-                                    {...form.register("professionalSkills")}
+                                    {...form.register("professionalSkill")}
                                 />
-                                {form.formState.errors.professionalSkills && (
+                                {form.formState.errors.professionalSkill && (
                                     <p className="text-sm text-red-500">
                                         {
-                                            form.formState.errors.professionalSkills
+                                            form.formState.errors.professionalSkill
                                                 .message
                                         }
                                     </p>
@@ -334,11 +340,11 @@ export function ProfileStep({
                                     placeholder="e.g. 5 years in Tech, 3 years in Finance"
                                     className="min-h-16"
                                     maxLength={200}
-                                    {...form.register("industryExperience")}
+                                    {...form.register("experience")}
                                 />
-                                {form.formState.errors.industryExperience && (
+                                {form.formState.errors.experience && (
                                     <p className="text-sm text-red-500">
-                                        {form.formState.errors.industryExperience.message}
+                                        {form.formState.errors.experience.message}
                                     </p>
                                 )}
                             </div>
@@ -384,7 +390,7 @@ export function ProfileStep({
                         <div className="grid grid-cols-3 gap-2">
                             <div
                                 className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                    form.getValues("communicationMethod") === "Video call"
+                                    form.getValues("communicationPreference") === "Video call"
                                         ? "border-primary bg-primary/5"
                                         : "hover:border-gray-400"
                                 }`}
@@ -397,7 +403,7 @@ export function ProfileStep({
                             </div>
                             <div
                                 className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                    form.getValues("communicationMethod") === "Audio call"
+                                    form.getValues("communicationPreference") === "Audio call"
                                         ? "border-primary bg-primary/5"
                                         : "hover:border-gray-400"
                                 }`}
@@ -410,7 +416,7 @@ export function ProfileStep({
                             </div>
                             <div
                                 className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                    form.getValues("communicationMethod") === "Text chat"
+                                    form.getValues("communicationPreference") === "Text chat"
                                         ? "border-primary bg-primary/5"
                                         : "hover:border-gray-400"
                                 }`}
@@ -422,10 +428,13 @@ export function ProfileStep({
                                 <span className="text-sm font-medium">Text Chat</span>
                             </div>
                         </div>
-                        {form.formState.errors.communicationMethod && (
+                        <p className="text-xs text-muted-foreground">
+                            Select your preferred method for mentorship sessions
+                        </p>
+                        {form.formState.errors.communicationPreference && (
                             <p className="text-sm text-red-500">
                                 {
-                                    form.formState.errors.communicationMethod
+                                    form.formState.errors.communicationPreference
                                         .message
                                 }
                             </p>
@@ -457,6 +466,9 @@ export function ProfileStep({
                                 </div>
                             ))}
                         </div>
+                        <p className="text-xs text-muted-foreground">
+                            Select when you're typically available for sessions
+                        </p>
                         {form.formState.errors.availability && (
                             <p className="text-sm text-red-500">
                                 {form.formState.errors.availability.message}

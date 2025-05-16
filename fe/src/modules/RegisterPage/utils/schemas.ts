@@ -81,7 +81,7 @@ export const profileSchema = z.object({
 
     bio: z.string().trim().max(2000, BIO_HAS_INVALID_LENGTH).optional(),
 
-    expertise: z
+    expertises: z
         .array(z.string())
         .optional()
         .refine(
@@ -89,13 +89,13 @@ export const profileSchema = z.object({
             AREA_OF_EXPERTISE_IS_INVALID,
         ),
 
-    professionalSkills: z
+    professionalSkill: z
         .string()
         .trim()
         .max(200, PROFESSIONAL_SKILL_HAS_INVALID_LENGTH)
         .optional(),
 
-    industryExperience: z
+    experience: z
         .string()
         .trim()
         .max(200, INDUSTRY_EXPERIENCE_HAS_INVALID_LENGTH)
@@ -108,7 +108,7 @@ export const profileSchema = z.object({
             AVAILABILITY_IS_INVALID,
         ),
 
-    communicationMethod: z.enum(["Video call", "Audio call", "Text chat"], {
+    communicationPreference: z.enum(["Video call", "Audio call", "Text chat"], {
         required_error: PREFERRED_COMMUNICATION_IS_INVALID,
     }),
 
@@ -117,7 +117,7 @@ export const profileSchema = z.object({
 
 // Step 3: Preferences
 export const preferencesSchema = z.object({
-    topics: z
+    courseCategoryIds: z
         .array(z.string())
         .optional()
         .refine(
@@ -132,9 +132,12 @@ export const preferencesSchema = z.object({
         },
     ),
 
-    sessionDuration: z.enum(["1 hour"], {
-        required_error: PREFERRED_SESSION_DURATION_IS_INVALID,
-    }),
+    duration: z.enum(
+        ["30 minutes", "45 minutes", "1 hour", "1.5 hours", "2 hours"],
+        {
+            required_error: PREFERRED_SESSION_DURATION_IS_INVALID,
+        }
+    ),
 
     learningStyle: z
         .string()
@@ -143,7 +146,7 @@ export const preferencesSchema = z.object({
             PREFERRED_LEARNING_STYLE_IS_INVALID,
         ),
 
-    teachingApproach: z
+    teachingStyles: z
         .enum(["handson", "discussion", "project", "lecture"], {
             required_error: PREFERRED_TEACHING_METHOD_IS_INVALID,
         })
@@ -151,9 +154,9 @@ export const preferencesSchema = z.object({
 
     privacySettings: z
         .object({
-            privateProfile: z.boolean().default(false),
-            allowMessages: z.boolean().default(true),
-            receiveNotifications: z.boolean().default(true),
+            isPrivateProfile: z.boolean().default(false),
+            isReceiveMessage: z.boolean().default(true),
+            isNotification: z.boolean().default(true),
         })
         .optional(),
 });

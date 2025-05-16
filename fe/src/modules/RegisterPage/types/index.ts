@@ -5,8 +5,6 @@ import type { UseFormReturn } from "react-hook-form";
 // Define types from schemas
 export type AccountFormValues = z.infer<typeof accountSchema>;
 export type ProfileFormValues = z.infer<typeof profileSchema>;
-
-// Explicit preference form type
 export type PreferencesFormValues = z.infer<typeof preferencesSchema>;
 
 export type AccountStepProps = {
@@ -66,4 +64,5 @@ export const availabilitySlots = [
   "Mornings",
   "Afternoons",
   "Evenings",
-]; 
+];
+
