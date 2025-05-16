@@ -33,6 +33,7 @@ public class AuthServices: IAuthServices
 {
     private readonly IJwtTokenServices _jwtServices;
     private readonly IUserRepository _userRepository;
+    private readonly IRepository<UserDetail, Guid> _userDetailRepository;
     private readonly JwtTokenOptions _jwtTokenOptions;
     private readonly IRepository<Domain.Entities.CourseCategory, Guid> _courseCategoryRepository;
     private readonly IFileStorageServices _fileStorageServices;
@@ -48,6 +49,7 @@ public class AuthServices: IAuthServices
         ILogger<AuthServices> logger,
         IUnitOfWork unitOfWork,
         IUserRepository userRepository,
+        IRepository<UserDetail, Guid> userDetailRepository,
         IFileStorageFactory fileStorageFactory,
         IOptions<JwtTokenOptions> jwtTokenOptions, 
         IExecutionContext executionContext,
@@ -63,6 +65,7 @@ public class AuthServices: IAuthServices
         _executionContext = executionContext;
         _jwtServices = jwtServices;
         _userRepository = userRepository;
+        _userDetailRepository = userDetailRepository;
         _jwtTokenOptions = jwtTokenOptions.Value;
         _unitOfWork = unitOfWork;
         _userExpertiseRepository = userExpertiseRepository;
@@ -266,6 +269,23 @@ public class AuthServices: IAuthServices
         return Result<string>.Success(AuthCommandMessages.VerifyForgotPasswordCodeSuccessfully);
     }
 
+    public async Task<Result> GetCurrentUserAsync()
+    {
+        var userId = _executionContext.GetUserId();
+        var user = await _userRepository.GetByIdAsync(userId, nameof(User.UserDetail));
+        ValidateUserNotNull(user);
+        var currentUser = new CurrentUserResponse
+        {
+            Id = user!.Id,
+            Email = user.Email,
+            Role = user.Role,
+            FullName = user.UserDetail.FullName,
+            AvatarUrl = user.UserDetail.AvatarUrl
+        };
+        return Result<CurrentUserResponse>.Success(currentUser);
+    }
+
+
     private async Task ValidateAndRevokeRefreshTokenAsync(User user, string refreshToken, Guid refreshTokenId)
     {
         var refreshTokenObject = await _refreshTokenRepository.GetByIdAsync(refreshTokenId);
@@ -345,6 +365,7 @@ public class AuthServices: IAuthServices
             throw new BadRequestException(ApplicationExceptionMessage.UserNotExists);
         }
     }
+
     private async Task AddEmailWorkItemIntoQueueAsync(SendMailData sendMailData)
     {
         await _mailQueue.QueueBackgroundWorkItemAsync(async (sp, cancellationToken) =>
