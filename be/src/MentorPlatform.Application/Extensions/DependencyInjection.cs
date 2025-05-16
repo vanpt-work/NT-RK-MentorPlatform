@@ -24,7 +24,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IAuthServices, AuthServices>();
         services.AddScoped<ICourseCategoryServices, CourseCategoryServices>();
-        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IUserServices, UserServices>();
         return services;
     }
     public static IServiceCollection ConfigureFluentValidation(this IServiceCollection services)
