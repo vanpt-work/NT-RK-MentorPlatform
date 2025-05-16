@@ -1,10 +1,12 @@
 ﻿using MentorPlatform.Application.Commons.Errors;
+using MentorPlatform.Application.Commons.Models.Responses.AuthResponses;
 using MentorPlatform.Application.Identity;
 using MentorPlatform.CrossCuttingConcerns.Caching;
 using MentorPlatform.CrossCuttingConcerns.Exceptions;
 using MentorPlatform.CrossCuttingConcerns.Helpers;
 using MentorPlatform.Domain.Entities;
 using MentorPlatform.Domain.Repositories;
+using MentorPlatform.Domain.Shared;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.JsonWebTokens;
 using System.Net;
@@ -33,6 +35,10 @@ public class ExecutionContextMiddleware
             if (user == null)
             {
                 throw new BadRequestException(UserErrorMessages.UserNotExists);
+            }
+            if (!user.IsActive)
+            {
+                throw new BadRequestException(UserErrorMessages.UserHasBeenDeactivated);
             }
             string recallAccessTokenCacheKey = StringHelper.ReplacePlaceholders(CacheKeyConstants.RecallTokenKey, 
                 user.Id.ToString(), jti.ToString());
