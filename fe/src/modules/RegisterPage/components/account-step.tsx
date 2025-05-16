@@ -6,7 +6,7 @@ import { Label } from "@/common/components/ui/label";
 
 import type { AccountStepProps } from "../types";
 
-export function AccountStep({
+export function AccountStep ({
     form,
     onOpenTermsDialog,
     onOpenPrivacyDialog,
