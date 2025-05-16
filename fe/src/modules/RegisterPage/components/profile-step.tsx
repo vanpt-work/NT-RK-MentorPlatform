@@ -1,14 +1,12 @@
 import {
     BarChart4,
     Briefcase,
-    ClipboardList,
     Code,
     Database,
     GraduationCap,
     Lightbulb,
     LineChart,
     MessageSquare,
-    MessagesSquare,
     Palette,
     Phone,
     Users,
@@ -23,11 +21,15 @@ import { Button } from "@/common/components/ui/button";
 import { Input } from "@/common/components/ui/input";
 import { Label } from "@/common/components/ui/label";
 import { Textarea } from "@/common/components/ui/textarea";
+import { useEffect, useState } from "react";
 import {
     availabilitySlots,
-    expertiseAreas,
+    type Expertise,
     type ProfileStepProps,
 } from "../types";
+import expertiseService from "@/common/services/expertiseServices";
+import { toast } from "sonner";
+import LoadingSpinner from "@/common/components/loading-spinner";
 
 export function ProfileStep({
     form,
@@ -35,16 +37,65 @@ export function ProfileStep({
     onAvatarChange,
     hideRoleSelection = false,
 }: ProfileStepProps) {
-    // Handle expertise selection
-    const handleExpertiseChange = (expertise: string) => {
-        const currentExpertise = form.getValues("expertise") || [];
-        const updatedExpertise = currentExpertise.includes(expertise)
-            ? currentExpertise.filter((e) => e !== expertise)
-            : [...currentExpertise, expertise];
+    const [expertises, setExpertises] = useState<Expertise[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-        form.setValue("expertise", updatedExpertise, {
+    // Fetch expertise list when component mounts
+    useEffect(() => {
+        const fetchExpertises = async () => {
+            try {
+                setIsLoading(true);
+                const response = await expertiseService.getAllExpertises();
+                if (response.data) {
+                    setExpertises(response.data.items);
+                } else {
+                    setExpertises([]);
+                }
+            } catch (error) {
+                console.error("Failed to fetch expertises:", error);
+                toast.error("Failed to fetch areas of expertise. Please try again!");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchExpertises();
+    }, []);
+
+    // Handle expertise selection
+    const handleExpertiseChange = (expertiseId: string) => {
+        const currentExpertise = form.getValues("expertises") || [];
+        const updatedExpertise = currentExpertise.includes(expertiseId)
+            ? currentExpertise.filter((id) => id !== expertiseId)
+            : [...currentExpertise, expertiseId];
+
+        form.setValue("expertises", updatedExpertise, {
             shouldValidate: true,
         });
+    };
+
+    // Get icon for expertise
+    const getExpertiseIcon = (name: string) => {
+        switch (name.toLowerCase()) {
+            case "software development":
+                return Code;
+            case "data science":
+                return Database;
+            case "business & management":
+                return Briefcase;
+            case "design & creativity":
+                return Palette;
+            case "marketing":
+                return BarChart4;
+            case "engineering":
+                return Lightbulb;
+            case "education":
+                return GraduationCap;
+            case "finance":
+                return LineChart;
+            default:
+                return Lightbulb;
+        }
     };
 
     // Handle availability selection
@@ -61,7 +112,7 @@ export function ProfileStep({
 
     // Handle communication method selection
     const handleCommunicationChange = (method: "Video call" | "Audio call" | "Text chat") => {
-        form.setValue("communicationMethod", method, {
+        form.setValue("communicationPreference", method, {
             shouldValidate: true,
         });
     };
@@ -73,12 +124,12 @@ export function ProfileStep({
     };
 
     const getProfessionalSkillsCharCount = () => {
-        const skills = form.watch("professionalSkills") || "";
+        const skills = form.watch("professionalSkill") || "";
         return skills.length;
     };
 
     const getIndustryExperienceCharCount = () => {
-        const experience = form.watch("industryExperience") || "";
+        const experience = form.watch("experience") || "";
         return experience.length;
     };
 
@@ -218,6 +269,9 @@ export function ProfileStep({
                                         Upload Photo
                                     </Button>
                                 </div>
+                                <p className="text-xs text-muted-foreground">
+                                    Maximum file size: 5MB
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -232,67 +286,40 @@ export function ProfileStep({
                     <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                         <div className="space-y-3">
                             <Label>Areas of Expertise</Label>
-                            <div className="grid grid-cols-2 gap-2">
-                                {expertiseAreas.map((expertise) => {
-                                    let Icon;
-                                    switch (expertise) {
-                                        case "Leadership":
-                                            Icon = BarChart4;
-                                            break;
-                                        case "Programming":
-                                            Icon = Code;
-                                            break;
-                                        case "Design":
-                                            Icon = Palette;
-                                            break;
-                                        case "Marketing":
-                                            Icon = LineChart;
-                                            break;
-                                        case "Data Science":
-                                            Icon = Database;
-                                            break;
-                                        case "Business":
-                                            Icon = Briefcase;
-                                            break;
-                                        case "Project Management":
-                                            Icon = ClipboardList;
-                                            break;
-                                        case "Communication":
-                                            Icon = MessagesSquare;
-                                            break;
-                                        default:
-                                            Icon = Lightbulb;
-                                    }
-
-                                    return (
-                                        <div
-                                            key={expertise}
-                                            className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                                (
-                                                    form.getValues(
-                                                        "expertise",
-                                                    ) || []
-                                                ).includes(expertise)
-                                                    ? "border-primary bg-primary/5"
-                                                    : "hover:border-gray-400"
-                                            }`}
-                                            onClick={() =>
-                                                handleExpertiseChange(expertise)
-                                            }
-                                        >
-                                            <div className="flex h-8 w-8 items-center justify-center">
-                                                <Icon className="text-primary h-6 w-6" />
+                            {isLoading ? (
+                                <div className="flex items-center justify-center border rounded-lg p-8">
+                                    <LoadingSpinner size="sm" />
+                                    <span className="ml-2 text-sm text-muted-foreground">Loading areas of expertise...</span>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-2 gap-2">
+                                    {expertises.map((expertise) => {
+                                        const Icon = getExpertiseIcon(expertise.name);
+                                        return (
+                                            <div
+                                                key={expertise.id}
+                                                className={`flex cursor-pointer items-center rounded-lg border p-2 transition-all ${
+                                                    (form.getValues("expertises") || []).includes(expertise.id)
+                                                        ? "border-primary bg-primary/5"
+                                                        : "hover:border-gray-400"
+                                                }`}
+                                                onClick={() => handleExpertiseChange(expertise.id)}
+                                            >
+                                                <div className="flex h-6 w-6 items-center justify-center">
+                                                    <Icon className="h-4 w-4 text-primary" />
+                                                </div>
+                                                <span className="ml-2 text-sm">{expertise.name}</span>
                                             </div>
-                                            <span className="text-sm font-medium">
-                                                {expertise}
-                                            </span>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                            {form.formState.errors.expertise && (
+                                        );
+                                    })}
+                                </div>
+                            )}
+                            <p className="text-xs text-muted-foreground">
+                                Select areas that best represent your expertise
+                            </p>
+                            {form.formState.errors.expertises && (
                                 <p className="text-sm text-red-500">
-                                    {form.formState.errors.expertise.message}
+                                    {form.formState.errors.expertises.message}
                                 </p>
                             )}
                         </div>
@@ -310,12 +337,12 @@ export function ProfileStep({
                                     placeholder="e.g. JavaScript, Project Management, Research"
                                     className="min-h-16"
                                     maxLength={200}
-                                    {...form.register("professionalSkills")}
+                                    {...form.register("professionalSkill")}
                                 />
-                                {form.formState.errors.professionalSkills && (
+                                {form.formState.errors.professionalSkill && (
                                     <p className="text-sm text-red-500">
                                         {
-                                            form.formState.errors.professionalSkills
+                                            form.formState.errors.professionalSkill
                                                 .message
                                         }
                                     </p>
@@ -334,11 +361,11 @@ export function ProfileStep({
                                     placeholder="e.g. 5 years in Tech, 3 years in Finance"
                                     className="min-h-16"
                                     maxLength={200}
-                                    {...form.register("industryExperience")}
+                                    {...form.register("experience")}
                                 />
-                                {form.formState.errors.industryExperience && (
+                                {form.formState.errors.experience && (
                                     <p className="text-sm text-red-500">
-                                        {form.formState.errors.industryExperience.message}
+                                        {form.formState.errors.experience.message}
                                     </p>
                                 )}
                             </div>
@@ -384,7 +411,7 @@ export function ProfileStep({
                         <div className="grid grid-cols-3 gap-2">
                             <div
                                 className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                    form.getValues("communicationMethod") === "Video call"
+                                    form.getValues("communicationPreference") === "Video call"
                                         ? "border-primary bg-primary/5"
                                         : "hover:border-gray-400"
                                 }`}
@@ -397,7 +424,7 @@ export function ProfileStep({
                             </div>
                             <div
                                 className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                    form.getValues("communicationMethod") === "Audio call"
+                                    form.getValues("communicationPreference") === "Audio call"
                                         ? "border-primary bg-primary/5"
                                         : "hover:border-gray-400"
                                 }`}
@@ -410,7 +437,7 @@ export function ProfileStep({
                             </div>
                             <div
                                 className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                    form.getValues("communicationMethod") === "Text chat"
+                                    form.getValues("communicationPreference") === "Text chat"
                                         ? "border-primary bg-primary/5"
                                         : "hover:border-gray-400"
                                 }`}
@@ -422,10 +449,13 @@ export function ProfileStep({
                                 <span className="text-sm font-medium">Text Chat</span>
                             </div>
                         </div>
-                        {form.formState.errors.communicationMethod && (
+                        <p className="text-xs text-muted-foreground">
+                            Select your preferred method for mentorship sessions
+                        </p>
+                        {form.formState.errors.communicationPreference && (
                             <p className="text-sm text-red-500">
                                 {
-                                    form.formState.errors.communicationMethod
+                                    form.formState.errors.communicationPreference
                                         .message
                                 }
                             </p>
@@ -457,6 +487,9 @@ export function ProfileStep({
                                 </div>
                             ))}
                         </div>
+                        <p className="text-xs text-muted-foreground">
+                            Select when you're typically available for sessions
+                        </p>
                         {form.formState.errors.availability && (
                             <p className="text-sm text-red-500">
                                 {form.formState.errors.availability.message}
@@ -468,3 +501,4 @@ export function ProfileStep({
         </form>
     );
 }
+
