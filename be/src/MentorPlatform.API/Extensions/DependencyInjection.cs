@@ -61,6 +61,7 @@ public static class DependencyInjection
             context.AddRange(users);
             await context.SaveChangesAsync();
         }
+
     }
 
     private static async Task SeedCourseCategoryDataAsync(ApplicationDbContext context)
