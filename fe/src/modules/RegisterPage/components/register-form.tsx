@@ -35,7 +35,7 @@ import {
     profileSchema,
 } from "../utils/schemas";
 import { useNavigate } from "react-router-dom";
-import registerService from "../services/registerServices";
+import { registerService } from "../services/registerServices";
 
 // Mapping function to convert form values to RegisterRequest
 const mapFormDataToRegisterRequest = (

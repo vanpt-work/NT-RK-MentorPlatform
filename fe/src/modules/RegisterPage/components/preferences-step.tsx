@@ -13,7 +13,7 @@ import { type CourseCategory, type PreferencesStepProps, type SessionDurationTyp
 import { BookOpen, Ear, Eye, GraduationCap, Hammer, Lightbulb, MessagesSquare, X } from "lucide-react";
 import { toast } from "sonner";
 import LoadingSpinner from "@/common/components/loading-spinner";
-import registerService from "../services/registerServices";
+import { registerService } from "../services/registerServices";
 
 export function PreferencesStep({
     form,

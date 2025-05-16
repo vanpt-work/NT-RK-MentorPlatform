@@ -1,5 +1,5 @@
-import { httpClient } from "../api/instance.axios";
-import type { Expertise } from "../types/expertise";
+
+import type { Expertise } from "@/modules/RegisterPage/types";
 import type { PaginatedResponseModel } from "../types/common";
 
 const mockExpertises: Expertise[] = [
