@@ -10,7 +10,7 @@ import { useAuthContext } from "../context/auth-context";
 const Header = () => {
   const { logout, user } = useAuthContext();
   return (
-    <header className="fixed top-0 left-0 w-full h-16 border-b border-gray-200 dark:border-gray-800 z-40 px-4 flex items-center justify-between">
+    <header className="fixed top-0 left-0 w-full h-16 border-b border-gray-200 dark:border-gray-800 z-40 px-4 flex items-center justify-between dark:bg-gray-900 bg-white">
       <div className="flex items-center gap-2 md:gap-4">
         <Link to="/" className="flex items-center gap-2">
           <span className="text-xl font-bold text-primary">Mentor Platform</span>

@@ -21,9 +21,13 @@ public class CourseCategoryServices : ICourseCategoryServices
 
     public async Task<Result> GetAllAsync(QueryParameters queryParameters)
     {
-        var queryAll = _courseCategoryRepository.GetQueryable().Where(x => x.Name.Contains(queryParameters.Search));
-        var queryPagination = _courseCategoryRepository.GetQueryable()
-                            .Skip(queryParameters.PageNumber - 1)
+        var searchValue = queryParameters?.Search?.Trim();
+        var queryAll = _courseCategoryRepository.GetQueryable()
+                        .Where(x => string.IsNullOrEmpty(searchValue) 
+                                    || x.Name.Contains(searchValue) 
+                                    || x.Description.Contains(searchValue));
+        var queryPagination = queryAll
+                            .Skip((queryParameters.PageNumber- 1) * queryParameters.PageSize)
                             .Take(queryParameters.PageSize)
                             .Select(x => new CourseCategoryResponse()
                             {

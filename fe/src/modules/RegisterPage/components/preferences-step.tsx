@@ -321,7 +321,7 @@ export function PreferencesStep({
                                 onValueChange={(value: SessionDurationType) => {
                                     form.setValue(
                                         "sessionDuration",
-                                        value,
+                                        value as "1 hour",
                                         {
                                             shouldValidate: true,
                                         },
