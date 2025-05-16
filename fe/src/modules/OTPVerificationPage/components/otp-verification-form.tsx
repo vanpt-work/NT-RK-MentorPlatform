@@ -156,11 +156,6 @@ export function OTPVerificationForm({
         }
     };
 
-    // Automatically send OTP on first mount
-    useEffect(() => {
-        sendOtpVerification();
-    }, []);
-
     // Resend OTP
     const resendOtp = async () => {
         if (!canResendOtp) return;
@@ -172,20 +167,17 @@ export function OTPVerificationForm({
         setIsLoading(true);
         setError(null);
         try {
-            // TODO: Replace with actual API call to verify OTP
-            console.log("Verifying OTP:", values.otp);
-
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 1500));
-
+            await verify({
+                email: email,
+                code: values.otp,
+            });
             // Call success callback
-            onVerificationSuccess();
-
             toast.success(
                 purpose === "registration"
                     ? "Email verification successful! Completing registration..."
                     : "Email verification successful! Redirecting to home page...",
             );
+            onVerificationSuccess();
         } catch (error) {
             console.error("OTP verification failed:", error);
             setError("OTP verification failed. Please try again.");

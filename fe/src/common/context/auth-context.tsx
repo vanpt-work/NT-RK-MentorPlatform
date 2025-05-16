@@ -1,9 +1,10 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Result } from "../types/result";
-import { getClientToken, getRefreshToken, isLoginPage, removeClientToken, setClientToken } from "../lib/token";
+import { getAccessToken, getClientToken, getRefreshToken, isLoginPage, removeClientToken, setClientToken } from "../lib/token";
 import authService from "../services/authServices";
 import type { LoginRequest, Token, UserInfo, VerifyEmailRequest, VerifyEmailResponse } from "../types/auth";
+import { PATH } from "../constants/paths";
 
 type AuthContextType = {
     isAuthenticated: boolean;
@@ -51,28 +52,38 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
     const logout = () => {
         const refreshToken = getRefreshToken();
-        if (refreshToken) {
+        const accesshToken = getAccessToken();
+        if (refreshToken || accesshToken) {
             authService.logout().finally(() => removeClientToken());
         }
-        // location.href = PATH.Login;
+        removeClientToken();
         setIsAuthenticated(false);
         setUser(undefined);
     };
 
     const login =  async (data: LoginRequest) : Promise<string> => {
-        console.log("OKOKOK")
         const res = await authService.login(data);
-        if(res.data && res.data.isVerifyEmail == true){
-             return `/verify-otp?email=${encodeURIComponent(data.email)}&purpose=registration`;
+        if(res.data && res.data.isVerifyEmail == false){
+             return `${PATH.VerifyOTP}?email=${encodeURIComponent(data.email)}&purpose=login`;
         }
-        else{
-            return '/verify-failure';
+        else if(res.data && res.data.isVerifyEmail == true){
+            const token: Token = {
+                accessToken: res.data?.accessToken ?? "",
+                refreshToken: res.data?.refreshToken ?? "",
+            };
+            setClientToken(token);
+            setIsAuthenticated(true);
+            return PATH.Home;
+        }
+        else {
+            return PATH.VerifyFailure;
         }
        
     };
 
     const verify = async (data: VerifyEmailRequest): Promise<Result<VerifyEmailResponse>> => {
         const res = await authService.verifyEmail(data);
+        console.log(res);
         const token: Token = {
             accessToken: res.data?.accessToken ?? "",
             refreshToken: res.data?.refreshToken ?? "",
