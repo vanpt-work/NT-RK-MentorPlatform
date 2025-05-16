@@ -10,9 +10,6 @@ public class UserDetailConfiguration : IEntityTypeConfiguration<UserDetail>
 {
     public void Configure(EntityTypeBuilder<UserDetail> builder)
     {
-        builder.HasOne(ud => ud.User)
-            .WithOne(u => u.UserDetail)
-            .HasForeignKey<User>();
         builder.Property(ud => ud.FullName)
             .HasMaxLength(UserConstants.MaxLengthFullName);
 

@@ -1,18 +1,37 @@
-import type { z } from "zod";
-import type { accountSchema, profileSchema, preferencesSchema } from "../utils/schemas";
 import type { UseFormReturn } from "react-hook-form";
+import type { z } from "zod";
+
+import type {
+    accountSchema,
+    preferencesSchema,
+    profileSchema,
+} from "../utils/schemas";
 
 // Define types from schemas
 export type AccountFormValues = z.infer<typeof accountSchema>;
 export type ProfileFormValues = z.infer<typeof profileSchema>;
-
-// Explicit preference form type
 export type PreferencesFormValues = z.infer<typeof preferencesSchema>;
 
 export type AccountStepProps = {
     form: UseFormReturn<AccountFormValues>;
     onOpenTermsDialog: () => void;
     onOpenPrivacyDialog: () => void;
+};
+
+export type Expertise = {
+    id: string;
+    name: string;
+    description?: string;
+    createdAt: string;
+    updatedAt: string;
+};
+
+export type CourseCategory = {
+    id: string;
+    name: string;
+    description?: string;
+    createdAt: string;
+    updatedAt: string;
 };
 
 export type ProfileStepProps = {
@@ -22,8 +41,82 @@ export type ProfileStepProps = {
     hideRoleSelection?: boolean;
 };
 
-export type SessionFrequencyType = "Weekly" | "Every two weeks" | "Monthly" | "As Needed";
-export type SessionDurationType = "30 minutes" | "45 minutes" | "1 hour" | "1.5 hours" | "2 hours";
+export enum Role {
+    Admin = 0,
+    Mentor = 1,
+    Learner = 2,
+    All = 3,
+}
+
+export enum CommunicationPreference {
+    Video = 0,
+    Audio = 1,
+    Text = 2,
+}
+
+export enum UserAvailability {
+    Weekdays = 0,
+    Weekends = 1,
+    Mornings = 2,
+    Afternoons = 3,
+    Evenings = 4,
+}
+
+export enum SessionFrequency {
+    Week = 0,
+    TwoWeek = 1,
+    Month = 2,
+    AsNeeded = 3,
+}
+
+export enum LearningStyle {
+    Visual = 0,
+    Auditory = 1,
+    ReadWriting = 2,
+    Kinesthetic = 3,
+}
+
+export enum TeachingStyle {
+    HandsOnPractice = 0,
+    DiscussionBased = 1,
+    ProjectBased = 2,
+    LectureStyle = 3,
+}
+
+export type RegisterRequest = {
+    email: string;
+    password: string;
+    avatarUrl?: File | null;
+    fullName: string;
+    role: Role;
+    bio?: string | null;
+    isNotification?: boolean;
+    isReceiveMessage?: boolean;
+    isPrivateProfile?: boolean;
+    expertises?: string[] | null;
+    professionalSkill?: string | null;
+    experience?: string | null;
+    communicationPreference?: CommunicationPreference | null;
+    goals?: string | null;
+    availability?: UserAvailability[] | null;
+    courseCategoryIds?: string[] | null;
+    sessionFrequency: SessionFrequency;
+    duration: number;
+    learningStyle?: LearningStyle | null;
+    teachingStyles?: TeachingStyle[] | null;
+};
+
+export type SessionFrequencyType =
+    | "Weekly"
+    | "Every two weeks"
+    | "Monthly"
+    | "As Needed";
+export type SessionDurationType =
+    | "30 minutes"
+    | "45 minutes"
+    | "1 hour"
+    | "1.5 hours"
+    | "2 hours";
 
 export type PreferencesStepProps = {
     form: UseFormReturn<PreferencesFormValues>;
@@ -31,39 +124,10 @@ export type PreferencesStepProps = {
     onSubmit: () => void;
 };
 
-
-// Sample data for selects
-export const expertiseAreas = [
-  "Leadership",
-  "Programming",
-  "Design",
-  "Marketing",
-  "Data Science",
-  "Business",
-  "Project Management",
-  "Communication",
-];
-
-// Topics of Interest for preferences
-export const interestTopics = [
-  "Content Writing",
-  "Design",
-  "Product",
-  "Product Research",
-  "Technical Skills",
-  "Leadership",
-  "Communication",
-  "Career Development",
-  "Work-Life Balance", 
-  "Industry Insights",
-  "Networking",
-  "Entrepreneurship",
-];
-
 export const availabilitySlots = [
-  "Weekdays",
-  "Weekends",
-  "Mornings",
-  "Afternoons",
-  "Evenings",
-]; 
+    "Weekdays",
+    "Weekends",
+    "Mornings",
+    "Afternoons",
+    "Evenings",
+];

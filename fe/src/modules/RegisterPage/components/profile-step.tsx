@@ -1,19 +1,22 @@
 import {
     BarChart4,
     Briefcase,
-    ClipboardList,
     Code,
     Database,
     GraduationCap,
     Lightbulb,
     LineChart,
     MessageSquare,
-    MessagesSquare,
     Palette,
     Phone,
     Users,
     Video,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import type { UseFormReturn } from "react-hook-form";
+import { toast } from "sonner";
+
+import LoadingSpinner from "@/common/components/loading-spinner";
 import {
     Avatar,
     AvatarFallback,
@@ -23,11 +26,20 @@ import { Button } from "@/common/components/ui/button";
 import { Input } from "@/common/components/ui/input";
 import { Label } from "@/common/components/ui/label";
 import { Textarea } from "@/common/components/ui/textarea";
+import expertiseService from "@/common/services/expertiseServices";
+
 import {
+    type Expertise,
+    type ProfileFormValues,
     availabilitySlots,
-    expertiseAreas,
-    type ProfileStepProps,
 } from "../types";
+
+type ProfileStepProps = {
+    form: UseFormReturn<ProfileFormValues>;
+    avatarPreview: string | null;
+    onAvatarChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    hideRoleSelection?: boolean;
+};
 
 export function ProfileStep({
     form,
@@ -35,16 +47,67 @@ export function ProfileStep({
     onAvatarChange,
     hideRoleSelection = false,
 }: ProfileStepProps) {
-    // Handle expertise selection
-    const handleExpertiseChange = (expertise: string) => {
-        const currentExpertise = form.getValues("expertise") || [];
-        const updatedExpertise = currentExpertise.includes(expertise)
-            ? currentExpertise.filter((e) => e !== expertise)
-            : [...currentExpertise, expertise];
+    const [expertises, setExpertises] = useState<Expertise[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-        form.setValue("expertise", updatedExpertise, {
+    // Fetch expertise list when component mounts
+    useEffect(() => {
+        const fetchExpertises = async () => {
+            try {
+                setIsLoading(true);
+                const response = await expertiseService.getAllExpertises();
+                if (response.data) {
+                    setExpertises(response.data.items);
+                } else {
+                    setExpertises([]);
+                }
+            } catch (error) {
+                console.error("Failed to fetch expertises:", error);
+                toast.error(
+                    "Failed to fetch areas of expertise. Please try again!",
+                );
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchExpertises();
+    }, []);
+
+    // Handle expertise selection
+    const handleExpertiseChange = (expertiseId: string) => {
+        const currentExpertise = form.getValues("expertises") || [];
+        const updatedExpertise = currentExpertise.includes(expertiseId)
+            ? currentExpertise.filter((id) => id !== expertiseId)
+            : [...currentExpertise, expertiseId];
+
+        form.setValue("expertises", updatedExpertise, {
             shouldValidate: true,
         });
+    };
+
+    // Get icon for expertise
+    const getExpertiseIcon = (name: string) => {
+        switch (name.toLowerCase()) {
+            case "software development":
+                return Code;
+            case "data science":
+                return Database;
+            case "business & management":
+                return Briefcase;
+            case "design & creativity":
+                return Palette;
+            case "marketing":
+                return BarChart4;
+            case "engineering":
+                return Lightbulb;
+            case "education":
+                return GraduationCap;
+            case "finance":
+                return LineChart;
+            default:
+                return Lightbulb;
+        }
     };
 
     // Handle availability selection
@@ -60,8 +123,10 @@ export function ProfileStep({
     };
 
     // Handle communication method selection
-    const handleCommunicationChange = (method: "Video call" | "Audio call" | "Text chat") => {
-        form.setValue("communicationMethod", method, {
+    const handleCommunicationChange = (
+        method: "Video call" | "Audio call" | "Text chat",
+    ) => {
+        form.setValue("communicationPreference", method, {
             shouldValidate: true,
         });
     };
@@ -73,12 +138,12 @@ export function ProfileStep({
     };
 
     const getProfessionalSkillsCharCount = () => {
-        const skills = form.watch("professionalSkills") || "";
+        const skills = form.watch("professionalSkill") || "";
         return skills.length;
     };
 
     const getIndustryExperienceCharCount = () => {
-        const experience = form.watch("industryExperience") || "";
+        const experience = form.watch("experience") || "";
         return experience.length;
     };
 
@@ -91,7 +156,9 @@ export function ProfileStep({
         <form className="space-y-8">
             {!hideRoleSelection && (
                 <div className="mb-6 pt-2">
-                    <h3 className="mb-2 text-lg font-medium">I am joining as:</h3>
+                    <h3 className="mb-2 text-lg font-medium">
+                        I am joining as:
+                    </h3>
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div
                             className={`flex cursor-pointer flex-col items-center rounded-lg border p-4 text-center transition-all ${
@@ -113,7 +180,7 @@ export function ProfileStep({
                                 I want to find mentors
                             </p>
                         </div>
-                        
+
                         <div
                             className={`flex cursor-pointer flex-col items-center rounded-lg border p-4 text-center transition-all ${
                                 form.getValues("role") === "Mentor"
@@ -167,7 +234,7 @@ export function ProfileStep({
                         <div className="space-y-3">
                             <div className="flex justify-between">
                                 <Label htmlFor="bio">Bio</Label>
-                                <span className="text-xs text-muted-foreground">
+                                <span className="text-muted-foreground text-xs">
                                     {getBioCharCount()}/2000
                                 </span>
                             </div>
@@ -218,6 +285,9 @@ export function ProfileStep({
                                         Upload Photo
                                     </Button>
                                 </div>
+                                <p className="text-muted-foreground text-xs">
+                                    Maximum file size: 5MB
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -232,67 +302,54 @@ export function ProfileStep({
                     <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                         <div className="space-y-3">
                             <Label>Areas of Expertise</Label>
-                            <div className="grid grid-cols-2 gap-2">
-                                {expertiseAreas.map((expertise) => {
-                                    let Icon;
-                                    switch (expertise) {
-                                        case "Leadership":
-                                            Icon = BarChart4;
-                                            break;
-                                        case "Programming":
-                                            Icon = Code;
-                                            break;
-                                        case "Design":
-                                            Icon = Palette;
-                                            break;
-                                        case "Marketing":
-                                            Icon = LineChart;
-                                            break;
-                                        case "Data Science":
-                                            Icon = Database;
-                                            break;
-                                        case "Business":
-                                            Icon = Briefcase;
-                                            break;
-                                        case "Project Management":
-                                            Icon = ClipboardList;
-                                            break;
-                                        case "Communication":
-                                            Icon = MessagesSquare;
-                                            break;
-                                        default:
-                                            Icon = Lightbulb;
-                                    }
-
-                                    return (
-                                        <div
-                                            key={expertise}
-                                            className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                                (
-                                                    form.getValues(
-                                                        "expertise",
-                                                    ) || []
-                                                ).includes(expertise)
-                                                    ? "border-primary bg-primary/5"
-                                                    : "hover:border-gray-400"
-                                            }`}
-                                            onClick={() =>
-                                                handleExpertiseChange(expertise)
-                                            }
-                                        >
-                                            <div className="flex h-8 w-8 items-center justify-center">
-                                                <Icon className="text-primary h-6 w-6" />
+                            {isLoading ? (
+                                <div className="flex items-center justify-center rounded-lg border p-8">
+                                    <LoadingSpinner size="sm" />
+                                    <span className="text-muted-foreground ml-2 text-sm">
+                                        Loading areas of expertise...
+                                    </span>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-2 gap-2">
+                                    {expertises.map((expertise) => {
+                                        const Icon = getExpertiseIcon(
+                                            expertise.name,
+                                        );
+                                        return (
+                                            <div
+                                                key={expertise.id}
+                                                className={`flex cursor-pointer items-center rounded-lg border p-2 transition-all ${
+                                                    (
+                                                        form.getValues(
+                                                            "expertises",
+                                                        ) || []
+                                                    ).includes(expertise.id)
+                                                        ? "border-primary bg-primary/5"
+                                                        : "hover:border-gray-400"
+                                                }`}
+                                                onClick={() =>
+                                                    handleExpertiseChange(
+                                                        expertise.id,
+                                                    )
+                                                }
+                                            >
+                                                <div className="flex h-6 w-6 items-center justify-center">
+                                                    <Icon className="text-primary h-4 w-4" />
+                                                </div>
+                                                <span className="ml-2 text-sm">
+                                                    {expertise.name}
+                                                </span>
                                             </div>
-                                            <span className="text-sm font-medium">
-                                                {expertise}
-                                            </span>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                            {form.formState.errors.expertise && (
+                                        );
+                                    })}
+                                </div>
+                            )}
+                            <p className="text-muted-foreground text-xs">
+                                Select areas that best represent your expertise
+                            </p>
+                            {form.formState.errors.expertises && (
                                 <p className="text-sm text-red-500">
-                                    {form.formState.errors.expertise.message}
+                                    {form.formState.errors.expertises.message}
                                 </p>
                             )}
                         </div>
@@ -301,7 +358,7 @@ export function ProfileStep({
                             <div className="space-y-3">
                                 <div className="flex justify-between">
                                     <Label>Professional Skills</Label>
-                                    <span className="text-xs text-muted-foreground">
+                                    <span className="text-muted-foreground text-xs">
                                         {getProfessionalSkillsCharCount()}/200
                                     </span>
                                 </div>
@@ -310,13 +367,13 @@ export function ProfileStep({
                                     placeholder="e.g. JavaScript, Project Management, Research"
                                     className="min-h-16"
                                     maxLength={200}
-                                    {...form.register("professionalSkills")}
+                                    {...form.register("professionalSkill")}
                                 />
-                                {form.formState.errors.professionalSkills && (
+                                {form.formState.errors.professionalSkill && (
                                     <p className="text-sm text-red-500">
                                         {
-                                            form.formState.errors.professionalSkills
-                                                .message
+                                            form.formState.errors
+                                                .professionalSkill.message
                                         }
                                     </p>
                                 )}
@@ -324,8 +381,10 @@ export function ProfileStep({
 
                             <div className="space-y-3">
                                 <div className="flex justify-between">
-                                    <Label htmlFor="industryExperience">Industry Experience</Label>
-                                    <span className="text-xs text-muted-foreground">
+                                    <Label htmlFor="industryExperience">
+                                        Industry Experience
+                                    </Label>
+                                    <span className="text-muted-foreground text-xs">
                                         {getIndustryExperienceCharCount()}/200
                                     </span>
                                 </div>
@@ -334,11 +393,14 @@ export function ProfileStep({
                                     placeholder="e.g. 5 years in Tech, 3 years in Finance"
                                     className="min-h-16"
                                     maxLength={200}
-                                    {...form.register("industryExperience")}
+                                    {...form.register("experience")}
                                 />
-                                {form.formState.errors.industryExperience && (
+                                {form.formState.errors.experience && (
                                     <p className="text-sm text-red-500">
-                                        {form.formState.errors.industryExperience.message}
+                                        {
+                                            form.formState.errors.experience
+                                                .message
+                                        }
                                     </p>
                                 )}
                             </div>
@@ -350,7 +412,7 @@ export function ProfileStep({
                         <div className="space-y-3">
                             <div className="flex justify-between">
                                 <Label htmlFor="goals">Goals</Label>
-                                <span className="text-xs text-muted-foreground">
+                                <span className="text-muted-foreground text-xs">
                                     {getGoalsCharCount()}/200
                                 </span>
                             </div>
@@ -384,49 +446,70 @@ export function ProfileStep({
                         <div className="grid grid-cols-3 gap-2">
                             <div
                                 className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                    form.getValues("communicationMethod") === "Video call"
+                                    form.getValues(
+                                        "communicationPreference",
+                                    ) === "Video call"
                                         ? "border-primary bg-primary/5"
                                         : "hover:border-gray-400"
                                 }`}
-                                onClick={() => handleCommunicationChange("Video call")}
+                                onClick={() =>
+                                    handleCommunicationChange("Video call")
+                                }
                             >
                                 <div className="flex h-6 w-6 items-center justify-center">
-                                    <Video className="h-4 w-4 text-primary" />
+                                    <Video className="text-primary h-4 w-4" />
                                 </div>
-                                <span className="text-sm font-medium">Video Call</span>
+                                <span className="text-sm font-medium">
+                                    Video Call
+                                </span>
                             </div>
                             <div
                                 className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                    form.getValues("communicationMethod") === "Audio call"
+                                    form.getValues(
+                                        "communicationPreference",
+                                    ) === "Audio call"
                                         ? "border-primary bg-primary/5"
                                         : "hover:border-gray-400"
                                 }`}
-                                onClick={() => handleCommunicationChange("Audio call")}
+                                onClick={() =>
+                                    handleCommunicationChange("Audio call")
+                                }
                             >
                                 <div className="flex h-6 w-6 items-center justify-center">
-                                    <Phone className="h-4 w-4 text-primary" />
+                                    <Phone className="text-primary h-4 w-4" />
                                 </div>
-                                <span className="text-sm font-medium">Audio Call</span>
+                                <span className="text-sm font-medium">
+                                    Audio Call
+                                </span>
                             </div>
                             <div
                                 className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                    form.getValues("communicationMethod") === "Text chat"
+                                    form.getValues(
+                                        "communicationPreference",
+                                    ) === "Text chat"
                                         ? "border-primary bg-primary/5"
                                         : "hover:border-gray-400"
                                 }`}
-                                onClick={() => handleCommunicationChange("Text chat")}
+                                onClick={() =>
+                                    handleCommunicationChange("Text chat")
+                                }
                             >
                                 <div className="flex h-6 w-6 items-center justify-center">
-                                    <MessageSquare className="h-4 w-4 text-primary" />
+                                    <MessageSquare className="text-primary h-4 w-4" />
                                 </div>
-                                <span className="text-sm font-medium">Text Chat</span>
+                                <span className="text-sm font-medium">
+                                    Text Chat
+                                </span>
                             </div>
                         </div>
-                        {form.formState.errors.communicationMethod && (
+                        <p className="text-muted-foreground text-xs">
+                            Select your preferred method for mentorship sessions
+                        </p>
+                        {form.formState.errors.communicationPreference && (
                             <p className="text-sm text-red-500">
                                 {
-                                    form.formState.errors.communicationMethod
-                                        .message
+                                    form.formState.errors
+                                        .communicationPreference.message
                                 }
                             </p>
                         )}
@@ -440,9 +523,7 @@ export function ProfileStep({
                                     key={slot}
                                     className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
                                         (
-                                            form.getValues(
-                                                "availability",
-                                            ) || []
+                                            form.getValues("availability") || []
                                         ).includes(slot)
                                             ? "border-primary bg-primary/5"
                                             : "hover:border-gray-400"
@@ -457,6 +538,9 @@ export function ProfileStep({
                                 </div>
                             ))}
                         </div>
+                        <p className="text-muted-foreground text-xs">
+                            Select when you're typically available for sessions
+                        </p>
                         {form.formState.errors.availability && (
                             <p className="text-sm text-red-500">
                                 {form.formState.errors.availability.message}

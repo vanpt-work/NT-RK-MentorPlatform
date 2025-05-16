@@ -16,6 +16,14 @@ public class AuthsController : ApiControllerBase
         _authServices = authServices;
     }
 
+    [HttpGet("me")]
+    [Authorize(Roles = $"{nameof(Role.Admin)},{nameof(Role.Learner)},{nameof(Role.Mentor)}")]
+    public async Task<IActionResult> GetCurrentUserAsync()
+    {
+        var result = await _authServices.GetCurrentUserAsync();
+        return ProcessResult(result);
+    }
+
     [HttpPost("login")]
     public async Task<IActionResult> LoginAsync([FromBody] LoginRequest loginRequest)
     {
@@ -72,6 +80,16 @@ public class AuthsController : ApiControllerBase
     public async Task<IActionResult> RegisterAsync([FromForm] RegisterRequest registerRequest)
     {
         var result = await _authServices.RegisterAsync(registerRequest);
+
+        return ProcessResult(result);
+    }
+
+    [HttpPost("me")]
+    [Authorize]
+    public async Task<IActionResult> EditingProfileUserAsync(
+        [FromForm] EditingUserProfileRequest editUserProfileRequest)
+    {
+        var result = await _authServices.EditingProfileUserAsync(editUserProfileRequest);
 
         return ProcessResult(result);
     }

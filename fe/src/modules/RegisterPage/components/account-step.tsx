@@ -1,10 +1,18 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import type { UseFormReturn } from "react-hook-form";
+
 import { Checkbox } from "@/common/components/ui/checkbox";
 import { Input } from "@/common/components/ui/input";
 import { Label } from "@/common/components/ui/label";
 
-import type { AccountStepProps } from "../types";
+import type { AccountFormValues } from "../types";
+
+type AccountStepProps = {
+    form: UseFormReturn<AccountFormValues>;
+    onOpenTermsDialog: () => void;
+    onOpenPrivacyDialog: () => void;
+};
 
 export function AccountStep({
     form,
@@ -54,7 +62,7 @@ export function AccountStep({
                                     if (form.getValues("confirmPassword")) {
                                         form.trigger("confirmPassword");
                                     }
-                                }
+                                },
                             })}
                         />
                         <button

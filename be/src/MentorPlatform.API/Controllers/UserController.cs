@@ -1,37 +1,40 @@
 ﻿using MentorPlatform.Application.Commons.Models.Query;
 using MentorPlatform.Application.UseCases.UserManagement;
+using MentorPlatform.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MentorPlatform.WebApi.Controllers;
 
 [Route("api/users")]
+[Authorize(Roles = nameof(Role.Admin))]
 public class UserController : ApiControllerBase
 {
-    private readonly IUserService _userService;
+    private readonly IUserServices _userService;
 
-    public UserController(IUserService userService)
+    public UserController(IUserServices userService)
     {
         _userService = userService;
     }
 
     [HttpGet]
-    public async Task<IActionResult> SearchUsersAsync([FromQuery] HasRoleQueryParameters query)
+    public async Task<IActionResult> SearchUsersAsync([FromQuery] UserQueryParameters query)
     {
-        var result = await _userService.Search(query);
+        var result = await _userService.GetUsersByQueryAsync(query);
         return ProcessResult(result);
     }
 
-    [HttpPatch("activate/{userId}")]
+    [HttpPatch("{userId}/activate")]
     public async Task<IActionResult> ActivateUserAsync([FromRoute] Guid userId)
     {
-        var result = await _userService.ActivateUser(userId);
+        var result = await _userService.ChangeUserActiveAsync(userId);
         return ProcessResult(result);
     }
 
-    [HttpPatch("deactivate/{userId}")]
+    [HttpPatch("{userId}/deactivate")]
     public async Task<IActionResult> DeactivateUserAsync([FromRoute] Guid userId)
     {
-        var result = await _userService.DeactivateUser(userId);
+        var result = await _userService.ChangeUserActiveAsync(userId, false);
         return ProcessResult(result);
     }
 }

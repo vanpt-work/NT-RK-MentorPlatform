@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { PATH } from "@/common/constants/paths";
 
 import { OTPVerificationForm } from "./components/otp-verification-form";
 
@@ -8,6 +11,7 @@ export default function OTPVerificationPage() {
         "registration",
     );
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         // Get email and purpose from URL parameters
@@ -32,11 +36,9 @@ export default function OTPVerificationPage() {
     const handleVerificationSuccess = () => {
         // Redirect based on purpose
         if (purpose === "registration") {
-            // For registration, go to a success page or login
-            window.location.href = "/login?verified=true";
+            navigate(PATH.Login + "?verified=true");
         } else {
-            // For login, go to dashboard
-            window.location.href = "/home";
+            navigate("/home");
         }
     };
 

@@ -5,6 +5,5 @@ public enum Role
 {
     Admin=0,
     Mentor=1,
-    Learner=2,
-    All=3
+    Learner=2
 }

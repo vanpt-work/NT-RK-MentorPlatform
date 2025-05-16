@@ -18,7 +18,6 @@ public class User : AuditableEntity, IHasKey<Guid>, ISoftDeleteEntity
     public bool IsVerifyEmail { get; set; } = false;
     public bool IsActive { get; set; } = true;
     public DateTime LastActive { get; set; } = default!;
-    public Guid UserDetailId { get; set; }
     [JsonIgnore]
     public UserDetail UserDetail { get; set; } = default!;
     public virtual ICollection<UserExpertise>? UserExpertises { get; set; } = default;

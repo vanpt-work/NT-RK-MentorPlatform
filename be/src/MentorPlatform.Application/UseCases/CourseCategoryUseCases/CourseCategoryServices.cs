@@ -1,6 +1,6 @@
 ﻿using MentorPlatform.Application.Commons.CommandMessages;
 using MentorPlatform.Application.Commons.Errors;
-using MentorPlatform.Application.Commons.Models;
+using MentorPlatform.Application.Commons.Models.Query;
 using MentorPlatform.Application.Commons.Models.Requests.CourseCategory;
 using MentorPlatform.Application.Commons.Models.Responses.Course;
 using MentorPlatform.Application.Commons.Models.Responses.CourseCategory;
@@ -21,9 +21,13 @@ public class CourseCategoryServices : ICourseCategoryServices
 
     public async Task<Result> GetAllAsync(QueryParameters queryParameters)
     {
-        var queryAll = _courseCategoryRepository.GetQueryable().Where(x => x.Name.Contains(queryParameters.Search));
-        var queryPagination = _courseCategoryRepository.GetQueryable()
-                            .Skip(queryParameters.PageNumber - 1)
+        var searchValue = queryParameters?.Search?.Trim();
+        var queryAll = _courseCategoryRepository.GetQueryable()
+                        .Where(x => string.IsNullOrEmpty(searchValue) 
+                                    || x.Name.Contains(searchValue) 
+                                    || x.Description.Contains(searchValue));
+        var queryPagination = queryAll
+                            .Skip((queryParameters.PageNumber- 1) * queryParameters.PageSize)
                             .Take(queryParameters.PageSize)
                             .Select(x => new CourseCategoryResponse()
                             {
@@ -73,7 +77,7 @@ public class CourseCategoryServices : ICourseCategoryServices
     public async Task<Result> CreateAsync(CreateCourseCategoryRequest createRequest)
     {
         var query = _courseCategoryRepository.GetQueryable().Where(x => x.Name.ToLower() == createRequest.Name.Trim().ToLower());
-       if (await _courseCategoryRepository.AnyAsync(query))
+        if (await _courseCategoryRepository.AnyAsync(query))
         {
             return Result.Failure(400, CourseCategoryErrors.CourseCategoryDuplicateName);
         }
@@ -96,7 +100,10 @@ public class CourseCategoryServices : ICourseCategoryServices
         {
             return Result.Failure(404, CourseCategoryErrors.CourseCategoryNotExists);
         }
-        if (selectedCategory.Name.ToLower() == updateRequest.Name.Trim().ToLower())
+
+        var queryExistedName = _courseCategoryRepository.GetQueryable()
+                                .Where(x => x.Id != selectedCategory.Id && x.Name.ToLower() == updateRequest.Name.Trim().ToLower());
+        if (await _courseCategoryRepository.AnyAsync(queryExistedName))
         {
             return Result.Failure(400, CourseCategoryErrors.CourseCategoryDuplicateName);
         }

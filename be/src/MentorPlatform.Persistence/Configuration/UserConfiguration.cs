@@ -10,6 +10,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
+        builder.HasOne(ud => ud.UserDetail)
+            .WithOne(u => u.User)
+            .HasForeignKey<UserDetail>(u => u.UserId);
         builder.HasQueryFilter(u => !u.IsDeleted);
         builder.Property(u => u.Email)
             .HasMaxLength(UserConstants.MaxLengthGmail);
