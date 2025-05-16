@@ -29,7 +29,6 @@ export function LoginForm() {
     const { login } = useAuthContext();
     const navigate = useNavigate();
 
-    // Form state
     const form = useForm({
         resolver: zodResolver(loginSchema),
         defaultValues: {

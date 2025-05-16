@@ -16,6 +16,7 @@ import {
     CardTitle,
 } from "@/common/components/ui/card";
 import { Progress } from "@/common/components/ui/progress";
+import { CommunicationPreference, LearningStyle, Role, SessionFrequency, TeachingStyle, UserAvailability, type RegisterRequest } from "../types";
 
 // Import our new components
 import { AccountStep } from "./account-step";
@@ -33,6 +34,111 @@ import {
     preferencesSchema,
     profileSchema,
 } from "../utils/schemas";
+import { useNavigate } from "react-router-dom";
+import registerService from "../services/registerServices";
+
+// Mapping function to convert form values to RegisterRequest
+const mapFormDataToRegisterRequest = (
+    accountData: AccountFormValues,
+    profileData: ProfileFormValues,
+    preferencesData: PreferencesFormValues
+): RegisterRequest => {
+    // Map role from string to Role enum
+    const roleMap: Record<string, Role> = {
+        "Learner": Role.Learner,
+        "Mentor": Role.Mentor
+    };
+    
+    // Map communication method to CommunicationPreference enum
+    const communicationMap: Record<string, CommunicationPreference> = {
+        "Video call": CommunicationPreference.Video,
+        "Audio call": CommunicationPreference.Audio,
+        "Text chat": CommunicationPreference.Text,
+    };
+    
+    // Map session frequency to SessionFrequency enum
+    const frequencyMap: Record<string, SessionFrequency> = {
+        "Weekly": SessionFrequency.Week,
+        "Every two weeks": SessionFrequency.TwoWeek,
+        "Monthly": SessionFrequency.Month,
+        "As Needed": SessionFrequency.AsNeeded 
+    };
+    
+    // Map learning style to LearningStyle enum
+    const learningStyleMap: Record<string, LearningStyle> = {
+        "Visual": LearningStyle.Visual,
+        "Auditory": LearningStyle.Auditory,
+        "Reading/Writing": LearningStyle.ReadWriting,
+        "Kinesthetic": LearningStyle.Kinesthetic
+    };
+    
+    // Map availability to UserAvailability enum array
+    const mapAvailability = (availabilities: string[] | undefined): UserAvailability[] | undefined => {
+        if (!availabilities || availabilities.length === 0) {
+            return undefined;
+        }
+        
+        const availabilityMap: Record<string, UserAvailability> = {
+            "Weekdays": UserAvailability.Weekdays,
+            "Weekends": UserAvailability.Weekends,
+            "Evenings": UserAvailability.Evenings,
+            "Mornings": UserAvailability.Mornings,
+            "Afternoons": UserAvailability.Weekdays
+        };
+        
+        return availabilities.map(a => availabilityMap[a] || UserAvailability.Weekdays);
+    };
+    
+    // Map teaching approach to TeachingStyle enum array
+    const mapTeachingStyles = (approach?: string): TeachingStyle[] | undefined => {
+        if (!approach) return undefined;
+        
+        const styleMap: Record<string, TeachingStyle> = {
+            "handson": TeachingStyle.HandsOnPractice,
+            "discussion": TeachingStyle.DiscussionBased,
+            "project": TeachingStyle.ProjectBased,
+            "lecture": TeachingStyle.LectureStyle
+        };
+        
+        return [styleMap[approach] || TeachingStyle.LectureStyle];
+    };
+    
+    // Calculate duration in minutes from session duration string
+    const mapDuration = (duration: string): number => {
+        const durationMap: Record<string, number> = {
+            "30 minutes": 30,
+            "45 minutes": 45,
+            "1 hour": 60,
+            "1.5 hours": 90,
+            "2 hours": 120
+        };
+        
+        return durationMap[duration] || 60;
+    };
+    
+    return {
+        email: accountData.email,
+        password: accountData.password,
+        avatarUrl: profileData.photo,
+        fullName: profileData.fullName,
+        role: roleMap[profileData.role] || Role.Learner,
+        bio: profileData.bio,
+        isNotification: preferencesData.privacySettings?.isNotification,
+        isReceiveMessage: preferencesData.privacySettings?.isReceiveMessage,
+        isPrivateProfile: preferencesData.privacySettings?.isPrivateProfile,
+        expertises: profileData.expertises,
+        professionalSkill: profileData.professionalSkill,
+        experience: profileData.experience,
+        communicationPreference: communicationMap[profileData.communicationPreference],
+        goals: profileData.goals,
+        availability: mapAvailability(profileData.availability),
+        courseCategoryIds: preferencesData.courseCategoryIds,
+        sessionFrequency: frequencyMap[preferencesData.sessionFrequency],
+        duration: mapDuration(preferencesData.duration),
+        learningStyle: learningStyleMap[preferencesData.learningStyle],
+        teachingStyles: mapTeachingStyles(preferencesData.teachingStyles)
+    };
+};
 
 export function RegisterForm() {
     const [step, setStep] = useState(1);
@@ -40,6 +146,7 @@ export function RegisterForm() {
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
     const [showTermsDialog, setShowTermsDialog] = useState(false);
     const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
+    const navigate = useNavigate();
 
     // Form state for each step
     const accountForm = useForm<AccountFormValues>({
@@ -60,11 +167,11 @@ export function RegisterForm() {
             fullName: "",
             bio: "",
             photo: undefined,
-            expertise: [],
-            professionalSkills: "",
-            industryExperience: "",
+            expertises: [],
+            professionalSkill: "",
+            experience: "",
             availability: [],
-            communicationMethod: "Video call",
+            communicationPreference: "Video call",
             goals: "",
         },
         mode: "onChange",
@@ -73,14 +180,14 @@ export function RegisterForm() {
     const preferencesForm = useForm<PreferencesFormValues>({
         resolver: zodResolver(preferencesSchema) as Resolver<PreferencesFormValues>,
         defaultValues: {
-            topics: [],
+            courseCategoryIds: [],
             sessionFrequency: "Weekly",
-            sessionDuration: "1 hour",
+            duration: "1 hour",
             learningStyle: "Visual",
             privacySettings: {
-                privateProfile: false,
-                allowMessages: true,
-                receiveNotifications: true,
+                isPrivateProfile: false,
+                isReceiveMessage: true,
+                isNotification: true,
             },
         },
         mode: "onChange",
@@ -104,31 +211,78 @@ export function RegisterForm() {
     const onFinalSubmit = async () => {
         setIsLoading(true);
         try {
-            // Combine all form data
-            const formData = {
-                ...accountForm.getValues(),
-                ...profileForm.getValues(),
-                ...preferencesForm.getValues(),
-            };
+            // Validate all forms first
+            const accountValid = await accountForm.trigger();
+            const profileValid = await profileForm.trigger();
+            const preferencesValid = await preferencesForm.trigger();
             
-            // TODO: Replace with actual API call to register user
-            console.log("Registering user with:", formData);
+            if (!accountValid || !profileValid || !preferencesValid) {
+                toast.error("Please fix the validation errors before submitting.");
+                setIsLoading(false);
+                return;
+            }
             
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 1500));
+            // Combine all form data and map to RegisterRequest
+            const registerData = mapFormDataToRegisterRequest(
+                accountForm.getValues(),
+                profileForm.getValues(),
+                preferencesForm.getValues()
+            );
             
-            // Show success toast
+            // Log the request data for debugging
+            console.log("Register request data:", JSON.stringify(registerData, null, 2));
+            
+            const formData = new FormData();
+            
+            formData.append('email', registerData.email);
+            formData.append('password', registerData.password);
+            formData.append('fullName', registerData.fullName);
+            formData.append('role', String(registerData.role));
+            if (registerData.bio) formData.append('bio', registerData.bio);
+            if (registerData.isNotification !== undefined) formData.append('isNotification', String(registerData.isNotification));
+            if (registerData.isReceiveMessage !== undefined) formData.append('isReceiveMessage', String(registerData.isReceiveMessage));
+            if (registerData.isPrivateProfile !== undefined) formData.append('isPrivateProfile', String(registerData.isPrivateProfile));
+            if (registerData.professionalSkill) formData.append('professionalSkill', registerData.professionalSkill);
+            if (registerData.experience) formData.append('experience', registerData.experience);
+            if (registerData.communicationPreference !== undefined) formData.append('communicationPreference', String(registerData.communicationPreference));
+            if (registerData.goals) formData.append('goals', registerData.goals);
+            formData.append('sessionFrequency', String(registerData.sessionFrequency));
+            formData.append('duration', String(registerData.duration));
+            if (registerData.learningStyle !== undefined) formData.append('learningStyle', String(registerData.learningStyle));
+            if (registerData.avatarUrl && registerData.avatarUrl instanceof File) {
+                formData.append('avatarUrl', registerData.avatarUrl);
+            }
+            if (registerData.expertises && registerData.expertises.length > 0) {
+                registerData.expertises.forEach((expertise) => {
+                    formData.append('expertises', expertise);
+                });
+            }
+            if (registerData.courseCategoryIds && registerData.courseCategoryIds.length > 0) {
+                registerData.courseCategoryIds.forEach((categoryId) => {
+                    formData.append('courseCategoryIds', categoryId);
+                });
+            }
+            if (registerData.availability && registerData.availability.length > 0) {
+                registerData.availability.forEach((avail) => {
+                    formData.append('availability', String(avail));
+                });
+            }
+            if (registerData.teachingStyles && registerData.teachingStyles.length > 0) {
+                registerData.teachingStyles.forEach((style) => {
+                    formData.append('teachingStyles', String(style));
+                });
+            }
+            
+            await registerService.registerWithFormData(formData);
+            
             toast.success(
                 "Account created successfully! Redirecting to email verification...",
             );
             
-            // Redirect to email verification page after a short delay
             setTimeout(() => {
-                // Get email from form
                 const email = accountForm.getValues().email;
-                // Redirect to verify-otp page with the email as parameter
-                window.location.href = `/verify-otp?email=${encodeURIComponent(email)}&purpose=registration`;
-            }, 2000);
+                navigate(`/verify-otp?email=${encodeURIComponent(email)}&purpose=registration`);
+            }, 1500);
         } catch (error) {
             console.error("Registration failed:", error);
             toast.error("Registration failed. Please try again.");

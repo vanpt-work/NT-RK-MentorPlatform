@@ -34,12 +34,13 @@ public class UserServices : IUserServices
         return Result.Success();
     }
 
-    public async Task<Result<PaginationResult<UserResponse>>> GetUsersByQueryAsync(HasRoleQueryParameters query)
+    public async Task<Result<PaginationResult<UserResponse>>> GetUsersByQueryAsync(UserQueryParameters query)
     {
         var keyword = query.Search.Trim().ToLower();
+        var roleList = query.Role.Select(x => (Role)x);
         var dbQuery = _userRepository
             .GetQueryable()
-            .Where(u => (query.Role == Role.All || u.Role == query.Role) && (u.UserDetail.FullName.ToLower().Contains(keyword) || u.Email.ToLower().Contains(keyword)));
+            .Where(u => (roleList.Contains(u.Role)) && (u.UserDetail.FullName.ToLower().Contains(keyword) || u.Email.ToLower().Contains(keyword)));
         var dbUsers = await _userRepository
             .ToListAsync(dbQuery.OrderBy(u => u.Id)
                 .Skip((query.PageNumber - 1) * query.PageSize)
