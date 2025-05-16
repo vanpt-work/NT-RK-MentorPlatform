@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { Resolver } from "react-hook-form";
 
+import LoadingSpinner from "@/common/components/loading-spinner";
 import { Button } from "@/common/components/ui/button";
 import {
     Card,
@@ -32,7 +33,6 @@ import {
     preferencesSchema,
     profileSchema,
 } from "../utils/schemas";
-import LoadingSpinner from "@/common/components/loading-spinner";
 
 export function RegisterForm() {
     const [step, setStep] = useState(1);
