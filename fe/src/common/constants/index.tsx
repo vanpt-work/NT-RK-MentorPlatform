@@ -57,3 +57,6 @@ export const PREFERRED_SESSION_DURATION_IS_INVALID =
 
 export const PREFERRED_LEARNING_STYLE_IS_INVALID =
     "Preferred learning style is invalid.";
+
+export const OTP_HAS_INVALID_LENGTH = "Please enter a 6-digit code.";
+export const OTP_HAS_INVALID_CHARACTERS = "OTP must contain only numbers.";
