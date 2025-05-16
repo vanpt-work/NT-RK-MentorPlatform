@@ -27,6 +27,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B8735FC6
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MentorPlatform.Presentation.Tests", "tests\MentorPlatform.Presentation.Tests\MentorPlatform.Presentation.Tests.csproj", "{94287A37-C676-4966-9FEB-A5DC8313FCA1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{88A084A0-3DF3-4A58-857A-84BAA9163215}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{085ADA51-49A8-4A35-8891-3CE626FC4124}"
+	ProjectSection(SolutionItems) = preProject
+		docker-push.yml = docker-push.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,5 +80,6 @@ Global
 		{99426B05-9709-410F-A75A-B44C9D31E20A} = {B84147F9-C497-4A07-8261-053B061109C7}
 		{B5AC3FB7-88D2-4BB0-891C-E430F8304C5F} = {B84147F9-C497-4A07-8261-053B061109C7}
 		{94287A37-C676-4966-9FEB-A5DC8313FCA1} = {B8735FC6-A1ED-4770-93DF-D87D25B2BC65}
+		{085ADA51-49A8-4A35-8891-3CE626FC4124} = {88A084A0-3DF3-4A58-857A-84BAA9163215}
 	EndGlobalSection
 EndGlobal

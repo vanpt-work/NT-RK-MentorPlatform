@@ -28,7 +28,7 @@ export function LoginForm() {
     const [error, setError] = useState<string | null>(null);
     const { login } = useAuthContext();
     const navigate = useNavigate();
-    
+
     // Form state
     const form = useForm({
         resolver: zodResolver(loginSchema),
@@ -42,15 +42,14 @@ export function LoginForm() {
     async function onSubmit(values: z.infer<typeof loginSchema>) {
         setIsLoading(true);
         setError(null);
-
         try {
             const route = await login({
                 email: values.email,
                 password: values.password,
             });
             navigate(route);
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-        } catch{
+        } catch (err) {
+            console.error("Login failed:", err);
             setError("Invalid email or password");
         } finally {
             setIsLoading(false);

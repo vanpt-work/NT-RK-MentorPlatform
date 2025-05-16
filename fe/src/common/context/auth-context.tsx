@@ -63,7 +63,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         console.log("OKOKOK")
         const res = await authService.login(data);
         if(res.data && res.data.isVerifyEmail == true){
-             return '/verify-email';
+             return `/verify-otp?email=${encodeURIComponent(data.email)}&purpose=registration`;
         }
         else{
             return '/verify-failure';
