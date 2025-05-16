@@ -1,4 +1,5 @@
-﻿using MentorPlatform.Application.Identity;
+﻿using Amazon.S3;
+using MentorPlatform.Application.Identity;
 using MentorPlatform.Application.Services.File;
 using MentorPlatform.Application.Services.FileStorage;
 using MentorPlatform.Application.Services.HostedServices;
@@ -35,6 +36,7 @@ public static class DependencyInjection
 
         services.Configure<FileStorageOptions>(config.GetSection(nameof(FileStorageOptions)));
         services.Configure<CloudinaryStorageOptions>(config.GetSection($"{nameof(FileStorageOptions)}:CloudiaryStorageOptions"));
+        services.Configure<AWSS3StorageOptions>(config.GetSection($"{nameof(FileStorageOptions)}:AWSS3StorageOptions"));
 
         services.AddScoped<IJwtTokenServices, JwtTokenServices>();
         services
@@ -42,7 +44,11 @@ public static class DependencyInjection
             .AddScoped<INamedFileStorageServices, AWSS3StorageServices>((sp) =>
             {
                 var options = sp.GetRequiredService<IOptions<FileStorageOptions>>().Value;
-                return new AWSS3StorageServices(options.AWSS3StorageOptions!);
+                var awsS3Options = options.AWSS3StorageOptions;
+
+                var s3 = new AmazonS3Client(awsS3Options!.AccessKey, awsS3Options!.SecretKey);
+
+                return new AWSS3StorageServices(s3, awsS3Options);
             });
         services.AddScoped<IFileStorageFactory, FileStorageFactory>();
         return services;
