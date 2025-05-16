@@ -15,7 +15,7 @@ public class UserController : ApiControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> SearchUsersAsync([FromQuery] HasRoleQueryParameters query)
+    public async Task<IActionResult> SearchUsersAsync([FromQuery] UserQueryParameters query)
     {
         var result = await _userService.Search(query);
         return ProcessResult(result);

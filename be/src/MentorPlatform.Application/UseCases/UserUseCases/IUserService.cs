@@ -9,5 +9,5 @@ public interface IUserService
 {
     public Task<Result> ActivateUser(Guid userId);
     public Task<Result> DeactivateUser(Guid userId);
-    public Task<Result<PaginationResult<UserResponse>>> Search(HasRoleQueryParameters query);
+    public Task<Result<PaginationResult<UserResponse>>> Search(UserQueryParameters query);
 }

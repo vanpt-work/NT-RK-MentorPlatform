@@ -46,7 +46,7 @@ public class UserService : IUserService
         return Result.Success();
     }
 
-    public async Task<Result<PaginationResult<UserResponse>>> Search(HasRoleQueryParameters query)
+    public async Task<Result<PaginationResult<UserResponse>>> Search(UserQueryParameters query)
     {
         var dbUsers = await _userRepository
             .GetUsersByFullnameOrEmail(query.Search.Trim(), query.Role, (query.PageNumber - 1) * query.PageSize + 1, query.PageSize);
