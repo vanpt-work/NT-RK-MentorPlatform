@@ -8,6 +8,7 @@ import HomePage from "@/modules/HomePage";
 import ManageUsersPage from "@/modules/AdminPage/ManageUsersPage";
 import OTPVerificationPage from "@/modules/OTPVerificationPage";
 import PrivateRoute from "@/common/components/routes/PrivateRoute";
+import ManageCourseCategoryPage from "@/modules/AdminPage/ManageCourseCategoryPage";
 
 const router = createBrowserRouter([
   // Protected routes with layout
@@ -47,7 +48,7 @@ const router = createBrowserRouter([
   // Admin routes
   {
     path: "/admin",
-    element: <MainLayout />,
+    element: <PrivateRoute><MainLayout /></PrivateRoute>,
     children: [
       {
         path: "manage-users",
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
       {
         path: "profile",
         element: <ProfilePage />,
+      },
+      {
+        path: "manage-course-categories",
+        element: <ManageCourseCategoryPage />,
       },
     ],
   },

@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Github } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import type { z } from "zod";
@@ -21,6 +21,7 @@ import { Label } from "@/common/components/ui/label";
 import { useAuthContext } from "@/common/context/auth-context";
 
 import { loginSchema } from "../utils/schemas";
+import { REMEMBER_ME_KEY } from "@/common/constants/keys";
 
 export function LoginForm() {
     const [showPassword, setShowPassword] = useState(false);
@@ -38,10 +39,23 @@ export function LoginForm() {
         },
     });
 
+    useEffect(() => {
+        if (localStorage.getItem(REMEMBER_ME_KEY) === "true") {
+            form.setValue("rememberMe", true);
+        }
+        else {
+            form.setValue("rememberMe", false); 
+            localStorage.removeItem(REMEMBER_ME_KEY);
+        }
+    },[]);
+
     async function onSubmit(values: z.infer<typeof loginSchema>) {
         setIsLoading(true);
         setError(null);
         try {
+            console.log("Logging in with values:", values);
+            if (values.rememberMe == true) localStorage.setItem(REMEMBER_ME_KEY, "true");
+            else localStorage.removeItem(REMEMBER_ME_KEY);
             const route = await login({
                 email: values.email,
                 password: values.password,
@@ -113,7 +127,8 @@ export function LoginForm() {
                         <div className="flex items-center space-x-2">
                             <Checkbox
                                 id="remember"
-                                {...form.register("rememberMe")}
+                                checked={form.watch("rememberMe")}
+                                onCheckedChange={checked => form.setValue("rememberMe", !!checked)}
                             />
                             <Label
                                 htmlFor="remember"

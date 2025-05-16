@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import type { AccountFormValues, PreferencesFormValues, ProfileFormValues } from "../RegisterPage/types";
@@ -36,10 +37,8 @@ export default function ProfilePage() {
       fullName: "",
       bio: "",
       photo: undefined,
-      expertise: [],
-      professionalSkills: "",
-      industryExperience: "",
-      communicationMethod: "Video call",
+      expertises: [],
+      professionalSkill: "",
       availability: [],
       goals: "",
     },
@@ -48,15 +47,12 @@ export default function ProfilePage() {
   const preferencesForm = useForm<PreferencesFormValues>({
     resolver: zodResolver(preferencesSchema) as any,
     defaultValues: {
-      topics: [],
       sessionFrequency: "Weekly",
-      sessionDuration: "1 hour",
       learningStyle: "Visual",
-      teachingApproach: undefined,
       privacySettings: {
-        privateProfile: false,
-        allowMessages: true,
-        receiveNotifications: true,
+        isPrivateProfile: false,
+        isReceiveMessage: true,
+        isNotification: true,
       },
     },
   });
@@ -90,20 +86,20 @@ export default function ProfilePage() {
           photo: "https://github.com/shadcn.png",
           role: "Mentor" as "Learner" | "Mentor",
           expertise: ["Programming", "Leadership"],
-          professionalSkills: "JavaScript, React, Node.js",
+          professionalSkill: "JavaScript, React, Node.js",
           industryExperience: "5 years in tech, 2 years in finance",
-          communicationMethod: "Video call" as "Video call",
+          communicationMethod: "Video call",
           availability: ["Weekdays Morning", "Weekdays Evening"],
           goals: "I want to help others grow in their software development career",
           topics: ["Programming", "Design"],
-          sessionFrequency: "Weekly" as "Weekly",
-          sessionDuration: "1 hour" as "1 hour",
+          sessionFrequency: "Weekly",
+          sessionDuration: "1 hour",
           learningStyle: "Visual",
           teachingApproach: "handson" as "handson" | "discussion" | "project" | "lecture",
           privacySettings: {
-            privateProfile: false,
-            allowMessages: true,
-            receiveNotifications: true,
+            isPrivateProfile: false,
+            isReceiveMessage: true,
+            isNotification: true,
           },
         };
 
@@ -126,22 +122,13 @@ export default function ProfilePage() {
           fullName: userData.fullName,
           bio: userData.bio,
           photo: userData.photo,
-          expertise: userData.expertise,
-          professionalSkills: userData.professionalSkills,
-          industryExperience: userData.industryExperience,
-          communicationMethod: userData.communicationMethod,
+          expertises: userData.expertise,
+          professionalSkill: userData.professionalSkill,
           availability: userData.availability,
           goals: userData.goals,
         });
 
-        preferencesForm.reset({
-          topics: userData.topics,
-          sessionFrequency: userData.sessionFrequency,
-          sessionDuration: userData.sessionDuration,
-          learningStyle: userData.learningStyle,
-          teachingApproach: userData.teachingApproach,
-          privacySettings: userData.privacySettings,
-        });
+        
 
         // Wait for animation
         await new Promise(resolve => setTimeout(resolve, 500));

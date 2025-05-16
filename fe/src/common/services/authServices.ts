@@ -1,5 +1,5 @@
 import { httpClient } from "../api/instance.axios";
-import type { CurrentUser, LoginRequest, LoginResponse, RefreshTokenRequest, RefreshTokenResponse, ResendVerifyEmailRequest, VerifyEmailRequest, VerifyEmailResponse } from "../types/auth";
+import type { CurrentUser, ForgotPasswordRequest, LoginRequest, LoginResponse, RefreshTokenRequest, RefreshTokenResponse, RegisterRequest, ResendVerifyEmailRequest, VerifyEmailRequest, VerifyEmailResponse, VerifyForgotPasswordRequest } from "../types/auth";
 
 const authService = {
     login: (body: LoginRequest) => httpClient.post<LoginResponse>('auth/login', body),
