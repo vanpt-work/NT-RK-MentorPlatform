@@ -73,7 +73,7 @@ public class CourseCategoryServices : ICourseCategoryServices
     public async Task<Result> CreateAsync(CreateCourseCategoryRequest createRequest)
     {
         var query = _courseCategoryRepository.GetQueryable().Where(x => x.Name.ToLower() == createRequest.Name.Trim().ToLower());
-       if (await _courseCategoryRepository.AnyAsync(query))
+        if (await _courseCategoryRepository.AnyAsync(query))
         {
             return Result.Failure(400, CourseCategoryErrors.CourseCategoryDuplicateName);
         }
@@ -96,7 +96,10 @@ public class CourseCategoryServices : ICourseCategoryServices
         {
             return Result.Failure(404, CourseCategoryErrors.CourseCategoryNotExists);
         }
-        if (selectedCategory.Name.ToLower() == updateRequest.Name.Trim().ToLower())
+
+        var queryExistedName = _courseCategoryRepository.GetQueryable()
+                                .Where(x => x.Id != selectedCategory.Id && x.Name.ToLower() == updateRequest.Name.Trim().ToLower());
+        if (await _courseCategoryRepository.AnyAsync(queryExistedName))
         {
             return Result.Failure(400, CourseCategoryErrors.CourseCategoryDuplicateName);
         }
