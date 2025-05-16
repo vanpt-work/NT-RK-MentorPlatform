@@ -39,12 +39,12 @@ public class UserServices : IUserServices
         var keyword = query.Search.Trim().ToLower();
         var dbQuery = _userRepository
             .GetQueryable()
-            .Where(u => (query.Role == Role.All || u.Role == query.Role) && (u.UserDetail.FullName.ToLower().Contains(keyword) || u.Email.ToLower().Contains(keyword)))
-                .OrderBy(u => u.Id)
+            .Where(u => (query.Role == Role.All || u.Role == query.Role) && (u.UserDetail.FullName.ToLower().Contains(keyword) || u.Email.ToLower().Contains(keyword)));
+        var dbUsers = await _userRepository
+            .ToListAsync(dbQuery.OrderBy(u => u.Id)
                 .Skip((query.PageNumber - 1) * query.PageSize)
-                .Take(query.PageSize);
-        var dbUsers = await _userRepository.ToListAsync(dbQuery, nameof(User.UserDetail));
-        var userCount = dbUsers.Count;
+                .Take(query.PageSize), nameof(User.UserDetail));
+        var userCount = await _userRepository.CountAsync(dbQuery);
         var pagination = new PaginationResult<UserResponse>(query.PageSize, query.PageNumber, userCount, dbUsers.Select(user => user.ToResponse()).ToList());
         return pagination;
     }
