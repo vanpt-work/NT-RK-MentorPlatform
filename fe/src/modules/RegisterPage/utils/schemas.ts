@@ -1,144 +1,159 @@
 import * as z from "zod";
 
+import {
+    AREA_OF_EXPERTISE_IS_INVALID,
+    AVAILABILITY_IS_INVALID,
+    BIO_HAS_INVALID_LENGTH,
+    EMAIL_CANNOT_BE_BLANK,
+    EMAIL_HAS_INVALID_LENGTH,
+    EMAIL_IS_INVALID,
+    FULLNAME_CANNOT_BE_BLANK,
+    FULLNAME_HAS_INVALID_LENGTH,
+    GOALS_HAS_INVALID_LENGTH,
+    INDUSTRY_EXPERIENCE_HAS_INVALID_LENGTH,
+    PASSWORDS_DO_NOT_MATCH,
+    PASSWORD_CANNOT_BE_BLANK,
+    PASSWORD_IS_INVALID,
+    PHOTO_IS_TOO_LARGE,
+    PREFERRED_COMMUNICATION_IS_INVALID,
+    PREFERRED_LEARNING_STYLE_IS_INVALID,
+    PREFERRED_SESSION_DURATION_IS_INVALID,
+    PREFERRED_SESSION_FREQUENCY_IS_INVALID,
+    PREFERRED_TEACHING_METHOD_IS_INVALID,
+    PROFESSIONAL_SKILL_HAS_INVALID_LENGTH,
+    ROLE_IS_INVALID,
+    TOPIC_IS_INVALID,
+    TOS_AND_PP_NOT_ACCEPTED,
+} from "@/common/constants";
+
 // Step 1: Account Information
-export const accountSchema = z.object({
-  email: z
-    .string()
-    .email("Please enter a valid email address"),
-    // Additional validation check could be added here for "Email already is registered"
-    // This would typically happen server-side
+export const accountSchema = z
+    .object({
+        email: z
+            .string()
+            .nonempty(EMAIL_CANNOT_BE_BLANK)
+            .min(8, EMAIL_HAS_INVALID_LENGTH)
+            .max(50, EMAIL_HAS_INVALID_LENGTH)
+            .regex(
+                /^(?=.{8,50}$)[A-Za-z0-9]+(?:\.[A-Za-z0-9]+)*@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/,
+                EMAIL_IS_INVALID,
+            ),
 
-  password: z
-    .string()
-    .min(8, "Password must be 8–32 characters and include uppercase, lowercase, number & special character.")
-    .max(32, "Password must be 8–32 characters and include uppercase, lowercase, number & special character.")
-    .refine(value => value.length > 0, "Password must not be empty.")
-    .refine(
-      value => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/.test(value),
-      "Password must be 8–32 characters and include uppercase, lowercase, number & special character."
-    ),
+        password: z
+            .string()
+            .nonempty(PASSWORD_CANNOT_BE_BLANK)
+            .regex(
+                /^(?=.{8,32}$)(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).*$/,
+                PASSWORD_IS_INVALID,
+            ),
 
-  confirmPassword: z
-    .string()
-    .min(8, "Password must be 8–32 characters.")
-    .max(32, "Password must be 8–32 characters."),
+        confirmPassword: z.string(),
 
-  termsAgreed: z
-    .boolean()
-    .refine(value => value === true, 
-      "Please agree to the Terms of Service and Privacy Policy."
-    ),
-}).refine(
-  data => data.password === data.confirmPassword,
-  {
-    message: "Confirm password do not match with password.",
-    path: ["confirmPassword"],
-  }
-);
+        termsAgreed: z
+            .boolean()
+            .refine((value) => value === true, TOS_AND_PP_NOT_ACCEPTED),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: PASSWORDS_DO_NOT_MATCH,
+        path: ["confirmPassword"],
+    });
 
 // Step 2: Role & Profile Information
 export const profileSchema = z.object({
-  photo: z
-    .any()
-    .optional()
-    .refine(
-      (file) => !file || file.size <= 5 * 1024 * 1024,
-      "Photo must not exceed 5MB"
-    ),
-  
-  fullName: z
-    .string()
-    .trim()
-    .min(3, "Fullname must be at least 3 characters.")
-    .max(200, "Fullname must be 200 characters max.")
-    .refine((value) => value.length > 0, "Fullname must not be empty."),
-  
-  role: z
-    .enum(["Learner", "Mentor"], { 
-      required_error: "Role invalid, please choose valid value." 
+    photo: z
+        .any()
+        .optional()
+        .refine(
+            (file) => !file || file.size <= 5 * 1024 * 1024,
+            PHOTO_IS_TOO_LARGE,
+        ),
+
+    fullName: z
+        .string()
+        .trim()
+        .nonempty(FULLNAME_CANNOT_BE_BLANK)
+        .min(3, FULLNAME_HAS_INVALID_LENGTH)
+        .max(200, FULLNAME_HAS_INVALID_LENGTH),
+
+    role: z.enum(["Learner", "Mentor"], {
+        required_error: ROLE_IS_INVALID,
     }),
-  
-  bio: z
-    .string()
-    .trim()
-    .max(2000, "Bio must be 2000 characters max.")
-    .optional(),
-  
-  expertise: z
-    .array(z.string())
-    .optional()
-    .refine(
-      (val) => !val || val.every(id => typeof id === "string"),
-      "Areas of expertises have invalid value."
-    ),
-  
-  professionalSkills: z
-    .string()
-    .trim()
-    .max(200, "Professional skills must be 200 characters max.")
-    .optional(),
-  
-  industryExperience: z
-    .string()
-    .trim()
-    .max(200, "Industry experience must be 200 characters max.")
-    .optional(),
-  
-  availability: z
-    .array(z.string())
-    .refine(
-      (val) => val.every(id => typeof id === "string"),
-      "Your availability have invalid value."
-    ),
-  
-  communicationMethod: z
-    .enum(["Video call", "Audio call", "Text chat"], {
-      required_error: "Preferred communication method invalid."
+
+    bio: z.string().trim().max(2000, BIO_HAS_INVALID_LENGTH).optional(),
+
+    expertise: z
+        .array(z.string())
+        .optional()
+        .refine(
+            (val) => !val || val.every((id) => typeof id === "string"),
+            AREA_OF_EXPERTISE_IS_INVALID,
+        ),
+
+    professionalSkills: z
+        .string()
+        .trim()
+        .max(200, PROFESSIONAL_SKILL_HAS_INVALID_LENGTH)
+        .optional(),
+
+    industryExperience: z
+        .string()
+        .trim()
+        .max(200, INDUSTRY_EXPERIENCE_HAS_INVALID_LENGTH)
+        .optional(),
+
+    availability: z
+        .array(z.string())
+        .refine(
+            (val) => val.every((id) => typeof id === "string"),
+            AVAILABILITY_IS_INVALID,
+        ),
+
+    communicationMethod: z.enum(["Video call", "Audio call", "Text chat"], {
+        required_error: PREFERRED_COMMUNICATION_IS_INVALID,
     }),
-  
-  goals: z
-    .string()
-    .trim()
-    .max(200, "Goals must be 200 characters max.")
-    .optional(),
+
+    goals: z.string().trim().max(200, GOALS_HAS_INVALID_LENGTH).optional(),
 });
 
 // Step 3: Preferences
 export const preferencesSchema = z.object({
-  topics: z
-    .array(z.string())
-    .optional()
-    .refine(
-      (val) => !val || val.every(id => typeof id === "string"),
-      "Topics chosen have invalid value"
+    topics: z
+        .array(z.string())
+        .optional()
+        .refine(
+            (val) => !val || val.every((id) => typeof id === "string"),
+            TOPIC_IS_INVALID,
+        ),
+
+    sessionFrequency: z.enum(
+        ["Weekly", "Every two weeks", "Monthly", "As Needed"],
+        {
+            required_error: PREFERRED_SESSION_FREQUENCY_IS_INVALID,
+        },
     ),
-  
-  sessionFrequency: z
-    .enum(["Weekly", "Every two weeks", "Monthly", "As Needed"], { 
-      required_error: "Preferred session frequency invalid." 
+
+    sessionDuration: z.enum(["1 hour"], {
+        required_error: PREFERRED_SESSION_DURATION_IS_INVALID,
     }),
-  
-  sessionDuration: z
-    .enum(["30 minutes", "45 minutes", "1 hour", "1.5 hours", "2 hours"], { 
-      required_error: "Preferred session duration invalid." 
-    }),
-  
-  learningStyle: z
-    .string()
-    .refine(
-      (val) => typeof val === "string",
-      "Your preferred learning style invalid."
-    ),
-  
-  teachingApproach: z
-    .enum(["handson", "discussion", "project", "lecture"], {
-      required_error: "Teaching approach invalid."
-    })
-    .optional(),
-  
-  privacySettings: z.object({
-    privateProfile: z.boolean().default(false),  
-    allowMessages: z.boolean().default(true),
-    receiveNotifications: z.boolean().default(true)
-  }).optional(),
+
+    learningStyle: z
+        .string()
+        .refine(
+            (val) => typeof val === "string",
+            PREFERRED_LEARNING_STYLE_IS_INVALID,
+        ),
+
+    teachingApproach: z
+        .enum(["handson", "discussion", "project", "lecture"], {
+            required_error: PREFERRED_TEACHING_METHOD_IS_INVALID,
+        })
+        .optional(),
+
+    privacySettings: z
+        .object({
+            privateProfile: z.boolean().default(false),
+            allowMessages: z.boolean().default(true),
+            receiveNotifications: z.boolean().default(true),
+        })
+        .optional(),
 });
