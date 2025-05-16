@@ -53,6 +53,42 @@ public static class UserMappings
             Email = registerRequest.Email,
             Password = HashingHelper.HashData(registerRequest.Password),
             Role = (Role)registerRequest.Role,
+            IsNotification = registerRequest.IsNotification,
+            IsPrivateProfile = registerRequest.IsPrivateProfile,
+            IsReceiveMessage = registerRequest.IsReceiveMessage
+        };
+        user.UserDetail = new UserDetail
+        {
+            FullName = registerRequest.FullName,
+            Bio = registerRequest.Bio,
+            Experience = registerRequest.Experience,
+            CommunicationPreference = registerRequest.CommunicationPreference is not null
+                ? (CommunicationPreference)registerRequest.CommunicationPreference.Value
+                : default,
+            ProfessionalSkill = registerRequest.ProfessionalSkill,
+            Goals = registerRequest.Goals,
+            Duration = registerRequest.Duration,
+            SessionFrequency = (SessionFrequency)registerRequest.SessionFrequency,
+            LearningStyle = registerRequest.LearningStyle is not null
+                ? (LearningStyle?)registerRequest.LearningStyle.Value
+                : null,
+            TeachingStyles = registerRequest.TeachingStyles?
+                .Select(t => (TeachingStyle)t)
+                .ToList(),
+            Availability = registerRequest.Availability?
+                .Select(a => (UserAvailability)a)
+                .ToList()
+        };
+
+        return user;
+    }
+    public static User ToUser(this EditingUserProfileRequest registerRequest)
+    {
+        var user = new User
+        {
+            IsNotification = registerRequest.IsNotification,
+            IsPrivateProfile = registerRequest.IsPrivateProfile,
+            IsReceiveMessage = registerRequest.IsReceiveMessage
         };
         user.UserDetail = new UserDetail
         {

@@ -1,5 +1,3 @@
-import type { UseFormReturn } from "react-hook-form";
-
 import { Checkbox } from "@/common/components/ui/checkbox";
 import { Label } from "@/common/components/ui/label";
 import {
@@ -10,15 +8,8 @@ import {
     SelectValue,
 } from "@/common/components/ui/select";
 
-import type { PreferencesFormValues } from "../types/Account";
-import { expertiseAreas, interestTopics } from "../types/Account";
+import { interestTopics, type PreferencesStepProps, type SessionDurationType, type SessionFrequencyType } from "../types";
 import { BookOpen, Ear, Eye, GraduationCap, Hammer, Lightbulb, MessagesSquare, X } from "lucide-react";
-
-type PreferencesStepProps = {
-    form: UseFormReturn<PreferencesFormValues>;
-    role: "Learner" | "Mentor";
-    onSubmit: () => void;
-};
 
 export function PreferencesStep({
     form,
@@ -40,6 +31,7 @@ export function PreferencesStep({
     return (
         <form
             className="space-y-8"
+            onChange={() => form.trigger()}
             onSubmit={(e) => {
                 e.preventDefault();
                 onSubmit();
@@ -73,6 +65,7 @@ export function PreferencesStep({
                                 <Select
                                     onValueChange={(value) => {
                                         handleTopicChange(value);
+                                        form.trigger("topics");
                                     }}
                                 >
                                     <SelectTrigger className="w-full border-0 p-0 h-8 bg-transparent hover:bg-transparent focus:ring-0">
@@ -109,7 +102,10 @@ export function PreferencesStep({
                                             ? "border-primary bg-primary/5"
                                             : "hover:border-gray-400"
                                     }`}
-                                    onClick={() => form.setValue("learningStyle", "Visual", { shouldValidate: true })}
+                                    onClick={() => {
+                                        form.setValue("learningStyle", "Visual", { shouldValidate: true });
+                                        form.trigger("learningStyle");
+                                    }}
                                 >
                                     <div className="flex h-6 w-6 items-center justify-center">
                                         <Eye className="h-4 w-4 text-primary" />
@@ -122,7 +118,10 @@ export function PreferencesStep({
                                             ? "border-primary bg-primary/5"
                                             : "hover:border-gray-400"
                                     }`}
-                                    onClick={() => form.setValue("learningStyle", "Auditory", { shouldValidate: true })}
+                                    onClick={() => {
+                                        form.setValue("learningStyle", "Auditory", { shouldValidate: true });
+                                        form.trigger("learningStyle");
+                                    }}
                                 >
                                     <div className="flex h-6 w-6 items-center justify-center">
                                         <Ear className="h-4 w-4 text-primary" />
@@ -135,7 +134,10 @@ export function PreferencesStep({
                                             ? "border-primary bg-primary/5"
                                             : "hover:border-gray-400"
                                     }`}
-                                    onClick={() => form.setValue("learningStyle", "Reading", { shouldValidate: true })}
+                                    onClick={() => {
+                                        form.setValue("learningStyle", "Reading", { shouldValidate: true });
+                                        form.trigger("learningStyle");
+                                    }}
                                 >
                                     <div className="flex h-6 w-6 items-center justify-center">
                                         <BookOpen className="h-4 w-4 text-primary" />
@@ -148,7 +150,10 @@ export function PreferencesStep({
                                             ? "border-primary bg-primary/5"
                                             : "hover:border-gray-400"
                                     }`}
-                                    onClick={() => form.setValue("learningStyle", "Kinesthetic", { shouldValidate: true })}
+                                    onClick={() => {
+                                        form.setValue("learningStyle", "Kinesthetic", { shouldValidate: true });
+                                        form.trigger("learningStyle");
+                                    }}
                                 >
                                     <div className="flex h-6 w-6 items-center justify-center">
                                         <Hammer className="h-4 w-4 text-primary" />
@@ -178,7 +183,10 @@ export function PreferencesStep({
                                                 ? "border-primary bg-primary/5"
                                                 : "hover:border-gray-400"
                                         }`}
-                                        onClick={() => form.setValue("teachingApproach", "handson", { shouldValidate: true })}
+                                        onClick={() => {
+                                            form.setValue("teachingApproach", "handson", { shouldValidate: true });
+                                            form.trigger("teachingApproach");
+                                        }}
                                     >
                                         <div className="flex h-6 w-6 items-center justify-center">
                                             <Hammer className="h-4 w-4 text-primary" />
@@ -191,7 +199,10 @@ export function PreferencesStep({
                                                 ? "border-primary bg-primary/5"
                                                 : "hover:border-gray-400"
                                         }`}
-                                        onClick={() => form.setValue("teachingApproach", "discussion", { shouldValidate: true })}
+                                        onClick={() => {
+                                            form.setValue("teachingApproach", "discussion", { shouldValidate: true });
+                                            form.trigger("teachingApproach");
+                                        }}
                                     >
                                         <div className="flex h-6 w-6 items-center justify-center">
                                             <MessagesSquare className="h-4 w-4 text-primary" />
@@ -204,7 +215,10 @@ export function PreferencesStep({
                                                 ? "border-primary bg-primary/5"
                                                 : "hover:border-gray-400"
                                         }`}
-                                        onClick={() => form.setValue("teachingApproach", "project", { shouldValidate: true })}
+                                        onClick={() => {
+                                            form.setValue("teachingApproach", "project", { shouldValidate: true });
+                                            form.trigger("teachingApproach");
+                                        }}
                                     >
                                         <div className="flex h-6 w-6 items-center justify-center">
                                             <Lightbulb className="h-4 w-4 text-primary" />
@@ -217,7 +231,10 @@ export function PreferencesStep({
                                                 ? "border-primary bg-primary/5"
                                                 : "hover:border-gray-400"
                                         }`}
-                                        onClick={() => form.setValue("teachingApproach", "lecture", { shouldValidate: true })}
+                                        onClick={() => {
+                                            form.setValue("teachingApproach", "lecture", { shouldValidate: true });
+                                            form.trigger("teachingApproach");
+                                        }}
                                     >
                                         <div className="flex h-6 w-6 items-center justify-center">
                                             <GraduationCap className="h-4 w-4 text-primary" />
@@ -254,15 +271,16 @@ export function PreferencesStep({
                                 defaultValue={form.getValues(
                                     "sessionFrequency",
                                 ) || "Weekly"}
-                                onValueChange={() =>
+                                onValueChange={(value: SessionFrequencyType) => {
                                     form.setValue(
                                         "sessionFrequency",
-                                        "Weekly",
+                                        value,
                                         {
                                             shouldValidate: true,
                                         },
-                                    )
-                                }
+                                    );
+                                    form.trigger("sessionFrequency");
+                                }}
                             >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select frequency" />
@@ -271,11 +289,14 @@ export function PreferencesStep({
                                     <SelectItem value="Weekly">
                                         Weekly
                                     </SelectItem>
-                                    <SelectItem value="Bi-weekly">
-                                        Bi-weekly
+                                    <SelectItem value="Every two weeks">
+                                        Every two weeks
                                     </SelectItem>
                                     <SelectItem value="Monthly">
                                         Monthly
+                                    </SelectItem>
+                                    <SelectItem value="As Needed">
+                                        As Needed
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
@@ -297,15 +318,16 @@ export function PreferencesStep({
                             </Label>
                             <Select
                                 defaultValue={form.getValues("sessionDuration") || "1 hour"}
-                                onValueChange={() =>
+                                onValueChange={(value: SessionDurationType) => {
                                     form.setValue(
                                         "sessionDuration",
-                                        "1 hour",
+                                        value,
                                         {
                                             shouldValidate: true,
                                         },
-                                    )
-                                }
+                                    );
+                                    form.trigger("sessionDuration");
+                                }}
                             >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select duration" />
@@ -314,11 +336,17 @@ export function PreferencesStep({
                                     <SelectItem value="30 minutes">
                                         30 minutes
                                     </SelectItem>
-                                    <SelectItem value="1 hour">
-                                        60 minutes
+                                    <SelectItem value="45 minutes">
+                                        45 minutes
                                     </SelectItem>
-                                    <SelectItem value="90 minutes">
-                                        90 minutes
+                                    <SelectItem value="1 hour">
+                                        1 hour
+                                    </SelectItem>
+                                    <SelectItem value="1.5 hours">
+                                        1.5 hours
+                                    </SelectItem>
+                                    <SelectItem value="2 hours">
+                                        2 hours
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
@@ -361,6 +389,7 @@ export function PreferencesStep({
                                             shouldValidate: true,
                                         }
                                     );
+                                    form.trigger("privacySettings");
                                 }}
                             />
                             <Label
@@ -391,6 +420,7 @@ export function PreferencesStep({
                                             shouldValidate: true,
                                         }
                                     );
+                                    form.trigger("privacySettings");
                                 }}
                             />
                             <Label
@@ -421,6 +451,7 @@ export function PreferencesStep({
                                             shouldValidate: true,
                                         }
                                     );
+                                    form.trigger("privacySettings");
                                 }}
                             />
                             <Label

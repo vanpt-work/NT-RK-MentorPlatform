@@ -55,12 +55,24 @@ public static class DependencyInjection
                         Duration = 45,
                         SessionFrequency = 0
                     }
+                },
+                new()
+                {
+                    Role = (int)Role.Admin, IsVerifyEmail = true, Email = "thanh.hung.st302@gmail.com", Password = HashingHelper.HashData("Password@123"),
+                    UserDetail = new()
+                    {
+                        FullName = "Nguyen Thanh Hung",
+                        CommunicationPreference = 0,
+                        Duration = 45,
+                        SessionFrequency = 0
+                    }
                 }
             };
 
             context.AddRange(users);
             await context.SaveChangesAsync();
         }
+
     }
 
     private static async Task SeedCourseCategoryDataAsync(ApplicationDbContext context)

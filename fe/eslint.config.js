@@ -36,14 +36,6 @@ export default tseslint.config(
                     eventHandlerPropPrefix: "on",
                 },
             ],
-            "no-restricted-syntax": [
-                "error",
-                {
-                    selector: "TSEnumDeclaration",
-                    message:
-                        "Replace enum with a literal type or a const assertion.",
-                },
-            ],
             "@typescript-eslint/naming-convention": [
                 "error",
                 {

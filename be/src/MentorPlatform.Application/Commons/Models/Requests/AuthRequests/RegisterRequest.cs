@@ -15,6 +15,9 @@ public class RegisterRequest
     public string FullName { get; set; } = default!;
     public int Role { get; set; } = default!;
     public string? Bio { get; set; } = default;
+    public bool IsNotification { get; set; } = true;
+    public bool IsReceiveMessage { get; set; } = true;
+    public bool IsPrivateProfile { get; set; } = false;
     public List<Guid>? Expertises { get; set; } = default;
     public string? ProfessionalSkill { get; set; } = default;
     public string? Experience { get; set; } = default;

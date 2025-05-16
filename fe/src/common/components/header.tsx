@@ -5,8 +5,10 @@ import { ThemeSwitcher } from "./theme-switcher";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/common/components/ui/dropdown-menu";
+import { useAuthContext } from "../context/auth-context";
 
 const Header = () => {
+  const { logout } = useAuthContext();
   return (
     <header className="fixed top-0 left-0 w-full h-16 border-b border-gray-200 dark:border-gray-800 z-40 px-4 flex items-center justify-between">
       <div className="flex items-center gap-2 md:gap-4">
@@ -46,7 +48,9 @@ const Header = () => {
                 Profile
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-red-500 focus:text-red-500 focus:bg-red-50 dark:focus:text-red-500 dark:focus:bg-red-950/20">
+            <DropdownMenuItem 
+            onClick={logout}
+              className="text-red-500 focus:text-red-500 focus:bg-red-50 dark:focus:text-red-500 dark:focus:bg-red-950/20">
               <LogOut className="mr-2 h-4 w-4" />
               Logout
             </DropdownMenuItem>
