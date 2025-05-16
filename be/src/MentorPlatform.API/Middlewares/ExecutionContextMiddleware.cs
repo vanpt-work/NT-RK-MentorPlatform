@@ -1,4 +1,4 @@
-﻿using MentorPlatform.Application.Commons.Errors;
+﻿ using MentorPlatform.Application.Commons.Errors;
 using MentorPlatform.Application.Commons.Models.Responses.AuthResponses;
 using MentorPlatform.Application.Identity;
 using MentorPlatform.CrossCuttingConcerns.Caching;
@@ -31,7 +31,7 @@ public class ExecutionContextMiddleware
             Guid.TryParse(context.User.FindFirstValue(JwtRegisteredClaimNames.Sid), out Guid id);
             Guid.TryParse(context.User.FindFirstValue(JwtRegisteredClaimNames.Jti), out Guid jti);
 
-            User? user = await userRepository.GetByIdAsync(id, nameof(user.Role));
+            User? user = await userRepository.GetByIdAsync(id);
             if (user == null)
             {
                 throw new BadRequestException(UserErrorMessages.UserNotExists);

@@ -3,5 +3,5 @@
 namespace MentorPlatform.Application.Commons.Models.Query;
 public class UserQueryParameters : QueryParameters
 {
-    public Role Role { get; set; } = Role.All;
+    public List<int> Role { get; set; } = [0,1,2];
 }
