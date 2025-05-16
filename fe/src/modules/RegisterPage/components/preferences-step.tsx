@@ -1,3 +1,17 @@
+import {
+    BookOpen,
+    Ear,
+    Eye,
+    GraduationCap,
+    Hammer,
+    Lightbulb,
+    MessagesSquare,
+    X,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
+import LoadingSpinner from "@/common/components/loading-spinner";
 import { Checkbox } from "@/common/components/ui/checkbox";
 import { Label } from "@/common/components/ui/label";
 import {
@@ -8,12 +22,13 @@ import {
     SelectValue,
 } from "@/common/components/ui/select";
 
-import { useEffect, useState } from "react";
-import { type CourseCategory, type PreferencesStepProps, type SessionDurationType, type SessionFrequencyType } from "../types";
-import { BookOpen, Ear, Eye, GraduationCap, Hammer, Lightbulb, MessagesSquare, X } from "lucide-react";
-import { toast } from "sonner";
-import LoadingSpinner from "@/common/components/loading-spinner";
 import registerService from "../services/registerServices";
+import {
+    type CourseCategory,
+    type PreferencesStepProps,
+    type SessionDurationType,
+    type SessionFrequencyType,
+} from "../types";
 
 export function PreferencesStep({
     form,
@@ -35,7 +50,9 @@ export function PreferencesStep({
                 }
             } catch (error) {
                 console.error("Failed to fetch course categories:", error);
-                toast.error("Failed to fetch course categories. Please try again!");
+                toast.error(
+                    "Failed to fetch course categories. Please try again!",
+                );
             } finally {
                 setIsLoading(false);
             }
@@ -44,7 +61,7 @@ export function PreferencesStep({
         fetchCategories();
     }, []);
 
-    console.log(categories)
+    console.log(categories);
 
     // Handle topics selection
     const handleTopicChange = (categoryId: string) => {
@@ -60,7 +77,7 @@ export function PreferencesStep({
 
     // Find category name by ID
     const getCategoryName = (id: string) => {
-        const category = categories.find(cat => cat.id === id);
+        const category = categories.find((cat) => cat.id === id);
         return category ? category.name : id;
     };
 
@@ -82,24 +99,34 @@ export function PreferencesStep({
                     <div className="space-y-6">
                         <div className="space-y-3">
                             <Label>Topics of Interest</Label>
-                            <div className="relative border rounded-lg p-3 min-h-20 flex flex-wrap gap-2">
+                            <div className="relative flex min-h-20 flex-wrap gap-2 rounded-lg border p-3">
                                 {isLoading ? (
-                                    <div className="flex items-center justify-center w-full py-2">
+                                    <div className="flex w-full items-center justify-center py-2">
                                         <LoadingSpinner size="sm" />
-                                        <span className="ml-2 text-sm text-muted-foreground">Loading topics...</span>
+                                        <span className="text-muted-foreground ml-2 text-sm">
+                                            Loading topics...
+                                        </span>
                                     </div>
                                 ) : (
                                     <>
-                                        {(form.getValues("courseCategoryIds") || []).map((categoryId) => (
+                                        {(
+                                            form.getValues(
+                                                "courseCategoryIds",
+                                            ) || []
+                                        ).map((categoryId) => (
                                             <div
                                                 key={categoryId}
-                                                className="bg-muted rounded-md px-2 py-1 text-sm flex items-center gap-1"
+                                                className="bg-muted flex items-center gap-1 rounded-md px-2 py-1 text-sm"
                                             >
                                                 {getCategoryName(categoryId)}
                                                 <button
                                                     type="button"
-                                                    className="h-4 w-4 rounded-full inline-flex items-center justify-center hover:bg-muted-foreground/20"
-                                                    onClick={() => handleTopicChange(categoryId)}
+                                                    className="hover:bg-muted-foreground/20 inline-flex h-4 w-4 items-center justify-center rounded-full"
+                                                    onClick={() =>
+                                                        handleTopicChange(
+                                                            categoryId,
+                                                        )
+                                                    }
                                                 >
                                                     <X className="h-3 w-3" />
                                                 </button>
@@ -108,17 +135,31 @@ export function PreferencesStep({
                                         <Select
                                             onValueChange={(value) => {
                                                 handleTopicChange(value);
-                                                form.trigger("courseCategoryIds");
+                                                form.trigger(
+                                                    "courseCategoryIds",
+                                                );
                                             }}
                                         >
-                                            <SelectTrigger className="w-full border-0 p-0 h-8 bg-transparent hover:bg-transparent focus:ring-0">
+                                            <SelectTrigger className="h-8 w-full border-0 bg-transparent p-0 hover:bg-transparent focus:ring-0">
                                                 <SelectValue placeholder="Select topics" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {categories
-                                                    .filter(category => !(form.getValues("courseCategoryIds") || []).includes(category.id))
+                                                    .filter(
+                                                        (category) =>
+                                                            !(
+                                                                form.getValues(
+                                                                    "courseCategoryIds",
+                                                                ) || []
+                                                            ).includes(
+                                                                category.id,
+                                                            ),
+                                                    )
                                                     .map((category) => (
-                                                        <SelectItem key={category.id} value={category.id}>
+                                                        <SelectItem
+                                                            key={category.id}
+                                                            value={category.id}
+                                                        >
                                                             {category.name}
                                                         </SelectItem>
                                                     ))}
@@ -127,12 +168,16 @@ export function PreferencesStep({
                                     </>
                                 )}
                             </div>
-                            <p className="text-xs text-muted-foreground">
-                                Select topics you're interested in for mentorship
+                            <p className="text-muted-foreground text-xs">
+                                Select topics you're interested in for
+                                mentorship
                             </p>
                             {form.formState.errors.courseCategoryIds && (
                                 <p className="text-sm text-red-500">
-                                    {form.formState.errors.courseCategoryIds.message}
+                                    {
+                                        form.formState.errors.courseCategoryIds
+                                            .message
+                                    }
                                 </p>
                             )}
                         </div>
@@ -146,71 +191,100 @@ export function PreferencesStep({
                             <div className="grid grid-cols-2 gap-2">
                                 <div
                                     className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                        form.getValues("learningStyle") === "Visual"
+                                        form.getValues("learningStyle") ===
+                                        "Visual"
                                             ? "border-primary bg-primary/5"
                                             : "hover:border-gray-400"
                                     }`}
                                     onClick={() => {
-                                        form.setValue("learningStyle", "Visual", { shouldValidate: true });
+                                        form.setValue(
+                                            "learningStyle",
+                                            "Visual",
+                                            { shouldValidate: true },
+                                        );
                                         form.trigger("learningStyle");
                                     }}
                                 >
                                     <div className="flex h-6 w-6 items-center justify-center">
-                                        <Eye className="h-4 w-4 text-primary" />
+                                        <Eye className="text-primary h-4 w-4" />
                                     </div>
-                                    <span className="text-sm font-medium">Visual</span>
+                                    <span className="text-sm font-medium">
+                                        Visual
+                                    </span>
                                 </div>
                                 <div
                                     className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                        form.getValues("learningStyle") === "Auditory"
+                                        form.getValues("learningStyle") ===
+                                        "Auditory"
                                             ? "border-primary bg-primary/5"
                                             : "hover:border-gray-400"
                                     }`}
                                     onClick={() => {
-                                        form.setValue("learningStyle", "Auditory", { shouldValidate: true });
+                                        form.setValue(
+                                            "learningStyle",
+                                            "Auditory",
+                                            { shouldValidate: true },
+                                        );
                                         form.trigger("learningStyle");
                                     }}
                                 >
                                     <div className="flex h-6 w-6 items-center justify-center">
-                                        <Ear className="h-4 w-4 text-primary" />
+                                        <Ear className="text-primary h-4 w-4" />
                                     </div>
-                                    <span className="text-sm font-medium">Auditory</span>
+                                    <span className="text-sm font-medium">
+                                        Auditory
+                                    </span>
                                 </div>
                                 <div
                                     className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                        form.getValues("learningStyle") === "Reading/Writing"
+                                        form.getValues("learningStyle") ===
+                                        "Reading/Writing"
                                             ? "border-primary bg-primary/5"
                                             : "hover:border-gray-400"
                                     }`}
                                     onClick={() => {
-                                        form.setValue("learningStyle", "Reading/Writing", { shouldValidate: true });
+                                        form.setValue(
+                                            "learningStyle",
+                                            "Reading/Writing",
+                                            { shouldValidate: true },
+                                        );
                                         form.trigger("learningStyle");
                                     }}
                                 >
                                     <div className="flex h-6 w-6 items-center justify-center">
-                                        <BookOpen className="h-4 w-4 text-primary" />
+                                        <BookOpen className="text-primary h-4 w-4" />
                                     </div>
-                                    <span className="text-sm font-medium">Reading/Writing</span>
+                                    <span className="text-sm font-medium">
+                                        Reading/Writing
+                                    </span>
                                 </div>
                                 <div
                                     className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                        form.getValues("learningStyle") === "Kinesthetic"
+                                        form.getValues("learningStyle") ===
+                                        "Kinesthetic"
                                             ? "border-primary bg-primary/5"
                                             : "hover:border-gray-400"
                                     }`}
                                     onClick={() => {
-                                        form.setValue("learningStyle", "Kinesthetic", { shouldValidate: true });
+                                        form.setValue(
+                                            "learningStyle",
+                                            "Kinesthetic",
+                                            { shouldValidate: true },
+                                        );
                                         form.trigger("learningStyle");
                                     }}
                                 >
                                     <div className="flex h-6 w-6 items-center justify-center">
-                                        <Hammer className="h-4 w-4 text-primary" />
+                                        <Hammer className="text-primary h-4 w-4" />
                                     </div>
-                                    <span className="text-sm font-medium">Kinesthetic</span>
+                                    <span className="text-sm font-medium">
+                                        Kinesthetic
+                                    </span>
                                 </div>
                             </div>
-                            <p className="text-xs text-muted-foreground">
-                                Select the learning style that works best for you
+                            <p className="text-muted-foreground text-xs">
+                                Select the learning style that works best for
+                                you
                             </p>
                             {form.formState.errors.learningStyle && (
                                 <p className="text-sm text-red-500">
@@ -230,77 +304,106 @@ export function PreferencesStep({
                                 <div className="grid grid-cols-2 gap-2">
                                     <div
                                         className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                            form.getValues("teachingStyles") === "handson"
+                                            form.getValues("teachingStyles") ===
+                                            "handson"
                                                 ? "border-primary bg-primary/5"
                                                 : "hover:border-gray-400"
                                         }`}
                                         onClick={() => {
-                                            form.setValue("teachingStyles", "handson", { shouldValidate: true });
+                                            form.setValue(
+                                                "teachingStyles",
+                                                "handson",
+                                                { shouldValidate: true },
+                                            );
                                             form.trigger("teachingStyles");
                                         }}
                                     >
                                         <div className="flex h-6 w-6 items-center justify-center">
-                                            <Hammer className="h-4 w-4 text-primary" />
+                                            <Hammer className="text-primary h-4 w-4" />
                                         </div>
-                                        <span className="text-sm font-medium">Hands-on Practice</span>
+                                        <span className="text-sm font-medium">
+                                            Hands-on Practice
+                                        </span>
                                     </div>
                                     <div
                                         className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                            form.getValues("teachingStyles") === "discussion"
+                                            form.getValues("teachingStyles") ===
+                                            "discussion"
                                                 ? "border-primary bg-primary/5"
                                                 : "hover:border-gray-400"
                                         }`}
                                         onClick={() => {
-                                            form.setValue("teachingStyles", "discussion", { shouldValidate: true });
+                                            form.setValue(
+                                                "teachingStyles",
+                                                "discussion",
+                                                { shouldValidate: true },
+                                            );
                                             form.trigger("teachingStyles");
                                         }}
                                     >
                                         <div className="flex h-6 w-6 items-center justify-center">
-                                            <MessagesSquare className="h-4 w-4 text-primary" />
+                                            <MessagesSquare className="text-primary h-4 w-4" />
                                         </div>
-                                        <span className="text-sm font-medium">Discussion Base</span>
+                                        <span className="text-sm font-medium">
+                                            Discussion Base
+                                        </span>
                                     </div>
                                     <div
                                         className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                            form.getValues("teachingStyles") === "project"
+                                            form.getValues("teachingStyles") ===
+                                            "project"
                                                 ? "border-primary bg-primary/5"
                                                 : "hover:border-gray-400"
                                         }`}
                                         onClick={() => {
-                                            form.setValue("teachingStyles", "project", { shouldValidate: true });
+                                            form.setValue(
+                                                "teachingStyles",
+                                                "project",
+                                                { shouldValidate: true },
+                                            );
                                             form.trigger("teachingStyles");
                                         }}
                                     >
                                         <div className="flex h-6 w-6 items-center justify-center">
-                                            <Lightbulb className="h-4 w-4 text-primary" />
+                                            <Lightbulb className="text-primary h-4 w-4" />
                                         </div>
-                                        <span className="text-sm font-medium">Project Based</span>
+                                        <span className="text-sm font-medium">
+                                            Project Based
+                                        </span>
                                     </div>
                                     <div
                                         className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                            form.getValues("teachingStyles") === "lecture"
+                                            form.getValues("teachingStyles") ===
+                                            "lecture"
                                                 ? "border-primary bg-primary/5"
                                                 : "hover:border-gray-400"
                                         }`}
                                         onClick={() => {
-                                            form.setValue("teachingStyles", "lecture", { shouldValidate: true });
+                                            form.setValue(
+                                                "teachingStyles",
+                                                "lecture",
+                                                { shouldValidate: true },
+                                            );
                                             form.trigger("teachingStyles");
                                         }}
                                     >
                                         <div className="flex h-6 w-6 items-center justify-center">
-                                            <GraduationCap className="h-4 w-4 text-primary" />
+                                            <GraduationCap className="text-primary h-4 w-4" />
                                         </div>
-                                        <span className="text-sm font-medium">Lecture Style</span>
+                                        <span className="text-sm font-medium">
+                                            Lecture Style
+                                        </span>
                                     </div>
                                 </div>
-                                <p className="text-xs text-muted-foreground">
-                                    Select your preferred teaching approach as a mentor
+                                <p className="text-muted-foreground text-xs">
+                                    Select your preferred teaching approach as a
+                                    mentor
                                 </p>
                                 {form.formState.errors.teachingStyles && (
                                     <p className="text-sm text-red-500">
                                         {
-                                            form.formState.errors
-                                                .teachingStyles?.message
+                                            form.formState.errors.teachingStyles
+                                                ?.message
                                         }
                                     </p>
                                 )}
@@ -322,17 +425,16 @@ export function PreferencesStep({
                                 Preferred Session Frequency
                             </Label>
                             <Select
-                                defaultValue={form.getValues(
-                                    "sessionFrequency",
-                                ) || "Weekly"}
-                                onValueChange={(value: SessionFrequencyType) => {
-                                    form.setValue(
-                                        "sessionFrequency",
-                                        value,
-                                        {
-                                            shouldValidate: true,
-                                        },
-                                    );
+                                defaultValue={
+                                    form.getValues("sessionFrequency") ||
+                                    "Weekly"
+                                }
+                                onValueChange={(
+                                    value: SessionFrequencyType,
+                                ) => {
+                                    form.setValue("sessionFrequency", value, {
+                                        shouldValidate: true,
+                                    });
                                     form.trigger("sessionFrequency");
                                 }}
                             >
@@ -354,8 +456,9 @@ export function PreferencesStep({
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
-                            <p className="text-xs text-muted-foreground">
-                                How often would you like to have mentorship sessions
+                            <p className="text-muted-foreground text-xs">
+                                How often would you like to have mentorship
+                                sessions
                             </p>
                             {form.formState.errors.sessionFrequency && (
                                 <p className="text-sm text-red-500">
@@ -374,15 +477,13 @@ export function PreferencesStep({
                                 Preferred Session Duration
                             </Label>
                             <Select
-                                defaultValue={form.getValues("duration") || "1 hour"}
+                                defaultValue={
+                                    form.getValues("duration") || "1 hour"
+                                }
                                 onValueChange={(value: SessionDurationType) => {
-                                    form.setValue(
-                                        "duration",
-                                        value,
-                                        {
-                                            shouldValidate: true,
-                                        },
-                                    );
+                                    form.setValue("duration", value, {
+                                        shouldValidate: true,
+                                    });
                                     form.trigger("duration");
                                 }}
                             >
@@ -407,15 +508,12 @@ export function PreferencesStep({
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-muted-foreground text-xs">
                                 How long would you like each session to be
                             </p>
                             {form.formState.errors.duration && (
                                 <p className="text-sm text-red-500">
-                                    {
-                                        form.formState.errors.duration
-                                            .message
-                                    }
+                                    {form.formState.errors.duration.message}
                                 </p>
                             )}
                         </div>
@@ -432,22 +530,27 @@ export function PreferencesStep({
                         <div className="flex items-center space-x-2 rounded-lg border p-3">
                             <Checkbox
                                 id="privateProfile"
-                                checked={form.getValues("privacySettings")?.isPrivateProfile}
+                                checked={
+                                    form.getValues("privacySettings")
+                                        ?.isPrivateProfile
+                                }
                                 onCheckedChange={(checked) => {
-                                    const currentSettings = form.getValues("privacySettings") || {
+                                    const currentSettings = form.getValues(
+                                        "privacySettings",
+                                    ) || {
                                         isPrivateProfile: false,
                                         isReceiveMessage: true,
-                                        isNotification: true
+                                        isNotification: true,
                                     };
                                     form.setValue(
                                         "privacySettings",
                                         {
                                             ...currentSettings,
-                                            isPrivateProfile: checked === true
+                                            isPrivateProfile: checked === true,
                                         },
                                         {
                                             shouldValidate: true,
-                                        }
+                                        },
                                     );
                                     form.trigger("privacySettings");
                                 }}
@@ -463,22 +566,27 @@ export function PreferencesStep({
                         <div className="flex items-center space-x-2 rounded-lg border p-3">
                             <Checkbox
                                 id="allowMessages"
-                                checked={form.getValues("privacySettings")?.isReceiveMessage}
+                                checked={
+                                    form.getValues("privacySettings")
+                                        ?.isReceiveMessage
+                                }
                                 onCheckedChange={(checked) => {
-                                    const currentSettings = form.getValues("privacySettings") || {
+                                    const currentSettings = form.getValues(
+                                        "privacySettings",
+                                    ) || {
                                         isPrivateProfile: false,
                                         allowMessages: true,
-                                        isNotification: true
+                                        isNotification: true,
                                     };
                                     form.setValue(
                                         "privacySettings",
                                         {
                                             ...currentSettings,
-                                            isReceiveMessage: checked === true
+                                            isReceiveMessage: checked === true,
                                         },
                                         {
                                             shouldValidate: true,
-                                        }
+                                        },
                                     );
                                     form.trigger("privacySettings");
                                 }}
@@ -494,22 +602,27 @@ export function PreferencesStep({
                         <div className="flex items-center space-x-2 rounded-lg border p-3">
                             <Checkbox
                                 id="receiveNotifications"
-                                checked={form.getValues("privacySettings")?.isNotification}
+                                checked={
+                                    form.getValues("privacySettings")
+                                        ?.isNotification
+                                }
                                 onCheckedChange={(checked) => {
-                                    const currentSettings = form.getValues("privacySettings") || {
+                                    const currentSettings = form.getValues(
+                                        "privacySettings",
+                                    ) || {
                                         isPrivateProfile: false,
                                         isReceiveMessage: true,
-                                        isNotification: true
+                                        isNotification: true,
                                     };
                                     form.setValue(
                                         "privacySettings",
                                         {
                                             ...currentSettings,
-                                            isNotification: checked === true
+                                            isNotification: checked === true,
                                         },
                                         {
                                             shouldValidate: true,
-                                        }
+                                        },
                                     );
                                     form.trigger("privacySettings");
                                 }}
@@ -522,7 +635,7 @@ export function PreferencesStep({
                             </Label>
                         </div>
                     </div>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-muted-foreground text-xs">
                         These settings can be changed later in your profile
                     </p>
                 </div>

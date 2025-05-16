@@ -20,6 +20,7 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/common/components/ui/sheet";
+import { Textarea } from "@/common/components/ui/textarea";
 import {
     FormMode,
     type FormSetting,
@@ -31,7 +32,6 @@ import type {
     CourseCategoryDetailResponse,
     CourseCategoryResponse,
 } from "../types/course-response";
-import { Textarea } from "@/common/components/ui/textarea";
 
 type FormDetailProps = {
     formSetting: FormSetting;
@@ -134,14 +134,20 @@ export default function FormDetails(props: FormDetailProps) {
                                     control={form.control}
                                     name="isActive"
                                     render={({ field }) => (
-                                        <FormItem className="space-y-1 flex my-3 border rounded-md p-2 items-center shadow-sm">
-                                            <FormLabel className="mb-0">Active</FormLabel>
+                                        <FormItem className="my-3 flex items-center space-y-1 rounded-md border p-2 shadow-sm">
+                                            <FormLabel className="mb-0">
+                                                Active
+                                            </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type="checkbox"
                                                     checked={field.value}
-                                                    onChange={e => field.onChange(e.target.checked)}
-                                                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                                                    onChange={(e) =>
+                                                        field.onChange(
+                                                            e.target.checked,
+                                                        )
+                                                    }
+                                                    className="text-primary focus:ring-primary h-4 w-4 rounded border-gray-300"
                                                     name={field.name}
                                                     ref={field.ref}
                                                 />

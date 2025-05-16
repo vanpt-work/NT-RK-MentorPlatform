@@ -4,8 +4,8 @@ export type PaginatedResponseModel<T> = {
     totalPages: number;
     currentPage: number;
     pageSize: number;
-}
+};
 
 export type ListResponseModel<T> = {
     items: T[];
-}
+};

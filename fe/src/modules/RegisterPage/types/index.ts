@@ -1,6 +1,11 @@
-import type { z } from "zod";
-import type { accountSchema, profileSchema, preferencesSchema } from "../utils/schemas";
 import type { UseFormReturn } from "react-hook-form";
+import type { z } from "zod";
+
+import type {
+    accountSchema,
+    preferencesSchema,
+    profileSchema,
+} from "../utils/schemas";
 
 // Define types from schemas
 export type AccountFormValues = z.infer<typeof accountSchema>;
@@ -14,20 +19,20 @@ export type AccountStepProps = {
 };
 
 export type Expertise = {
-  id: string;
-  name: string;
-  description?: string;
-  createdAt: string;
-  updatedAt: string;
-} 
+    id: string;
+    name: string;
+    description?: string;
+    createdAt: string;
+    updatedAt: string;
+};
 
 export type CourseCategory = {
-  id: string;
-  name: string;
-  description?: string;
-  createdAt: string;
-  updatedAt: string;
-} 
+    id: string;
+    name: string;
+    description?: string;
+    createdAt: string;
+    updatedAt: string;
+};
 
 export type ProfileStepProps = {
     form: UseFormReturn<ProfileFormValues>;
@@ -101,8 +106,17 @@ export type RegisterRequest = {
     teachingStyles?: TeachingStyle[] | null;
 };
 
-export type SessionFrequencyType = "Weekly" | "Every two weeks" | "Monthly" | "As Needed";
-export type SessionDurationType = "30 minutes" | "45 minutes" | "1 hour" | "1.5 hours" | "2 hours";
+export type SessionFrequencyType =
+    | "Weekly"
+    | "Every two weeks"
+    | "Monthly"
+    | "As Needed";
+export type SessionDurationType =
+    | "30 minutes"
+    | "45 minutes"
+    | "1 hour"
+    | "1.5 hours"
+    | "2 hours";
 
 export type PreferencesStepProps = {
     form: UseFormReturn<PreferencesFormValues>;
@@ -111,10 +125,9 @@ export type PreferencesStepProps = {
 };
 
 export const availabilitySlots = [
-  "Weekdays",
-  "Weekends",
-  "Mornings",
-  "Afternoons",
-  "Evenings",
+    "Weekdays",
+    "Weekends",
+    "Mornings",
+    "Afternoons",
+    "Evenings",
 ];
-
