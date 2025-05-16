@@ -1,4 +1,4 @@
-﻿namespace MentorPlatform.Application.Commons.Models;
+﻿namespace MentorPlatform.Application.Commons.Models.Query;
 public class QueryParameters
 {
     private int? _pageSize;

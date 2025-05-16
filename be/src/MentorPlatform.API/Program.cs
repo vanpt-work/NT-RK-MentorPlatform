@@ -77,6 +77,7 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 app.UseCors(corsOptions.PolicyName);
 
+app.UseCors(corsOptions.PolicyName);
 app.UseExceptionHandler((_) => { });
 if (app.Environment.IsDevelopment())
 {
