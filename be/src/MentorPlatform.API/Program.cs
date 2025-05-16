@@ -1,6 +1,7 @@
 using MentorPlatform.Application.Services.Security;
 using MentorPlatform.WebApi.Extensions;
 using MentorPlatform.WebApi.Middlewares;
+using MentorPlatform.WebApi.ModelBinders;
 using MentorPlatform.WebApi.OpenApi;
 using MentorPlatform.WebApi.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -18,7 +19,10 @@ builder.Services.AddOpenApi();
 
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.ModelBinderProviders.Insert(0, new TrimmingModelBinderProvider());
+});
 builder.Services.ConfigureEntireLayers(builder.Configuration);
 
 var assembly = Assembly.GetExecutingAssembly();
