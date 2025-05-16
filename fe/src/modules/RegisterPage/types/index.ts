@@ -13,13 +13,21 @@ export type AccountStepProps = {
     onOpenPrivacyDialog: () => void;
 };
 
-export type Expertise = {
-  id: string;
-  name: string;
-  description?: string;
-  createdAt: string;
-  updatedAt: string;
-} 
+export type ProfileStepProps = {
+    form: UseFormReturn<ProfileFormValues>;
+    avatarPreview: string | null;
+    onAvatarChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    hideRoleSelection?: boolean;
+};
+
+export type SessionFrequencyType = "Weekly" | "Every two weeks" | "Monthly" | "As Needed";
+export type SessionDurationType = "30 minutes" | "45 minutes" | "1 hour" | "1.5 hours" | "2 hours";
+
+export type PreferencesStepProps = {
+    form: UseFormReturn<PreferencesFormValues>;
+    role: "Learner" | "Mentor";
+    onSubmit: () => void;
+};
 
 export type CourseCategory = {
   id: string;
@@ -27,14 +35,12 @@ export type CourseCategory = {
   description?: string;
   createdAt: string;
   updatedAt: string;
-} 
+}
 
-export type ProfileStepProps = {
-    form: UseFormReturn<ProfileFormValues>;
-    avatarPreview: string | null;
-    onAvatarChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    hideRoleSelection?: boolean;
-};
+export type Expertise = {
+  id: string;
+  name: string;
+}
 
 export enum Role {
     Admin = 0,
@@ -100,21 +106,4 @@ export type RegisterRequest = {
     learningStyle?: LearningStyle | null;
     teachingStyles?: TeachingStyle[] | null;
 };
-
-export type SessionFrequencyType = "Weekly" | "Every two weeks" | "Monthly" | "As Needed";
-export type SessionDurationType = "30 minutes" | "45 minutes" | "1 hour" | "1.5 hours" | "2 hours";
-
-export type PreferencesStepProps = {
-    form: UseFormReturn<PreferencesFormValues>;
-    role: "Learner" | "Mentor";
-    onSubmit: () => void;
-};
-
-export const availabilitySlots = [
-  "Weekdays",
-  "Weekends",
-  "Mornings",
-  "Afternoons",
-  "Evenings",
-];
 

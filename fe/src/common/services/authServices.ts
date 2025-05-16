@@ -1,15 +1,9 @@
 import { httpClient } from "../api/instance.axios";
-import type { CurrentUser, ForgotPasswordRequest, LoginRequest, LoginResponse, RefreshTokenRequest, RefreshTokenResponse, RegisterRequest, ResendVerifyEmailRequest, VerifyEmailRequest, VerifyEmailResponse, VerifyForgotPasswordRequest } from "../types/auth";
+import type { CurrentUser, ForgotPasswordRequest, LoginRequest, LoginResponse, RefreshTokenRequest, RefreshTokenResponse, ResendVerifyEmailRequest, VerifyEmailRequest, VerifyEmailResponse, VerifyForgotPasswordRequest } from "../types/auth";
 
 
 const authService = {
     login: (body: LoginRequest) => httpClient.post<LoginResponse>('auth/login', body),
-    register: (body: RegisterRequest) => httpClient.post<LoginResponse>('auth/register', body),
-    registerWithFormData: (formData: FormData) => httpClient.post<LoginResponse>('auth/register', formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    }),
     verifyEmail: (body: VerifyEmailRequest) => httpClient.post<VerifyEmailResponse>('auth/verify-email', body),
     getCurrentUser: () => httpClient.get<CurrentUser>("auth/me"),
     logout: () => httpClient.post("auth/logout"),

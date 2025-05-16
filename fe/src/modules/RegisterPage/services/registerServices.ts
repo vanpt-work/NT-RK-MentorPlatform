@@ -1,5 +1,5 @@
 import { httpClient } from "@/common/api/instance.axios";
-import type { CourseCategory, RegisterRequest } from "../types";
+import type { CourseCategory, Expertise, RegisterRequest } from "../types";
 import type { LoginResponse } from "@/common/types/auth";
 import type { PaginatedResponseModel } from "@/common/types/common";
 
@@ -11,6 +11,5 @@ export const registerService = {
         }
     }),
     getAllCourseCategories: () => httpClient.get<PaginatedResponseModel<CourseCategory>>('course-categories?pageSize=100'),
+    getAllExpertises: () => httpClient.get<Expertise[]>('expertises'),
 };
-
-export default registerService;

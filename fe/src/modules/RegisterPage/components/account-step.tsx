@@ -1,12 +1,13 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+
 import { Checkbox } from "@/common/components/ui/checkbox";
 import { Input } from "@/common/components/ui/input";
 import { Label } from "@/common/components/ui/label";
 
 import type { AccountStepProps } from "../types";
 
-export function AccountStep ({
+export function AccountStep({
     form,
     onOpenTermsDialog,
     onOpenPrivacyDialog,
@@ -14,7 +15,6 @@ export function AccountStep ({
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    // Handle checkbox selection for terms
     const handleTermsChange = (checked: boolean) => {
         form.setValue("termsAgreed", checked, {
             shouldValidate: true,
@@ -54,7 +54,7 @@ export function AccountStep ({
                                     if (form.getValues("confirmPassword")) {
                                         form.trigger("confirmPassword");
                                     }
-                                }
+                                },
                             })}
                         />
                         <button
