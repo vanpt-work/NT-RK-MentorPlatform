@@ -27,9 +27,9 @@ import {
     type Expertise,
     type ProfileStepProps,
 } from "../types";
-import expertiseService from "@/common/services/expertiseServices";
 import { toast } from "sonner";
 import LoadingSpinner from "@/common/components/loading-spinner";
+import { registerService } from "../services/registerServices";
 
 export function ProfileStep({
     form,
@@ -45,7 +45,7 @@ export function ProfileStep({
         const fetchExpertises = async () => {
             try {
                 setIsLoading(true);
-                const response = await expertiseService.getAllExpertises();
+                const response = await registerService.getAllExpertises();
                 if (response.data) {
                     setExpertises(response.data.items);
                 } else {
