@@ -5,7 +5,7 @@ type LoadingSpinnerProps = {
     className?: string;
     fullScreen?: boolean;
     text?: string;
-}
+};
 
 export function LoadingSpinner({
     size = "md",

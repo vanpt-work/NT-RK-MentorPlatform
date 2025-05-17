@@ -1,5 +1,3 @@
-
-
 export type CourseCategoryRequest = {
     name: string;
     description: string;

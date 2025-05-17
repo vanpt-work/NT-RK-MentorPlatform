@@ -91,7 +91,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
             setClientToken(token);
             setIsAuthenticated(true);
             getCurrentUser();
-            
+
             return PATH.Home;
         } else {
             return PATH.VerifyFailure;

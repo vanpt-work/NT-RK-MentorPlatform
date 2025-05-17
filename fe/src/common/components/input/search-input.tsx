@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react';
 import { Search } from "lucide-react";
-import { Input } from '../ui/input';
-import useDebounce from '@/common/hooks/use-debounce';
+import { useEffect, useState } from "react";
+
+import useDebounce from "@/common/hooks/use-debounce";
+
+import { Input } from "../ui/input";
 
 type SearchInputProps = {
     onSearch: (value: string) => void;
     delay?: number;
-}
+};
 
 const SearchInput: React.FC<SearchInputProps> = ({ onSearch, delay = 500 }) => {
     const [input, setInput] = useState("");
@@ -18,7 +20,10 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch, delay = 500 }) => {
 
     return (
         <div className="relative w-full max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+            <Search
+                className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
+                size={18}
+            />
             <Input
                 type="text"
                 placeholder="Search..."

@@ -125,6 +125,6 @@ export type CurrentUser = {
     id: string;
     fullName: string;
     email: string;
-    avatarUrl : string;
+    avatarUrl: string;
     role: Role;
 };
