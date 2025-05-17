@@ -1,10 +1,11 @@
-﻿
+using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using MentorPlatform.Application.Services.File;
 using MentorPlatform.CrossCuttingConcerns.Exceptions;
 using MentorPlatform.Infrastructure.Options;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace MentorPlatform.Infrastructure.FileStorage;
@@ -13,18 +14,20 @@ public class AWSS3StorageServices : INamedFileStorageServices
 {
     private readonly AWSS3StorageOptions _awsS3StorageOptions;
     private readonly IAmazonS3 _s3;
+    private readonly ILogger<AWSS3StorageServices> _logger;
 
-    public AWSS3StorageServices(IAmazonS3 s3, AWSS3StorageOptions awsS3StorageOptions)
+    public AWSS3StorageServices(IAmazonS3 s3, ILogger<AWSS3StorageServices> logger, AWSS3StorageOptions awsS3StorageOptions)
     {
         _s3 = s3;
+        _logger = logger;
         _awsS3StorageOptions = awsS3StorageOptions;
     }
-    public AWSS3StorageServices(IAmazonS3 s3, IOptions<AWSS3StorageOptions> awsS3StorageOptions)
+    public AWSS3StorageServices(IAmazonS3 s3, ILogger<AWSS3StorageServices> logger, IOptions<AWSS3StorageOptions> awsS3StorageOptions)
     {
         _s3 = s3;
+        _logger = logger;
         _awsS3StorageOptions = awsS3StorageOptions.Value;
     }
-
     public async Task<string> UploadFileAsync(IFormFile fileUploadRequest, CancellationToken token = default)
     {
         if (fileUploadRequest == null || fileUploadRequest.Length == 0)
@@ -34,20 +37,38 @@ public class AWSS3StorageServices : INamedFileStorageServices
         string fileName = Guid.NewGuid() + Path.GetExtension(fileUploadRequest.FileName);
         string keyName = $"{folderName}/{fileName}";
 
-        using var newMemoryStream = new MemoryStream();
-        await fileUploadRequest.CopyToAsync(newMemoryStream, token);
-
-        var uploadRequest = new PutObjectRequest
+        try
         {
-            InputStream = newMemoryStream,
-            Key = keyName,
-            BucketName = _awsS3StorageOptions.BucketName,
-            ContentType = fileUploadRequest.ContentType
-        };
+            using var newMemoryStream = new MemoryStream();
+            await fileUploadRequest.CopyToAsync(newMemoryStream, token);
 
-        await _s3.PutObjectAsync(uploadRequest, token);
+            var uploadRequest = new PutObjectRequest
+            {
+                InputStream = newMemoryStream,
+                Key = keyName,
+                BucketName = _awsS3StorageOptions.BucketName,
+                ContentType = fileUploadRequest.ContentType
+            };
 
-        return keyName;
+            await _s3.PutObjectAsync(uploadRequest, token);
+
+            return keyName;
+        }
+        catch (AmazonS3Exception ex)
+        {
+            _logger.LogError(ex, "An S3 error occurred.");
+            return string.Empty;
+        }
+        catch (AmazonClientException ex)
+        {
+            _logger.LogError(ex, "An AWS client error occurred.");
+            return string.Empty;
+        }
+        catch (AmazonServiceException ex)
+        {
+            _logger.LogError(ex, "An AWS service error occurred.");
+            return string.Empty;
+        }
     }
 
     private static string GetFolderNameFromFieldName(string fieldName)
@@ -58,24 +79,57 @@ public class AWSS3StorageServices : INamedFileStorageServices
 
     public async Task<string> GetPreSignedUrlFile(string filePath, CancellationToken token = default)
     {
-        var urlRequest = new GetPreSignedUrlRequest
+        try
         {
-            BucketName = _awsS3StorageOptions.BucketName,
-            Key = filePath,
-        };
+            var urlRequest = new GetPreSignedUrlRequest
+            {
+                BucketName = _awsS3StorageOptions.BucketName,
+                Key = filePath,
+            };
 
-        return await _s3.GetPreSignedURLAsync(urlRequest);
+            return await _s3.GetPreSignedURLAsync(urlRequest);
+        }
+        catch (AmazonS3Exception ex)
+        {
+            _logger.LogError(ex, "An S3 error occurred.");
+            return string.Empty;
+        }
+        catch (AmazonClientException ex)
+        {
+            _logger.LogError(ex, "An AWS client error occurred.");
+            return string.Empty;
+        }
+        catch (AmazonServiceException ex)
+        {
+            _logger.LogError(ex, "An AWS service error occurred.");
+            return string.Empty;
+        }
     }
 
     public async Task DeleteFileAsync(string filePath, CancellationToken token = default)
     {
-        var deleteRequest = new DeleteObjectRequest
+        try
         {
-            BucketName = _awsS3StorageOptions.BucketName,
-            Key = filePath
-        };
+            var deleteRequest = new DeleteObjectRequest
+            {
+                BucketName = _awsS3StorageOptions.BucketName,
+                Key = filePath
+            };
 
-        await _s3.DeleteObjectAsync(deleteRequest, token);
+            await _s3.DeleteObjectAsync(deleteRequest, token);
+        }
+        catch (AmazonS3Exception ex)
+        {
+            _logger.LogError(ex, "An S3 error occurred.");
+        }
+        catch (AmazonClientException ex)
+        {
+            _logger.LogError(ex, "An AWS client error occurred.");
+        }
+        catch (AmazonServiceException ex)
+        {
+            _logger.LogError(ex, "An AWS service error occurred.");
+        }
     }
 
     public string ServiceName => nameof(AWSS3StorageServices);
