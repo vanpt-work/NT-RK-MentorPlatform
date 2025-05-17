@@ -43,7 +43,6 @@ public class AuthServices: IAuthServices
     private readonly IRepository<Expertise, Guid> _expertiseRepository;
     private readonly IBackgroundTaskQueue<Func<IServiceProvider, CancellationToken, ValueTask>> _mailQueue;
     private readonly ILogger<AuthServices> _logger;
-    private readonly IRepository<Expertise, Guid> _expertiseRepository;
     public AuthServices(IJwtTokenServices jwtServices,
         ILogger<AuthServices> logger,
         IUnitOfWork unitOfWork,
@@ -53,12 +52,7 @@ public class AuthServices: IAuthServices
         IExecutionContext executionContext,
         IRepository<Domain.Entities.CourseCategory, Guid> courseCategoryRepository,
         IRepository<RefreshToken, Guid> refreshTokenRepository,
-<<<<<<< HEAD
-        IRepository<UserExpertise, Guid> userExpertiseRepository,
-         IRepository<Expertise, Guid> expertiseRepository,
-=======
         IRepository<Expertise, Guid> expertiseRepository,
->>>>>>> origin/main
         IRazorLightEngine razorLightEngine,
         IMemoryCache memoryCache,
         IBackgroundTaskQueue<Func<IServiceProvider, CancellationToken, ValueTask>> mailQueue)
