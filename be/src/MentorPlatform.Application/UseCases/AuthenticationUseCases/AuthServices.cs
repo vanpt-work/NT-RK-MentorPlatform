@@ -14,7 +14,6 @@ using MentorPlatform.Application.Services.Security;
 using MentorPlatform.CrossCuttingConcerns.Caching;
 using MentorPlatform.CrossCuttingConcerns.Exceptions;
 using MentorPlatform.CrossCuttingConcerns.Helpers;
-using MentorPlatform.Domain.Constants;
 using MentorPlatform.Domain.Entities;
 using MentorPlatform.Domain.Repositories;
 using MentorPlatform.Domain.Shared;
@@ -41,7 +40,7 @@ public class AuthServices: IAuthServices
     private readonly IRazorLightEngine _razorLightEngine;
     private readonly IRepository<RefreshToken, Guid> _refreshTokenRepository;
     private readonly IMemoryCache _memoryCache;
-    private readonly IRepository<UserExpertise, Guid> _userExpertiseRepository;
+    private readonly IRepository<Expertise, Guid> _expertiseRepository;
     private readonly IBackgroundTaskQueue<Func<IServiceProvider, CancellationToken, ValueTask>> _mailQueue;
     private readonly ILogger<AuthServices> _logger;
     public AuthServices(IJwtTokenServices jwtServices,
@@ -53,7 +52,7 @@ public class AuthServices: IAuthServices
         IExecutionContext executionContext,
         IRepository<Domain.Entities.CourseCategory, Guid> courseCategoryRepository,
         IRepository<RefreshToken, Guid> refreshTokenRepository,
-        IRepository<UserExpertise, Guid> userExpertiseRepository,
+        IRepository<Expertise, Guid> expertiseRepository,
         IRazorLightEngine razorLightEngine,
         IMemoryCache memoryCache,
         IBackgroundTaskQueue<Func<IServiceProvider, CancellationToken, ValueTask>> mailQueue)
@@ -65,7 +64,7 @@ public class AuthServices: IAuthServices
         _userRepository = userRepository;
         _jwtTokenOptions = jwtTokenOptions.Value;
         _unitOfWork = unitOfWork;
-        _userExpertiseRepository = userExpertiseRepository;
+        _expertiseRepository = expertiseRepository;
         _razorLightEngine = razorLightEngine;
         _refreshTokenRepository = refreshTokenRepository;
         _memoryCache = memoryCache;
@@ -455,7 +454,7 @@ public class AuthServices: IAuthServices
     }
     private async Task<bool> ValidateExpertiseValidAsync(List<Guid> expertiseIds)
     {
-        var expertise = await _userExpertiseRepository.GetByIdsAsync(expertiseIds);
+        var expertise = await _expertiseRepository.GetByIdsAsync(expertiseIds);
         if (expertise.Count != expertiseIds.Count)
         {
             return false;
