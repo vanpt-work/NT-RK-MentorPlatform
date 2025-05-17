@@ -14,7 +14,7 @@ public static class UserErrorMessages
     public const string EmailAlreadyRegister = "Email already register.";
     public const string UserExpertiseInvalid = "Areas of expertise have invalid value.";
     public const string UserCourseCategoryInvalid = "Topics have invalid value.";
-    public const string VerifyEmailCodeIncorrect= "Verify email code incorrect";
+    public const string VerifyEmailCodeIncorrect= "Verify code incorrect";
 }
 public static class UserErrors
 {

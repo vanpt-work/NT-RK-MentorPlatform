@@ -217,9 +217,9 @@ public class AuthServices: IAuthServices
     public async Task<Result> ResendVerifyEmailAsync(ResendVerifyEmailRequest resendVerifyEmailRequest)
     { 
         var userByEmail = await _userRepository.GetByEmailAsync(resendVerifyEmailRequest.Email);
-        if (userByEmail != null)
+        if (userByEmail == null)
         {
-            return Result.Failure(400, UserErrors.EmailAlreadyRegister);
+            return Result.Failure(400, UserErrors.EmailNotAlreadyRegister);
         }
         return Result.Success();
     }
@@ -290,7 +290,7 @@ public class AuthServices: IAuthServices
     {
         var userId = _executionContext.GetUserId();
         var userByEmail = await _userRepository.GetByIdAsync(userId);
-        if (userByEmail != null)
+        if (userByEmail == null)
         {
             return Result.Failure(400, UserErrors.UserNotExists);
         }
