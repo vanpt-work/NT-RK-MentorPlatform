@@ -174,14 +174,14 @@ const Sidebar = ({ onToggle, userRole = "admin" }: SidebarProps) => {
             >
                 <Button
                     onClick={toggleSidebar}
-                    variant="ghost"
-                    className="absolute top-6 -right-3 z-40 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow-md dark:bg-gray-800"
+                    variant="outline"
+                    className="border-border bg-background hover:bg-accent absolute top-6 -right-3 z-40 flex h-6 w-6 items-center justify-center rounded-full border p-0 shadow-sm transition-colors dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
                     aria-label={isOpen ? "Collapse sidebar" : "Expand sidebar"}
                 >
                     {isOpen ? (
-                        <ChevronLeft size={16} />
+                        <ChevronLeft className="text-foreground h-3.5 w-3.5 dark:text-gray-300" />
                     ) : (
-                        <ChevronRight size={16} />
+                        <ChevronRight className="text-foreground h-3.5 w-3.5 dark:text-gray-300" />
                     )}
                 </Button>
 

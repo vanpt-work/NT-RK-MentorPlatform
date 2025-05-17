@@ -8,5 +8,5 @@ public static class AuthCommandMessages
     public const string RegisterSuccessfully = "Registered account successfully.";
     public const string VerifyEmailSuccessfully = "Verify email successfully";
     public const string VerifyForgotPasswordCodeSuccessfully = "Verify forgot password code successfully";
-    
+    public const string ResetPasswordSuccessfully = "Reset password successfully";
 }

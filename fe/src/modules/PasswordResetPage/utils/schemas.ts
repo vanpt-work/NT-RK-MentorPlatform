@@ -1,6 +1,9 @@
 import * as z from "zod";
 
 import {
+    EMAIL_CANNOT_BE_BLANK,
+    EMAIL_HAS_INVALID_LENGTH,
+    EMAIL_IS_INVALID,
     OTP_HAS_INVALID_CHARACTERS,
     OTP_HAS_INVALID_LENGTH,
     PASSWORDS_DO_NOT_MATCH,
@@ -9,6 +12,18 @@ import {
 } from "@/common/constants";
 
 // Define schema for OTP verification
+export const emailSchema = z.object({
+    email: z
+        .string()
+        .nonempty(EMAIL_CANNOT_BE_BLANK)
+        .min(8, EMAIL_HAS_INVALID_LENGTH)
+        .max(50, EMAIL_HAS_INVALID_LENGTH)
+        .regex(
+            /^(?=.{8,50}$)[A-Za-z0-9]+(?:\.[A-Za-z0-9]+)*@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/,
+            EMAIL_IS_INVALID,
+        ),
+});
+
 export const otpSchema = z.object({
     otp: z
         .string()

@@ -14,7 +14,7 @@ public interface IAuthServices
     Task<Result> ResendVerifyEmailAsync(ResendVerifyEmailRequest resendVerifyEmailRequest);
     Task<Result> RefreshTokenAsync(RefreshTokenRequest refreshTokenRequest);
     Task<Result> VerifyForgotPasswordAsync(VerifyForgotPasswordRequest  verifyForgotPasswordRequest);
-
+    Task<Result> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest);
     Task<Result> GetCurrentUserAsync();
 
     Task<Result> EditingProfileUserAsync(EditingUserProfileRequest editingUserProfileRequest);
