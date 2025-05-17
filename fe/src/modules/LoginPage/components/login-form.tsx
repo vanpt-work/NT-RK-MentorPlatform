@@ -102,7 +102,7 @@ export function LoginForm() {
                             <Input
                                 id="password"
                                 type={showPassword ? "text" : "password"}
-                                placeholder="••••••••"
+                                placeholder=""
                                 {...form.register("password")}
                             />
                             <button

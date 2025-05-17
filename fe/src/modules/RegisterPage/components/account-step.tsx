@@ -54,7 +54,7 @@ export function AccountStep({
                         <Input
                             id="password"
                             type={showPassword ? "text" : "password"}
-                            placeholder="••••••••"
+                            placeholder=""
                             {...form.register("password", {
                                 onChange: () => {
                                     form.trigger("password");
@@ -93,7 +93,7 @@ export function AccountStep({
                         <Input
                             id="confirmPassword"
                             type={showConfirmPassword ? "text" : "password"}
-                            placeholder="••••••••"
+                            placeholder=""
                             {...form.register("confirmPassword", {
                                 onChange: () => form.trigger("confirmPassword"),
                             })}
