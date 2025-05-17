@@ -1,11 +1,6 @@
-import type { UseFormReturn } from "react-hook-form";
 import type { z } from "zod";
-
-import type {
-    accountSchema,
-    preferencesSchema,
-    profileSchema,
-} from "../utils/schemas";
+import type { accountSchema, profileSchema, preferencesSchema } from "../utils/schemas";
+import type { UseFormReturn } from "react-hook-form";
 
 // Define types from schemas
 export type AccountFormValues = z.infer<typeof accountSchema>;
@@ -18,28 +13,34 @@ export type AccountStepProps = {
     onOpenPrivacyDialog: () => void;
 };
 
-export type Expertise = {
-    id: string;
-    name: string;
-    description?: string;
-    createdAt: string;
-    updatedAt: string;
-};
-
-export type CourseCategory = {
-    id: string;
-    name: string;
-    description?: string;
-    createdAt: string;
-    updatedAt: string;
-};
-
 export type ProfileStepProps = {
     form: UseFormReturn<ProfileFormValues>;
     avatarPreview: string | null;
     onAvatarChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     hideRoleSelection?: boolean;
 };
+
+export type SessionFrequencyType = "Weekly" | "Every two weeks" | "Monthly" | "As Needed";
+export type SessionDurationType = "30 minutes" | "45 minutes" | "1 hour" | "1.5 hours" | "2 hours";
+
+export type PreferencesStepProps = {
+    form: UseFormReturn<PreferencesFormValues>;
+    role: "Learner" | "Mentor";
+    onSubmit: () => void;
+};
+
+export type CourseCategory = {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type Expertise = {
+  id: string;
+  name: string;
+}
 
 export enum Role {
     Admin = 0,
@@ -106,28 +107,3 @@ export type RegisterRequest = {
     teachingStyles?: TeachingStyle[] | null;
 };
 
-export type SessionFrequencyType =
-    | "Weekly"
-    | "Every two weeks"
-    | "Monthly"
-    | "As Needed";
-export type SessionDurationType =
-    | "30 minutes"
-    | "45 minutes"
-    | "1 hour"
-    | "1.5 hours"
-    | "2 hours";
-
-export type PreferencesStepProps = {
-    form: UseFormReturn<PreferencesFormValues>;
-    role: "Learner" | "Mentor";
-    onSubmit: () => void;
-};
-
-export const availabilitySlots = [
-    "Weekdays",
-    "Weekends",
-    "Mornings",
-    "Afternoons",
-    "Evenings",
-];

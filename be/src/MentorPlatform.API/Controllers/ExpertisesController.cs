@@ -1,4 +1,4 @@
-﻿using MentorPlatform.Application.UseCases.ExpertisesUseCases;
+﻿using MentorPlatform.Application.UseCases.ExpertiseUseCases;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MentorPlatform.WebApi.Controllers;
@@ -6,9 +6,9 @@ namespace MentorPlatform.WebApi.Controllers;
 [Route("api/[controller]")]
 public class ExpertisesController : ApiControllerBase
 {
-    private readonly ExpertiseUseCases _expertiseUseCases;
+    private readonly IExpertiseUseCases _expertiseUseCases;
 
-    public ExpertisesController(ExpertiseUseCases expertiseUseCases)
+    public ExpertisesController(IExpertiseUseCases expertiseUseCases)
     {
         _expertiseUseCases = expertiseUseCases;
     }

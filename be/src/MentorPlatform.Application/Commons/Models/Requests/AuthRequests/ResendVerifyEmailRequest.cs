@@ -15,7 +15,8 @@ public class ResendVerifyEmailRequestValidator : AbstractValidator<ResendVerifyE
     public ResendVerifyEmailRequestValidator()
     {
         RuleFor(l => l.Email)
-            .NotEmpty().WithMessage(AuthModelsValidationMessages.EmailNotEmpty)
+            .NotEmpty()
+            .WithMessage(AuthModelsValidationMessages.FormatEmailInvalid)
             .Matches(UserConstants.EmailRegexPattern)
             .WithMessage(AuthModelsValidationMessages.FormatEmailInvalid);
     }

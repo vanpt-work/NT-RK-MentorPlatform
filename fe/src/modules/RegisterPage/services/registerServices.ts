@@ -2,7 +2,7 @@ import { httpClient } from "@/common/api/instance.axios";
 import type { LoginResponse } from "@/common/types/auth";
 import type { PaginatedResponseModel } from "@/common/types/common";
 
-import type { CourseCategory, RegisterRequest } from "../types";
+import type { CourseCategory, Expertise, RegisterRequest } from "../types";
 
 export const registerService = {
     register: (body: RegisterRequest) =>
@@ -17,6 +17,5 @@ export const registerService = {
         httpClient.get<PaginatedResponseModel<CourseCategory>>(
             "course-categories?pageSize=100",
         ),
+    getAllExpertises: () => httpClient.get<Expertise[]>("expertises"),
 };
-
-export default registerService;
