@@ -5,7 +5,7 @@ import type { KeyboardEvent } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import * as z from "zod";
+import type { z } from "zod";
 
 import LoadingSpinner from "@/common/components/loading-spinner";
 import { Button } from "@/common/components/ui/button";
