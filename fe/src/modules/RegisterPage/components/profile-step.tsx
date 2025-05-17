@@ -26,10 +26,7 @@ import { Label } from "@/common/components/ui/label";
 import { Textarea } from "@/common/components/ui/textarea";
 
 import { registerService } from "../services/registerServices";
-import {
-    type Expertise,
-    type ProfileStepProps,
-} from "../types";
+import { type Expertise, type ProfileStepProps } from "../types";
 
 export function ProfileStep({
     form,
@@ -101,7 +98,14 @@ export function ProfileStep({
     };
 
     // Handle availability selection
-    const handleAvailabilityChange = (availability: "Weekdays" | "Weekends" | "Mornings" | "Afternoons" | "Evenings") => {
+    const handleAvailabilityChange = (
+        availability:
+            | "Weekdays"
+            | "Weekends"
+            | "Mornings"
+            | "Afternoons"
+            | "Evenings",
+    ) => {
         const currentAvailability = form.getValues("availability") || [];
         const updatedAvailability = currentAvailability.includes(availability)
             ? currentAvailability.filter((a) => a !== availability)
@@ -211,7 +215,7 @@ export function ProfileStep({
                             <Label htmlFor="fullName">Full Name</Label>
                             <Input
                                 id="fullName"
-                                placeholder="John Doe"
+                                placeholder=""
                                 {...form.register("fullName")}
                             />
                             {form.formState.errors.fullName && (
@@ -510,11 +514,15 @@ export function ProfileStep({
                         <div className="grid grid-cols-3 gap-2">
                             <div
                                 className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                    (form.getValues("availability") || []).includes("Weekdays")
+                                    (
+                                        form.getValues("availability") || []
+                                    ).includes("Weekdays")
                                         ? "border-primary bg-primary/5"
                                         : "hover:border-gray-400"
                                 }`}
-                                onClick={() => handleAvailabilityChange("Weekdays")}
+                                onClick={() =>
+                                    handleAvailabilityChange("Weekdays")
+                                }
                             >
                                 <span className="text-sm font-medium">
                                     Weekdays
@@ -522,11 +530,15 @@ export function ProfileStep({
                             </div>
                             <div
                                 className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                    (form.getValues("availability") || []).includes("Weekends")
+                                    (
+                                        form.getValues("availability") || []
+                                    ).includes("Weekends")
                                         ? "border-primary bg-primary/5"
                                         : "hover:border-gray-400"
                                 }`}
-                                onClick={() => handleAvailabilityChange("Weekends")}
+                                onClick={() =>
+                                    handleAvailabilityChange("Weekends")
+                                }
                             >
                                 <span className="text-sm font-medium">
                                     Weekends
@@ -534,11 +546,15 @@ export function ProfileStep({
                             </div>
                             <div
                                 className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                    (form.getValues("availability") || []).includes("Mornings")
+                                    (
+                                        form.getValues("availability") || []
+                                    ).includes("Mornings")
                                         ? "border-primary bg-primary/5"
                                         : "hover:border-gray-400"
                                 }`}
-                                onClick={() => handleAvailabilityChange("Mornings")}
+                                onClick={() =>
+                                    handleAvailabilityChange("Mornings")
+                                }
                             >
                                 <span className="text-sm font-medium">
                                     Mornings
@@ -546,11 +562,15 @@ export function ProfileStep({
                             </div>
                             <div
                                 className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                    (form.getValues("availability") || []).includes("Afternoons")
+                                    (
+                                        form.getValues("availability") || []
+                                    ).includes("Afternoons")
                                         ? "border-primary bg-primary/5"
                                         : "hover:border-gray-400"
                                 }`}
-                                onClick={() => handleAvailabilityChange("Afternoons")}
+                                onClick={() =>
+                                    handleAvailabilityChange("Afternoons")
+                                }
                             >
                                 <span className="text-sm font-medium">
                                     Afternoons
@@ -558,11 +578,15 @@ export function ProfileStep({
                             </div>
                             <div
                                 className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                    (form.getValues("availability") || []).includes("Evenings")
+                                    (
+                                        form.getValues("availability") || []
+                                    ).includes("Evenings")
                                         ? "border-primary bg-primary/5"
                                         : "hover:border-gray-400"
                                 }`}
-                                onClick={() => handleAvailabilityChange("Evenings")}
+                                onClick={() =>
+                                    handleAvailabilityChange("Evenings")
+                                }
                             >
                                 <span className="text-sm font-medium">
                                     Evenings

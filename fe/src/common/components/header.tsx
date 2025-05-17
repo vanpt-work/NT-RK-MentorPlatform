@@ -18,7 +18,7 @@ import { useAuthContext } from "../context/auth-context";
 const Header = () => {
     const { logout, user } = useAuthContext();
     return (
-        <header className="fixed top-0 left-0 z-40 flex h-16 w-full items-center justify-between border-b border-gray-200 bg-white px-4 dark:border-gray-800 dark:bg-gray-900">
+        <header className="fixed top-0 left-0 z-40 flex h-16 w-full items-center justify-between border-b border-gray-200 bg-white px-4 dark:border-gray-800 dark:bg-black">
             <div className="flex items-center gap-2 md:gap-4">
                 <Link to="/" className="flex items-center gap-2">
                     <span className="text-primary text-xl font-bold">
