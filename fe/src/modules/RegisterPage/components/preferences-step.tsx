@@ -149,7 +149,7 @@ export function PreferencesStep({
                                                 <SelectValue placeholder="Select topics" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <div className="sticky top-0 border-b bg-white px-2 py-2">
+                                                <div className="sticky top-0 border-b px-2 py-2">
                                                     <div className="flex items-center gap-2 rounded border px-1 py-1">
                                                         <Search className="text-muted-foreground h-4 w-4" />
                                                         <Input
