@@ -56,17 +56,17 @@ public class AWSS3StorageServices : INamedFileStorageServices
         }
         catch (AmazonS3Exception ex)
         {
-            _logger.LogError(ex, "An S3 error occurred.");
+            _logger.LogError(ex, ApplicationExceptionMessage.AWSS3Error);
             return string.Empty;
         }
         catch (AmazonClientException ex)
         {
-            _logger.LogError(ex, "An AWS client error occurred.");
+            _logger.LogError(ex, ApplicationExceptionMessage.AWSClientError);
             return string.Empty;
         }
         catch (AmazonServiceException ex)
         {
-            _logger.LogError(ex, "An AWS service error occurred.");
+            _logger.LogError(ex, ApplicationExceptionMessage.AWSServerError);
             return string.Empty;
         }
     }
@@ -91,17 +91,17 @@ public class AWSS3StorageServices : INamedFileStorageServices
         }
         catch (AmazonS3Exception ex)
         {
-            _logger.LogError(ex, "An S3 error occurred.");
+            _logger.LogError(ex, ApplicationExceptionMessage.AWSS3Error);
             return string.Empty;
         }
         catch (AmazonClientException ex)
         {
-            _logger.LogError(ex, "An AWS client error occurred.");
+            _logger.LogError(ex, ApplicationExceptionMessage.AWSClientError);
             return string.Empty;
         }
         catch (AmazonServiceException ex)
         {
-            _logger.LogError(ex, "An AWS service error occurred.");
+            _logger.LogError(ex, ApplicationExceptionMessage.AWSServerError);
             return string.Empty;
         }
     }
@@ -120,15 +120,15 @@ public class AWSS3StorageServices : INamedFileStorageServices
         }
         catch (AmazonS3Exception ex)
         {
-            _logger.LogError(ex, "An S3 error occurred.");
+            _logger.LogError(ex, ApplicationExceptionMessage.AWSS3Error);
         }
         catch (AmazonClientException ex)
         {
-            _logger.LogError(ex, "An AWS client error occurred.");
+            _logger.LogError(ex, ApplicationExceptionMessage.AWSClientError);
         }
         catch (AmazonServiceException ex)
         {
-            _logger.LogError(ex, "An AWS service error occurred.");
+            _logger.LogError(ex, ApplicationExceptionMessage.AWSServerError);
         }
     }
 
