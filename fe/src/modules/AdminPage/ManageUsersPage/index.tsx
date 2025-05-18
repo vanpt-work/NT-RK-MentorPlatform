@@ -1,118 +1,127 @@
-import { columns } from "./components/columns";
-import { DataTable } from "./components/data-table";
+import type { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
+import { useEffect, useState } from "react";
+
+import DataTable from "@/common/components/table/data-table";
+import DataTablePagination from "@/common/components/table/data-table-pagination";
+import { userServices } from "@/common/services/userServices";
+
+import { ActionCell } from "./components/action-cell";
 import type { User } from "./types";
 
+const getRoleString = (role: number) => {
+    switch (role) {
+        case 0:
+            return "Admin";
+        case 1:
+            return "Learner";
+        case 2:
+            return "Mentor";
+    }
+};
+
+export const columns: ColumnDef<User>[] = [
+    {
+        accessorKey: "name",
+        header: "Name",
+        cell: ({ row }) => (
+            <div className="dark:text-gray-200">
+                {row.original.userDetail.fullName}
+            </div>
+        ),
+    },
+    {
+        accessorKey: "email",
+        header: "Email",
+        cell: ({ row }) => (
+            <div className="dark:text-gray-200">{row.getValue("email")}</div>
+        ),
+    },
+    {
+        accessorKey: "role",
+        header: "Role",
+        cell: ({ row }) => (
+            <div className="dark:text-gray-200">
+                {getRoleString(row.original.role)}
+            </div>
+        ),
+    },
+    {
+        accessorKey: "isActive",
+        header: "Status",
+        cell: ({ row }) => {
+            const status = row.getValue("isActive") as boolean;
+            return (
+                <span
+                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                        status
+                            ? "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100"
+                            : // : status === "Pending"
+                              //   ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100"
+                              "bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100"
+                    }`}
+                >
+                    {status ? "Active" : "Deactivated"}
+                </span>
+            );
+        },
+    },
+    {
+        accessorKey: "createdAt",
+        header: "Join Date",
+        cell: ({ row }) => {
+            const joinDate = new Date(row.getValue("createdAt"));
+            return (
+                <div className="dark:text-gray-200">
+                    {format(joinDate, "dd/MM/yyyy")}
+                </div>
+            );
+        },
+    },
+    {
+        accessorKey: "lastActive",
+        header: "Last Active",
+        cell: ({ row }) => {
+            const lastActive = new Date(row.getValue("lastActive"));
+            return (
+                <div className="dark:text-gray-200">
+                    {format(lastActive, "dd/MM/yyyy")}
+                </div>
+            );
+        },
+    },
+    {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => {
+            const user = row.original;
+            return <ActionCell user={user} />;
+        },
+    },
+];
+
+function useUsers(pageNumber: number = 1, pageSize: number = 10) {
+    const [users, setUsers] = useState<User[]>([]);
+    const [totalUserCount, setTotalUserCount] = useState(0);
+
+    useEffect(() => {
+        async function fetchUsers() {
+            const result = await userServices.get(pageNumber, pageSize);
+            setUsers(result.data?.items || []);
+            setTotalUserCount(result.data?.totalCount || 0);
+        }
+
+        fetchUsers();
+    }, [pageSize, pageNumber]);
+
+    return { users, totalUserCount };
+}
+
 export default function ManageUsersPage() {
-    const data: User[] = [
-        {
-            id: "1",
-            name: "Nguyễn Văn A",
-            email: "nguyenvana@example.com",
-            role: "Admin",
-            status: "Active",
-            joinDate: new Date("2023-01-15"),
-            lastActive: new Date("2023-06-20"),
-        },
-        {
-            id: "2",
-            name: "Trần Thị B",
-            email: "tranthib@example.com",
-            role: "Mentor",
-            status: "Active",
-            joinDate: new Date("2023-02-10"),
-            lastActive: new Date("2023-06-18"),
-        },
-        {
-            id: "3",
-            name: "Lê Văn C",
-            email: "levanc@example.com",
-            role: "Learner",
-            status: "Pending",
-            joinDate: new Date("2023-03-05"),
-            lastActive: new Date("2023-06-15"),
-        },
-        {
-            id: "4",
-            name: "Phạm Thị D",
-            email: "phamthid@example.com",
-            role: "Learner",
-            status: "Deactivated",
-            joinDate: new Date("2023-01-20"),
-            lastActive: new Date("2023-03-10"),
-        },
-        {
-            id: "5",
-            name: "Hoàng Văn E",
-            email: "hoangvane@example.com",
-            role: "Mentor",
-            status: "Active",
-            joinDate: new Date("2023-02-15"),
-            lastActive: new Date("2023-06-19"),
-        },
-        {
-            id: "6",
-            name: "Vũ Thị F",
-            email: "vuthif@example.com",
-            role: "Learner",
-            status: "Active",
-            joinDate: new Date("2023-03-10"),
-            lastActive: new Date("2023-06-17"),
-        },
-        {
-            id: "7",
-            name: "Đặng Văn G",
-            email: "dangvang@example.com",
-            role: "Learner",
-            status: "Active",
-            joinDate: new Date("2023-04-05"),
-            lastActive: new Date("2023-06-16"),
-        },
-        {
-            id: "8",
-            name: "Bùi Thị H",
-            email: "buithih@example.com",
-            role: "Mentor",
-            status: "Pending",
-            joinDate: new Date("2023-04-15"),
-            lastActive: new Date("2023-05-20"),
-        },
-        {
-            id: "9",
-            name: "Ngô Văn I",
-            email: "ngovani@example.com",
-            role: "Learner",
-            status: "Deactivated",
-            joinDate: new Date("2023-01-25"),
-            lastActive: new Date("2023-02-28"),
-        },
-        {
-            id: "10",
-            name: "Đinh Thị K",
-            email: "dinhthik@example.com",
-            role: "Mentor",
-            status: "Active",
-            joinDate: new Date("2023-02-20"),
-            lastActive: new Date("2023-06-21"),
-        },
-        {
-            id: "11",
-            name: "Dương Văn L",
-            email: "duongvanl@example.com",
-            role: "Learner",
-            status: "Active",
-            joinDate: new Date("2023-03-15"),
-            lastActive: new Date("2023-06-22"),
-        },
-        {
-            id: "12",
-            name: "Lý Thị M",
-            email: "lythim@example.com",
-            role: "Learner",
-            status: "Pending",
-            joinDate: new Date("2023-05-10"),
-            lastActive: new Date("2023-06-15"),
-        },
-    ];
+    const [pageNumber, setPageNumber] = useState(1);
+    const [pageSize, setPageSize] = useState(5);
+
+    const { users, totalUserCount } = useUsers(pageNumber, pageSize);
 
     return (
         <div className="space-y-4">
@@ -136,7 +145,20 @@ export default function ManageUsersPage() {
                     </p>
                 </div>
                 <div className="p-6">
-                    <DataTable columns={columns} data={data} />
+                    <DataTable data={users} columns={columns} />
+                    <div className="mt-4">
+                        <DataTablePagination
+                            pageSizeList={[5, 8, 10]}
+                            pageSize={pageSize}
+                            pageNumber={pageNumber}
+                            totalRecords={totalUserCount}
+                            onPageNumberChanged={setPageNumber}
+                            onPageSizeChanged={(pageSize: number) => {
+                                setPageSize(pageSize);
+                                setPageNumber(1);
+                            }}
+                        />
+                    </div>
                 </div>
             </div>
         </div>
