@@ -708,7 +708,7 @@ public static class DependencyInjection
                     {
                         Title = $"{category.Name} Course {i}",
                         Description = $"This is {category.Name} Course {i} description.",
-                        Level = i % 3 + 1,
+                        Level = (CourseLevel)(i % 3 + 1),
                         CourseCategoryId = category.Id,
                         IsDeleted = false
                     });
