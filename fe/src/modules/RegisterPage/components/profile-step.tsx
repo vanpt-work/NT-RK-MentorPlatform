@@ -282,6 +282,11 @@ export function ProfileStep({
                                 <p className="text-muted-foreground text-xs">
                                     Maximum file size: 5MB
                                 </p>
+                                {form.formState.errors.photo && (
+                                    <p className="text-sm text-red-500">
+                                        {form.formState.errors.photo.message?.toString()}
+                                    </p>
+                                )}
                             </div>
                         </div>
                     </div>
