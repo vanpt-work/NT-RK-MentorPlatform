@@ -1,6 +1,5 @@
 ﻿
 using MentorPlatform.Domain.Entities;
-using MentorPlatform.Domain.Enums;
 using MentorPlatform.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 
