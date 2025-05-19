@@ -1,6 +1,6 @@
-﻿using MentorPlatform.Application.Identity;
+﻿using Amazon.S3;
+using MentorPlatform.Application.Identity;
 using MentorPlatform.Application.Services.File;
-using MentorPlatform.Application.Services.FileStorage;
 using MentorPlatform.Application.Services.HostedServices;
 using MentorPlatform.Application.Services.Mail;
 using MentorPlatform.Application.Services.Security;
@@ -12,6 +12,7 @@ using MentorPlatform.Infrastructure.Options;
 using MentorPlatform.Infrastructure.Security;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace MentorPlatform.Infrastructure.Extensions;
@@ -34,15 +35,20 @@ public static class DependencyInjection
         var config = GetConfiguration(services);
 
         services.Configure<FileStorageOptions>(config.GetSection(nameof(FileStorageOptions)));
-        services.Configure<CloudinaryStorageOptions>(config.GetSection($"{nameof(FileStorageOptions)}:CloudiaryStorageOptions"));
+        services.Configure<CloudinaryStorageOptions>(config.GetSection($"{nameof(FileStorageOptions)}:CloudinaryStorageOptions"));
+        services.Configure<AWSS3StorageOptions>(config.GetSection($"{nameof(FileStorageOptions)}:AWSS3StorageOptions"));
+        services.AddDefaultAWSOptions(config.GetAWSOptions());
+        services.AddAWSService<IAmazonS3>();
 
         services.AddScoped<IJwtTokenServices, JwtTokenServices>();
         services
             .AddScoped<INamedFileStorageServices, CloudinaryStorageServices>()
-            .AddScoped<INamedFileStorageServices, AWSS3StorageServices>((sp) =>
+            .AddScoped<INamedFileStorageServices, AWSS3StorageServices>((serviceProvider) =>
             {
-                var options = sp.GetRequiredService<IOptions<FileStorageOptions>>().Value;
-                return new AWSS3StorageServices(options.AWSS3StorageOptions!);
+                var s3 = serviceProvider.GetRequiredService<IAmazonS3>();
+                var logger = serviceProvider.GetRequiredService<ILogger<AWSS3StorageServices>>();
+                var options = serviceProvider.GetRequiredService<IOptions<FileStorageOptions>>().Value;
+                return new AWSS3StorageServices(s3, logger, options.AWSS3StorageOptions!);
             });
         services.AddScoped<IFileStorageFactory, FileStorageFactory>();
         return services;
