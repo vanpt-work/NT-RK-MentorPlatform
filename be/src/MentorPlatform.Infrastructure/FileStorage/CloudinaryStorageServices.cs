@@ -107,6 +107,11 @@ public class CloudinaryStorageServices : INamedFileStorageServices
         {
             return _cloudinaryStorageOptions.MediaSettings.Videos.FolderPath;
         }
+        else if (_cloudinaryStorageOptions.MediaSettings?.Documents?.AllowedExtensions != null &&
+                _cloudinaryStorageOptions.MediaSettings.Documents.AllowedExtensions.Contains(fileExtension))
+        {
+            return _cloudinaryStorageOptions.MediaSettings.Documents.FolderPath;
+        }
 
         return "uploads";
     }
