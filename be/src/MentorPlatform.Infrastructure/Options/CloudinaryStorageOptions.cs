@@ -12,6 +12,7 @@ public class MediaSettings
 {
     public ImageSettings Images { get; set; }
     public VideoSettings Videos { get; set; }
+    public DocumentSettings Documents { get; set; }
 }
 
 public class ImageSettings
@@ -22,6 +23,13 @@ public class ImageSettings
 }
 
 public class VideoSettings
+{
+    public string[] AllowedExtensions { get; set; }
+    public long MaxSizeBytes { get; set; }
+    public string FolderPath { get; set; }
+}
+
+public class DocumentSettings
 {
     public string[] AllowedExtensions { get; set; }
     public long MaxSizeBytes { get; set; }

@@ -34,10 +34,6 @@ public class ExecutionContextMiddleware
             {
                 throw new BadRequestException(UserErrorMessages.UserNotExists);
             }
-            if (!user.IsActive)
-            {
-                throw new BadRequestException(UserErrorMessages.UserHasBeenDeactivated);
-            }
             string recallAccessTokenCacheKey = StringHelper.ReplacePlaceholders(CacheKeyConstants.RecallTokenKey, 
                 user.Id.ToString(), jti.ToString());
             if (memoryCache.Get(recallAccessTokenCacheKey) is not null)
@@ -45,6 +41,10 @@ public class ExecutionContextMiddleware
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 await context.Response.WriteAsync(nameof(HttpStatusCode.Unauthorized));
                 return;
+            }
+            if (!user.IsActive)
+            {
+                throw new BadRequestException(UserErrorMessages.UserHasBeenDeactivated);
             }
             if (!user.IsVerifyEmail)
             {

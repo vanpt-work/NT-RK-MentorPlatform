@@ -2,9 +2,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import type { Resolver } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import type { Resolver } from "react-hook-form";
 
 import LoadingSpinner from "@/common/components/loading-spinner";
 import { Button } from "@/common/components/ui/button";
@@ -24,17 +23,6 @@ import { PreferencesStep } from "./preferences-step";
 import { PrivacyDialog } from "./privacy-dialog";
 import { ProfileStep } from "./profile-step";
 import { TermsDialog } from "./terms-dialog";
-
-import registerService from "../services/registerServices";
-import {
-    CommunicationPreference,
-    LearningStyle,
-    type RegisterRequest,
-    Role,
-    SessionFrequency,
-    TeachingStyle,
-    UserAvailability,
-} from "../types";
 import type {
     AccountFormValues,
     PreferencesFormValues,
@@ -45,116 +33,9 @@ import {
     preferencesSchema,
     profileSchema,
 } from "../utils/schemas";
-
-// Mapping function to convert form values to RegisterRequest
-const mapFormDataToRegisterRequest = (
-    accountData: AccountFormValues,
-    profileData: ProfileFormValues,
-    preferencesData: PreferencesFormValues,
-): RegisterRequest => {
-    // Map role from string to Role enum
-    const roleMap: Record<string, Role> = {
-        Learner: Role.Learner,
-        Mentor: Role.Mentor,
-    };
-
-    // Map communication method to CommunicationPreference enum
-    const communicationMap: Record<string, CommunicationPreference> = {
-        "Video call": CommunicationPreference.Video,
-        "Audio call": CommunicationPreference.Audio,
-        "Text chat": CommunicationPreference.Text,
-    };
-
-    // Map session frequency to SessionFrequency enum
-    const frequencyMap: Record<string, SessionFrequency> = {
-        Weekly: SessionFrequency.Week,
-        "Every two weeks": SessionFrequency.TwoWeek,
-        Monthly: SessionFrequency.Month,
-        "As Needed": SessionFrequency.AsNeeded,
-    };
-
-    // Map learning style to LearningStyle enum
-    const learningStyleMap: Record<string, LearningStyle> = {
-        Visual: LearningStyle.Visual,
-        Auditory: LearningStyle.Auditory,
-        "Reading/Writing": LearningStyle.ReadWriting,
-        Kinesthetic: LearningStyle.Kinesthetic,
-    };
-
-    // Map availability to UserAvailability enum array
-    const mapAvailability = (
-        availabilities: string[] | undefined,
-    ): UserAvailability[] | undefined => {
-        if (!availabilities || availabilities.length === 0) {
-            return undefined;
-        }
-
-        const availabilityMap: Record<string, UserAvailability> = {
-            Weekdays: UserAvailability.Weekdays,
-            Weekends: UserAvailability.Weekends,
-            Evenings: UserAvailability.Evenings,
-            Mornings: UserAvailability.Mornings,
-            Afternoons: UserAvailability.Weekdays,
-        };
-
-        return availabilities.map(
-            (a) => availabilityMap[a] || UserAvailability.Weekdays,
-        );
-    };
-
-    // Map teaching approach to TeachingStyle enum array
-    const mapTeachingStyles = (
-        approach?: string,
-    ): TeachingStyle[] | undefined => {
-        if (!approach) return undefined;
-
-        const styleMap: Record<string, TeachingStyle> = {
-            handson: TeachingStyle.HandsOnPractice,
-            discussion: TeachingStyle.DiscussionBased,
-            project: TeachingStyle.ProjectBased,
-            lecture: TeachingStyle.LectureStyle,
-        };
-
-        return [styleMap[approach] || TeachingStyle.LectureStyle];
-    };
-
-    // Calculate duration in minutes from session duration string
-    const mapDuration = (duration: string): number => {
-        const durationMap: Record<string, number> = {
-            "30 minutes": 30,
-            "45 minutes": 45,
-            "1 hour": 60,
-            "1.5 hours": 90,
-            "2 hours": 120,
-        };
-
-        return durationMap[duration] || 60;
-    };
-
-    return {
-        email: accountData.email,
-        password: accountData.password,
-        avatarUrl: profileData.photo,
-        fullName: profileData.fullName,
-        role: roleMap[profileData.role] || Role.Learner,
-        bio: profileData.bio,
-        isNotification: preferencesData.privacySettings?.isNotification,
-        isReceiveMessage: preferencesData.privacySettings?.isReceiveMessage,
-        isPrivateProfile: preferencesData.privacySettings?.isPrivateProfile,
-        expertises: profileData.expertises,
-        professionalSkill: profileData.professionalSkill,
-        experience: profileData.experience,
-        communicationPreference:
-            communicationMap[profileData.communicationPreference],
-        goals: profileData.goals,
-        availability: mapAvailability(profileData.availability),
-        courseCategoryIds: preferencesData.courseCategoryIds,
-        sessionFrequency: frequencyMap[preferencesData.sessionFrequency],
-        duration: mapDuration(preferencesData.duration),
-        learningStyle: learningStyleMap[preferencesData.learningStyle],
-        teachingStyles: mapTeachingStyles(preferencesData.teachingStyles),
-    };
-};
+import { useNavigate } from "react-router-dom";
+import { registerService } from "../services/registerServices";
+import { mapFormDataToRegisterRequest } from "../utils/mapper";
 
 export function RegisterForm() {
     const [step, setStep] = useState(1);
@@ -194,9 +75,7 @@ export function RegisterForm() {
     });
 
     const preferencesForm = useForm<PreferencesFormValues>({
-        resolver: zodResolver(
-            preferencesSchema,
-        ) as Resolver<PreferencesFormValues>,
+        resolver: zodResolver(preferencesSchema) as Resolver<PreferencesFormValues>,
         defaultValues: {
             courseCategoryIds: [],
             sessionFrequency: "Weekly",
@@ -233,121 +112,73 @@ export function RegisterForm() {
             const accountValid = await accountForm.trigger();
             const profileValid = await profileForm.trigger();
             const preferencesValid = await preferencesForm.trigger();
-
+            
             if (!accountValid || !profileValid || !preferencesValid) {
-                toast.error(
-                    "Please fix the validation errors before submitting.",
-                );
+                toast.error("Please fix the validation errors before submitting.");
                 setIsLoading(false);
                 return;
             }
-
+            
             // Combine all form data and map to RegisterRequest
             const registerData = mapFormDataToRegisterRequest(
                 accountForm.getValues(),
                 profileForm.getValues(),
-                preferencesForm.getValues(),
+                preferencesForm.getValues()
             );
-
+            
             // Log the request data for debugging
-            console.log(
-                "Register request data:",
-                JSON.stringify(registerData, null, 2),
-            );
-
+            console.log("Register request data:", JSON.stringify(registerData, null, 2));
+            
             const formData = new FormData();
-
-            formData.append("email", registerData.email);
-            formData.append("password", registerData.password);
-            formData.append("fullName", registerData.fullName);
-            formData.append("role", String(registerData.role));
-            if (registerData.bio) formData.append("bio", registerData.bio);
-            if (registerData.isNotification !== undefined)
-                formData.append(
-                    "isNotification",
-                    String(registerData.isNotification),
-                );
-            if (registerData.isReceiveMessage !== undefined)
-                formData.append(
-                    "isReceiveMessage",
-                    String(registerData.isReceiveMessage),
-                );
-            if (registerData.isPrivateProfile !== undefined)
-                formData.append(
-                    "isPrivateProfile",
-                    String(registerData.isPrivateProfile),
-                );
-            if (registerData.professionalSkill)
-                formData.append(
-                    "professionalSkill",
-                    registerData.professionalSkill,
-                );
-            if (registerData.experience)
-                formData.append("experience", registerData.experience);
-            if (registerData.communicationPreference !== undefined)
-                formData.append(
-                    "communicationPreference",
-                    String(registerData.communicationPreference),
-                );
-            if (registerData.goals)
-                formData.append("goals", registerData.goals);
-            formData.append(
-                "sessionFrequency",
-                String(registerData.sessionFrequency),
-            );
-            formData.append("duration", String(registerData.duration));
-            if (registerData.learningStyle !== undefined)
-                formData.append(
-                    "learningStyle",
-                    String(registerData.learningStyle),
-                );
-            if (
-                registerData.avatarUrl &&
-                registerData.avatarUrl instanceof File
-            ) {
-                formData.append("avatarUrl", registerData.avatarUrl);
+            
+            formData.append('email', registerData.email);
+            formData.append('password', registerData.password);
+            formData.append('fullName', registerData.fullName);
+            formData.append('role', String(registerData.role));
+            if (registerData.bio) formData.append('bio', registerData.bio);
+            if (registerData.isNotification !== undefined) formData.append('isNotification', String(registerData.isNotification));
+            if (registerData.isReceiveMessage !== undefined) formData.append('isReceiveMessage', String(registerData.isReceiveMessage));
+            if (registerData.isPrivateProfile !== undefined) formData.append('isPrivateProfile', String(registerData.isPrivateProfile));
+            if (registerData.professionalSkill) formData.append('professionalSkill', registerData.professionalSkill);
+            if (registerData.experience) formData.append('experience', registerData.experience);
+            if (registerData.communicationPreference !== undefined) formData.append('communicationPreference', String(registerData.communicationPreference));
+            if (registerData.goals) formData.append('goals', registerData.goals);
+            formData.append('sessionFrequency', String(registerData.sessionFrequency));
+            formData.append('duration', String(registerData.duration));
+            if (registerData.learningStyle !== undefined) formData.append('learningStyle', String(registerData.learningStyle));
+            if (registerData.avatarUrl && registerData.avatarUrl instanceof File) {
+                formData.append('avatarUrl', registerData.avatarUrl);
             }
             if (registerData.expertises && registerData.expertises.length > 0) {
                 registerData.expertises.forEach((expertise) => {
-                    formData.append("expertises", expertise);
+                    formData.append('expertises', expertise);
                 });
             }
-            if (
-                registerData.courseCategoryIds &&
-                registerData.courseCategoryIds.length > 0
-            ) {
+            if (registerData.courseCategoryIds && registerData.courseCategoryIds.length > 0) {
                 registerData.courseCategoryIds.forEach((categoryId) => {
-                    formData.append("courseCategoryIds", categoryId);
+                    formData.append('courseCategoryIds', categoryId);
                 });
             }
-            if (
-                registerData.availability &&
-                registerData.availability.length > 0
-            ) {
+            if (registerData.availability && registerData.availability.length > 0) {
                 registerData.availability.forEach((avail) => {
-                    formData.append("availability", String(avail));
+                    formData.append('availability', String(avail));
                 });
             }
-            if (
-                registerData.teachingStyles &&
-                registerData.teachingStyles.length > 0
-            ) {
+            if (registerData.teachingStyles && registerData.teachingStyles.length > 0) {
                 registerData.teachingStyles.forEach((style) => {
-                    formData.append("teachingStyles", String(style));
+                    formData.append('teachingStyles', String(style));
                 });
             }
-
+            
             await registerService.registerWithFormData(formData);
-
+            
             toast.success(
                 "Account created successfully! Redirecting to email verification...",
             );
-
+            
             setTimeout(() => {
                 const email = accountForm.getValues().email;
-                navigate(
-                    `/verify-otp?email=${encodeURIComponent(email)}&purpose=registration`,
-                );
+                navigate(`/verify-otp?email=${encodeURIComponent(email)}&purpose=registration`);
             }, 1500);
         } catch (error) {
             console.error("Registration failed:", error);
@@ -385,7 +216,7 @@ export function RegisterForm() {
                 return "Create an account";
         }
     };
-
+    
     const getStepDescription = () => {
         switch (step) {
             case 1:

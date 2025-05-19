@@ -3,7 +3,9 @@ import { ArrowLeft, Check } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import type { z } from "zod";
 
 import LoadingSpinner from "@/common/components/loading-spinner";
 import { Button } from "@/common/components/ui/button";
@@ -19,12 +21,13 @@ import { Input } from "@/common/components/ui/input";
 import { Label } from "@/common/components/ui/label";
 import { Progress } from "@/common/components/ui/progress";
 
-import { newPasswordSchema, otpSchema } from "../utils/schemas";
-
-// Define schema for email form
-const emailSchema = z.object({
-    email: z.string().email("Please enter a valid email address"),
-});
+import resetPasswordService from "../services/resetPasswordService";
+import type {
+    ForgotPasswordRequest,
+    ResetPasswordRequest,
+    VerifyForgotPasswordRequest,
+} from "../types";
+import { emailSchema, newPasswordSchema, otpSchema } from "../utils/schemas";
 
 export function PasswordResetForm() {
     const [step, setStep] = useState(1);
@@ -33,6 +36,7 @@ export function PasswordResetForm() {
     const [error, setError] = useState<string | null>(null);
     const [otpValues, setOtpValues] = useState<string[]>(Array(6).fill(""));
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+    const navigate = useNavigate();
 
     // Form state for email
     const emailForm = useForm({
@@ -126,14 +130,17 @@ export function PasswordResetForm() {
         setIsLoading(true);
         setError(null);
         try {
-            // TODO: Implement API call to request reset
-            console.log("Requesting password reset for:", values.email);
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            const request: ForgotPasswordRequest = {
+                email: values.email,
+            };
+
+            await resetPasswordService.forgotPassword(request);
+            toast.success("Verification code sent to your email");
             setStep(2);
         } catch (err) {
             console.error("Password reset request failed:", err);
             setError("Failed to send OTP. Please try again.");
+            toast.error("Failed to send verification code. Please try again.");
         } finally {
             setIsLoading(false);
         }
@@ -144,14 +151,18 @@ export function PasswordResetForm() {
         setIsLoading(true);
         setError(null);
         try {
-            // TODO: Implement API call to verify OTP
-            console.log("Verifying OTP:", values.otp);
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            const request: VerifyForgotPasswordRequest = {
+                email: emailForm.getValues().email,
+                code: values.otp,
+            };
+
+            await resetPasswordService.verifyForgotPassword(request);
+            toast.success("OTP verified successfully");
             setStep(3);
         } catch (err) {
             console.error("OTP verification failed:", err);
             setError("Invalid OTP. Please try again.");
+            toast.error("Invalid verification code. Please try again.");
         } finally {
             setIsLoading(false);
         }
@@ -162,15 +173,24 @@ export function PasswordResetForm() {
         setIsLoading(true);
         setError(null);
         try {
-            // TODO: Implement API call to reset password
-            console.log(values);
-            console.log("Resetting password for:", emailForm.getValues().email);
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            const request: ResetPasswordRequest = {
+                email: emailForm.getValues().email,
+                code: otpForm.getValues().otp,
+                newPassword: values.password,
+            };
+
+            await resetPasswordService.resetPassword(request);
+            toast.success("Password reset successfully");
             setIsSubmitted(true);
+
+            // Redirect to login after a delay
+            setTimeout(() => {
+                navigate("/login");
+            }, 3000);
         } catch (err) {
             console.error("Password reset failed:", err);
             setError("Failed to reset password. Please try again.");
+            toast.error("Failed to reset password. Please try again.");
         } finally {
             setIsLoading(false);
         }

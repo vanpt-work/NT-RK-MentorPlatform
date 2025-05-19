@@ -24,4 +24,6 @@ public static class AuthModelsValidationMessages
     public const string AvatarShouldLessThanMaxLength = "Image must less than or equal {maxLength} mb.";
     public const string AccessTokenRequired = "Access token is required.";
     public const string RefreshTokenRequired = "Refresh token is required";
+    public const string CodeNotEmpty = "Code is required.";
+    public const string FormatCodeInvalid = "Code must consist of exactly 6 digits.";
 }

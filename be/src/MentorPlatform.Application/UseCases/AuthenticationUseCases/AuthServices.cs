@@ -28,7 +28,7 @@ using System.Security.Claims;
 
 namespace MentorPlatform.Application.UseCases.Authentication;
 
-public class AuthServices: IAuthServices
+public class AuthServices : IAuthServices
 {
     private readonly IJwtTokenServices _jwtServices;
     private readonly IUserRepository _userRepository;
@@ -48,7 +48,7 @@ public class AuthServices: IAuthServices
         IUnitOfWork unitOfWork,
         IUserRepository userRepository,
         IFileStorageFactory fileStorageFactory,
-        IOptions<JwtTokenOptions> jwtTokenOptions, 
+        IOptions<JwtTokenOptions> jwtTokenOptions,
         IExecutionContext executionContext,
         IRepository<Domain.Entities.CourseCategory, Guid> courseCategoryRepository,
         IRepository<RefreshToken, Guid> refreshTokenRepository,
@@ -57,6 +57,7 @@ public class AuthServices: IAuthServices
         IMemoryCache memoryCache,
         IBackgroundTaskQueue<Func<IServiceProvider, CancellationToken, ValueTask>> mailQueue)
     {
+        _expertiseRepository = expertiseRepository;
         _mailQueue = mailQueue;
         _logger = logger;
         _executionContext = executionContext;
@@ -96,7 +97,7 @@ public class AuthServices: IAuthServices
             return new LoginResponse
             {
                 AccessToken = string.Empty,
-                RefreshToken = string.Empty, 
+                RefreshToken = string.Empty,
                 IsVerifyEmail = false
             };
         }
@@ -104,7 +105,9 @@ public class AuthServices: IAuthServices
         var refreshToken = _jwtServices.GenerateRefreshToken();
         var freshTokenObject = new RefreshToken
         {
-            Value = HashingHelper.HashData(refreshToken), Expired = DateTime.UtcNow.AddDays(_jwtTokenOptions.ExpireRefreshTokenDays),
+            UserId = user.Id,
+            Value = HashingHelper.HashData(refreshToken),
+            Expired = DateTime.UtcNow.AddDays(_jwtTokenOptions.ExpireRefreshTokenDays),
         };
         _refreshTokenRepository.Add(freshTokenObject);
 
@@ -139,8 +142,8 @@ public class AuthServices: IAuthServices
         var user = registerRequest.ToUser();
         user.UserCourseCategories = userCourseCategories;
         user.UserExpertises = userExpertises;
-            
-        var userAvatarUrl =  await UploadImageAndGetAvatarUrlAsync(registerRequest.AvatarUrl);
+
+        var userAvatarUrl = await UploadImageAndGetAvatarUrlAsync(registerRequest.AvatarUrl);
         user.UserDetail.AvatarUrl = userAvatarUrl;
 
 
@@ -191,6 +194,7 @@ public class AuthServices: IAuthServices
         var refreshToken = _jwtServices.GenerateRefreshToken();
         var freshTokenObject = new RefreshToken
         {
+            UserId = user.Id,
             Value = HashingHelper.HashData(refreshToken),
             Expired = DateTime.UtcNow.AddDays(_jwtTokenOptions.ExpireRefreshTokenDays),
         };
@@ -211,11 +215,11 @@ public class AuthServices: IAuthServices
     }
 
     public async Task<Result> ResendVerifyEmailAsync(ResendVerifyEmailRequest resendVerifyEmailRequest)
-    { 
+    {
         var userByEmail = await _userRepository.GetByEmailAsync(resendVerifyEmailRequest.Email);
-        if (userByEmail != null)
+        if (userByEmail == null)
         {
-            return Result.Failure(400, UserErrors.EmailAlreadyRegister);
+            return Result.Failure(400, UserErrors.EmailNotAlreadyRegister);
         }
         return Result.Success();
     }
@@ -234,7 +238,7 @@ public class AuthServices: IAuthServices
         var refreshToken = _jwtServices.GenerateRefreshToken();
         var freshTokenObject = new RefreshToken
         {
-            UserId = userId,
+            UserId = user!.Id,
             Value = HashingHelper.HashData(refreshToken),
             Expired = DateTime.UtcNow.AddDays(_jwtTokenOptions.ExpireRefreshTokenDays),
         };
@@ -266,6 +270,27 @@ public class AuthServices: IAuthServices
         return Result<string>.Success(AuthCommandMessages.VerifyForgotPasswordCodeSuccessfully);
     }
 
+    public async Task<Result> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest)
+    {
+        var user = await _userRepository.GetByEmailAsync(resetPasswordRequest.Email);
+        if (user == null)
+        {
+            return Result.Failure(400, UserErrors.EmailNotAlreadyRegister);
+        }
+
+        var code = GetForgotPasswordCodeFromMemory(user);
+        if (code != resetPasswordRequest.Code)
+        {
+            return Result.Failure(400, UserErrors.VerifyEmailCodeIncorrect);
+        }
+        
+        user.Password = HashingHelper.HashData(resetPasswordRequest.NewPassword);
+        _userRepository.Update(user);
+        await _unitOfWork.SaveChangesAsync();
+        
+        return Result<string>.Success(AuthCommandMessages.ResetPasswordSuccessfully);
+    }
+
     public async Task<Result> GetCurrentUserAsync()
     {
         var userId = _executionContext.GetUserId();
@@ -287,7 +312,7 @@ public class AuthServices: IAuthServices
     {
         var userId = _executionContext.GetUserId();
         var userByEmail = await _userRepository.GetByIdAsync(userId);
-        if (userByEmail != null)
+        if (userByEmail == null)
         {
             return Result.Failure(400, UserErrors.UserNotExists);
         }
@@ -376,7 +401,7 @@ public class AuthServices: IAuthServices
             {
                 imageUrl = await _fileStorageServices.UploadFileAsync(formFile);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
             }
@@ -389,7 +414,9 @@ public class AuthServices: IAuthServices
 
         var sendMailData = new SendMailData
         {
-            ToEmail = user.Email, Subject = MailInformationConstants.TitleVerifyCodeEmail, Body = mailContent,
+            ToEmail = user.Email,
+            Subject = MailInformationConstants.TitleVerifyCodeEmail,
+            Body = mailContent,
         };
 
         await AddEmailWorkItemIntoQueueAsync(sendMailData);

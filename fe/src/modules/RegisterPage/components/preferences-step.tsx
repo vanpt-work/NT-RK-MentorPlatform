@@ -6,6 +6,7 @@ import {
     Hammer,
     Lightbulb,
     MessagesSquare,
+    Search,
     X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -13,6 +14,7 @@ import { toast } from "sonner";
 
 import LoadingSpinner from "@/common/components/loading-spinner";
 import { Checkbox } from "@/common/components/ui/checkbox";
+import { Input } from "@/common/components/ui/input";
 import { Label } from "@/common/components/ui/label";
 import {
     Select,
@@ -22,7 +24,7 @@ import {
     SelectValue,
 } from "@/common/components/ui/select";
 
-import registerService from "../services/registerServices";
+import { registerService } from "../services/registerServices";
 import {
     type CourseCategory,
     type PreferencesStepProps,
@@ -37,6 +39,7 @@ export function PreferencesStep({
 }: PreferencesStepProps) {
     const [categories, setCategories] = useState<CourseCategory[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -61,9 +64,6 @@ export function PreferencesStep({
         fetchCategories();
     }, []);
 
-    console.log(categories);
-
-    // Handle topics selection
     const handleTopicChange = (categoryId: string) => {
         const currentTopics = form.getValues("courseCategoryIds") || [];
         const updatedTopics = currentTopics.includes(categoryId)
@@ -75,11 +75,16 @@ export function PreferencesStep({
         });
     };
 
-    // Find category name by ID
     const getCategoryName = (id: string) => {
         const category = categories.find((cat) => cat.id === id);
         return category ? category.name : id;
     };
+
+    const filteredCategories = categories.filter(
+        (category) =>
+            category.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+            !(form.getValues("courseCategoryIds") || []).includes(category.id),
+    );
 
     return (
         <form
@@ -144,25 +149,43 @@ export function PreferencesStep({
                                                 <SelectValue placeholder="Select topics" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {categories
-                                                    .filter(
-                                                        (category) =>
-                                                            !(
-                                                                form.getValues(
-                                                                    "courseCategoryIds",
-                                                                ) || []
-                                                            ).includes(
-                                                                category.id,
-                                                            ),
+                                                <div className="sticky top-0 border-b px-2 py-2">
+                                                    <div className="flex items-center gap-2 rounded border px-1 py-1">
+                                                        <Search className="text-muted-foreground h-4 w-4" />
+                                                        <Input
+                                                            className="h-7 border-0 px-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                                                            placeholder="Search topics..."
+                                                            value={searchTerm}
+                                                            onChange={(e) =>
+                                                                setSearchTerm(
+                                                                    e.target
+                                                                        .value,
+                                                                )
+                                                            }
+                                                        />
+                                                    </div>
+                                                </div>
+                                                {filteredCategories.length >
+                                                0 ? (
+                                                    filteredCategories.map(
+                                                        (category) => (
+                                                            <SelectItem
+                                                                key={
+                                                                    category.id
+                                                                }
+                                                                value={
+                                                                    category.id
+                                                                }
+                                                            >
+                                                                {category.name}
+                                                            </SelectItem>
+                                                        ),
                                                     )
-                                                    .map((category) => (
-                                                        <SelectItem
-                                                            key={category.id}
-                                                            value={category.id}
-                                                        >
-                                                            {category.name}
-                                                        </SelectItem>
-                                                    ))}
+                                                ) : (
+                                                    <div className="text-muted-foreground px-2 py-4 text-center text-sm">
+                                                        No matching topics found
+                                                    </div>
+                                                )}
                                             </SelectContent>
                                         </Select>
                                     </>

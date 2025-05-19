@@ -17,8 +17,20 @@ import { useAuthContext } from "../context/auth-context";
 
 const Header = () => {
     const { logout, user } = useAuthContext();
+
+    const getInitials = () => {
+        if (!user || !user.fullName) return "UN";
+
+        const nameParts = user.fullName.split(" ");
+        if (nameParts.length === 1) return nameParts[0].charAt(0).toUpperCase();
+
+        return (
+            nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)
+        ).toUpperCase();
+    };
+
     return (
-        <header className="fixed top-0 left-0 z-40 flex h-16 w-full items-center justify-between border-b border-gray-200 bg-white px-4 dark:border-gray-800 dark:bg-gray-900">
+        <header className="fixed top-0 left-0 z-40 flex h-16 w-full items-center justify-between border-b border-gray-200 bg-white px-4 dark:border-gray-800 dark:bg-black">
             <div className="flex items-center gap-2 md:gap-4">
                 <Link to="/" className="flex items-center gap-2">
                     <span className="text-primary text-xl font-bold">
@@ -43,10 +55,10 @@ const Header = () => {
                     <DropdownMenuTrigger asChild>
                         <Avatar className="hover:ring-primary/20 h-9 w-9 cursor-pointer transition hover:ring-2">
                             <AvatarImage
-                                src="https://github.com/shadcn.png"
-                                alt="User"
+                                src={user?.avatarUrl}
+                                alt={user?.fullName || "User"}
                             />
-                            <AvatarFallback>UN</AvatarFallback>
+                            <AvatarFallback>{getInitials()}</AvatarFallback>
                         </Avatar>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">

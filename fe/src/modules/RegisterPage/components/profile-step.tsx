@@ -5,7 +5,6 @@ import {
     Database,
     GraduationCap,
     Lightbulb,
-    LineChart,
     MessageSquare,
     Palette,
     Phone,
@@ -13,7 +12,6 @@ import {
     Video,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import type { UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";
 
 import LoadingSpinner from "@/common/components/loading-spinner";
@@ -26,20 +24,9 @@ import { Button } from "@/common/components/ui/button";
 import { Input } from "@/common/components/ui/input";
 import { Label } from "@/common/components/ui/label";
 import { Textarea } from "@/common/components/ui/textarea";
-import expertiseService from "@/common/services/expertiseServices";
 
-import {
-    type Expertise,
-    type ProfileFormValues,
-    availabilitySlots,
-} from "../types";
-
-type ProfileStepProps = {
-    form: UseFormReturn<ProfileFormValues>;
-    avatarPreview: string | null;
-    onAvatarChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    hideRoleSelection?: boolean;
-};
+import { registerService } from "../services/registerServices";
+import { type Expertise, type ProfileStepProps } from "../types";
 
 export function ProfileStep({
     form,
@@ -55,9 +42,9 @@ export function ProfileStep({
         const fetchExpertises = async () => {
             try {
                 setIsLoading(true);
-                const response = await expertiseService.getAllExpertises();
-                if (response.data) {
-                    setExpertises(response.data.items);
+                const response = await registerService.getAllExpertises();
+                if (response && response.data) {
+                    setExpertises(response.data);
                 } else {
                     setExpertises([]);
                 }
@@ -89,33 +76,40 @@ export function ProfileStep({
     // Get icon for expertise
     const getExpertiseIcon = (name: string) => {
         switch (name.toLowerCase()) {
-            case "software development":
+            case "leadership":
+                return Users;
+            case "programming":
                 return Code;
-            case "data science":
-                return Database;
-            case "business & management":
-                return Briefcase;
-            case "design & creativity":
+            case "design":
                 return Palette;
             case "marketing":
                 return BarChart4;
-            case "engineering":
-                return Lightbulb;
-            case "education":
+            case "data science":
+                return Database;
+            case "business":
+                return Briefcase;
+            case "project management":
                 return GraduationCap;
-            case "finance":
-                return LineChart;
+            case "communication":
+                return MessageSquare;
             default:
                 return Lightbulb;
         }
     };
 
     // Handle availability selection
-    const handleAvailabilityChange = (slot: string) => {
+    const handleAvailabilityChange = (
+        availability:
+            | "Weekdays"
+            | "Weekends"
+            | "Mornings"
+            | "Afternoons"
+            | "Evenings",
+    ) => {
         const currentAvailability = form.getValues("availability") || [];
-        const updatedAvailability = currentAvailability.includes(slot)
-            ? currentAvailability.filter((a) => a !== slot)
-            : [...currentAvailability, slot];
+        const updatedAvailability = currentAvailability.includes(availability)
+            ? currentAvailability.filter((a) => a !== availability)
+            : [...currentAvailability, availability];
 
         form.setValue("availability", updatedAvailability, {
             shouldValidate: true,
@@ -221,7 +215,7 @@ export function ProfileStep({
                             <Label htmlFor="fullName">Full Name</Label>
                             <Input
                                 id="fullName"
-                                placeholder="John Doe"
+                                placeholder=""
                                 {...form.register("fullName")}
                             />
                             {form.formState.errors.fullName && (
@@ -288,6 +282,11 @@ export function ProfileStep({
                                 <p className="text-muted-foreground text-xs">
                                     Maximum file size: 5MB
                                 </p>
+                                {form.formState.errors.photo && (
+                                    <p className="text-sm text-red-500">
+                                        {form.formState.errors.photo.message?.toString()}
+                                    </p>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -518,25 +517,86 @@ export function ProfileStep({
                     <div className="space-y-3">
                         <Label>Your Availability</Label>
                         <div className="grid grid-cols-3 gap-2">
-                            {availabilitySlots.map((slot) => (
-                                <div
-                                    key={slot}
-                                    className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
-                                        (
-                                            form.getValues("availability") || []
-                                        ).includes(slot)
-                                            ? "border-primary bg-primary/5"
-                                            : "hover:border-gray-400"
-                                    }`}
-                                    onClick={() =>
-                                        handleAvailabilityChange(slot)
-                                    }
-                                >
-                                    <span className="text-sm font-medium">
-                                        {slot}
-                                    </span>
-                                </div>
-                            ))}
+                            <div
+                                className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
+                                    (
+                                        form.getValues("availability") || []
+                                    ).includes("Weekdays")
+                                        ? "border-primary bg-primary/5"
+                                        : "hover:border-gray-400"
+                                }`}
+                                onClick={() =>
+                                    handleAvailabilityChange("Weekdays")
+                                }
+                            >
+                                <span className="text-sm font-medium">
+                                    Weekdays
+                                </span>
+                            </div>
+                            <div
+                                className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
+                                    (
+                                        form.getValues("availability") || []
+                                    ).includes("Weekends")
+                                        ? "border-primary bg-primary/5"
+                                        : "hover:border-gray-400"
+                                }`}
+                                onClick={() =>
+                                    handleAvailabilityChange("Weekends")
+                                }
+                            >
+                                <span className="text-sm font-medium">
+                                    Weekends
+                                </span>
+                            </div>
+                            <div
+                                className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
+                                    (
+                                        form.getValues("availability") || []
+                                    ).includes("Mornings")
+                                        ? "border-primary bg-primary/5"
+                                        : "hover:border-gray-400"
+                                }`}
+                                onClick={() =>
+                                    handleAvailabilityChange("Mornings")
+                                }
+                            >
+                                <span className="text-sm font-medium">
+                                    Mornings
+                                </span>
+                            </div>
+                            <div
+                                className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
+                                    (
+                                        form.getValues("availability") || []
+                                    ).includes("Afternoons")
+                                        ? "border-primary bg-primary/5"
+                                        : "hover:border-gray-400"
+                                }`}
+                                onClick={() =>
+                                    handleAvailabilityChange("Afternoons")
+                                }
+                            >
+                                <span className="text-sm font-medium">
+                                    Afternoons
+                                </span>
+                            </div>
+                            <div
+                                className={`flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-all ${
+                                    (
+                                        form.getValues("availability") || []
+                                    ).includes("Evenings")
+                                        ? "border-primary bg-primary/5"
+                                        : "hover:border-gray-400"
+                                }`}
+                                onClick={() =>
+                                    handleAvailabilityChange("Evenings")
+                                }
+                            >
+                                <span className="text-sm font-medium">
+                                    Evenings
+                                </span>
+                            </div>
                         </div>
                         <p className="text-muted-foreground text-xs">
                             Select when you're typically available for sessions

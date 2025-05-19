@@ -21,4 +21,5 @@ public static class UserConstants
     public const string FullNameRegexPattern = @"^[A-Za-z._-]+(?:\s[A-Za-z._-]+)*$";
     public const string EmailRegexPattern = @"^(?=.{8,50}$)[A-Za-z0-9]+(?:\.[A-Za-z0-9]+)*@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$";
     public const string PasswordRegexPattern = @"^(?=.{8,32}$)(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).*$";
+    public const string CodeRegexPattern = @"^\d{6}$";
 }

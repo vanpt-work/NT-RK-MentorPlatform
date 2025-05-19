@@ -22,7 +22,6 @@ export function AccountStep({
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    // Handle checkbox selection for terms
     const handleTermsChange = (checked: boolean) => {
         form.setValue("termsAgreed", checked, {
             shouldValidate: true,
@@ -55,7 +54,7 @@ export function AccountStep({
                         <Input
                             id="password"
                             type={showPassword ? "text" : "password"}
-                            placeholder="••••••••"
+                            placeholder=""
                             {...form.register("password", {
                                 onChange: () => {
                                     form.trigger("password");
@@ -94,7 +93,7 @@ export function AccountStep({
                         <Input
                             id="confirmPassword"
                             type={showConfirmPassword ? "text" : "password"}
-                            placeholder="••••••••"
+                            placeholder=""
                             {...form.register("confirmPassword", {
                                 onChange: () => form.trigger("confirmPassword"),
                             })}
