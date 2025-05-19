@@ -18,6 +18,11 @@ public class CloudinaryStorageServices : INamedFileStorageServices
         _cloudinaryStorageOptions = cloudinaryStorageOptions.Value;
         _cloudinary = SetupCloudinary();
     }
+    public CloudinaryStorageServices(CloudinaryStorageOptions cloudinaryStorageOptions)
+    {
+        _cloudinaryStorageOptions = cloudinaryStorageOptions;
+        _cloudinary = SetupCloudinary();
+    }
 
     private Cloudinary SetupCloudinary()
     {

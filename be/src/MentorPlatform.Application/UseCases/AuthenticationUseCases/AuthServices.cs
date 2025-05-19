@@ -22,8 +22,8 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.JsonWebTokens;
 using RazorLight;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace MentorPlatform.Application.UseCases.Authentication;

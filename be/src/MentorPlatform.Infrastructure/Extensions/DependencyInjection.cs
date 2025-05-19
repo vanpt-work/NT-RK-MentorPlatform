@@ -35,14 +35,18 @@ public static class DependencyInjection
         var config = GetConfiguration(services);
 
         services.Configure<FileStorageOptions>(config.GetSection(nameof(FileStorageOptions)));
-        services.Configure<CloudinaryStorageOptions>(config.GetSection($"{nameof(FileStorageOptions)}:CloudinaryStorageOptions"));
-        services.Configure<AWSS3StorageOptions>(config.GetSection($"{nameof(FileStorageOptions)}:AWSS3StorageOptions"));
+        services.Configure<CloudinaryStorageOptions>(config.GetSection($"{nameof(FileStorageOptions)}:${nameof(CloudinaryStorageOptions)}"));
+        services.Configure<AWSS3StorageOptions>(config.GetSection($"{nameof(FileStorageOptions)}:${nameof(AWSS3StorageOptions)}"));
         services.AddDefaultAWSOptions(config.GetAWSOptions());
         services.AddAWSService<IAmazonS3>();
 
         services.AddScoped<IJwtTokenServices, JwtTokenServices>();
         services
-            .AddScoped<INamedFileStorageServices, CloudinaryStorageServices>()
+            .AddScoped<INamedFileStorageServices, CloudinaryStorageServices>((serviceProvider) =>
+            {
+                var options = serviceProvider.GetRequiredService<IOptions<FileStorageOptions>>().Value;
+                return new CloudinaryStorageServices(options.CloudinaryStorageOptions!);
+            })
             .AddScoped<INamedFileStorageServices, AWSS3StorageServices>((serviceProvider) =>
             {
                 var s3 = serviceProvider.GetRequiredService<IAmazonS3>();

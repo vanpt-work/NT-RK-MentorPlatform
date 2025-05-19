@@ -2,36 +2,36 @@
 
 public class CloudinaryStorageOptions
 {
-    public string CloudName { get; set; }
-    public string ApiKey { get; set; }
-    public string ApiSecret { get; set; }
-    public MediaSettings MediaSettings { get; set; }
+    public string CloudName { get; set; } = default!;
+    public string ApiKey { get; set; } = default!;
+    public string ApiSecret { get; set; } = default!;
+    public MediaSettings MediaSettings { get; set; } = default!;
 }
 
 public class MediaSettings
 {
-    public ImageSettings Images { get; set; }
-    public VideoSettings Videos { get; set; }
-    public DocumentSettings Documents { get; set; }
+    public ImageSettings Images { get; set; } = default!;
+    public VideoSettings Videos { get; set; } = default!;
+    public DocumentSettings Documents { get; set; } = default!;
 }
 
 public class ImageSettings
 {
-    public string[] AllowedExtensions { get; set; }
-    public long MaxSizeBytes { get; set; }
-    public string FolderPath { get; set; }
+    public string[] AllowedExtensions { get; set; } = default!;
+    public long MaxSizeBytes { get; set; } = default!;
+    public string FolderPath { get; set; } = default!;
 }
 
 public class VideoSettings
 {
-    public string[] AllowedExtensions { get; set; }
-    public long MaxSizeBytes { get; set; }
-    public string FolderPath { get; set; }
+    public string[] AllowedExtensions { get; set; } = default!;
+    public long MaxSizeBytes { get; set; } = default!;
+    public string FolderPath { get; set; } = default!;
 }
 
 public class DocumentSettings
 {
-    public string[] AllowedExtensions { get; set; }
-    public long MaxSizeBytes { get; set; }
-    public string FolderPath { get; set; }
+    public string[] AllowedExtensions { get; set; } = default!;
+    public long MaxSizeBytes { get; set; } = default!;
+    public string FolderPath { get; set; } = default!;
 }
