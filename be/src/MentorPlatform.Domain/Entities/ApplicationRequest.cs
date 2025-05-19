@@ -12,9 +12,10 @@ public class ApplicationRequest : AuditableEntity, IHasKey<Guid>, ISoftDeleteEnt
     public List<string>? Certifications { get; set; } = default;
     public string Description { get; set; } = default!;
     public string Note { get; set; } = default!;
+    public bool? IsApproved { get; set; } = false;
 
     public Guid UserId { get; set; }
-    [JsonIgnore]    
+    [JsonIgnore]
     public User User { get; set; } = default!;
 
     public virtual ICollection<ApplicationDocument>? ApplicationDocuments { get; set; } = default;

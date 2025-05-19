@@ -9,12 +9,13 @@ public static class UserMappings
 {
     public static UserResponse ToResponse(this User user)
     {
+        var isRequestPending = user.ApplicationRequests != null && user.ApplicationRequests.Any() && user.ApplicationRequests.MaxBy(r => r.ModifiedAt).IsApproved == null;
         return new UserResponse
         {
             Id = user.Id,
             Email = user.Email,
             Role = user.Role,
-            IsActive = user.IsActive,
+            Status = user.IsActive ? UserStatus.Active : (isRequestPending ? UserStatus.PendingForApproval : UserStatus.Inactive),
             IsDeleted = user.IsDeleted,
             IsNotification = user.IsNotification,
             IsPrivateProfile = user.IsPrivateProfile,
