@@ -12,7 +12,7 @@ public static class UserConstants
     public const int MinLengthFullName = 3;
     public const int MaxLengthProfessionalSkills = 200;
     public const int MaxLengthBio = 2000;
-    public const int MaxLengthAvatarUrl = 100;
+    public const int MaxLengthAvatarUrl = 1000;
     public const int MaxSizeAvatarMb = 5;
     public const string ImageUrlDefault = "default-image-avatar";
     public const int MaxLengthIndustryExperience = 200;

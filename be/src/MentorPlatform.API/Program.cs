@@ -24,7 +24,7 @@ builder.Services.ConfigureEntireLayers(builder.Configuration);
 var assembly = Assembly.GetExecutingAssembly();
 builder.Services.AddSingleton<IRazorLightEngine>(provider =>
     new RazorLightEngineBuilder()
-        .UseEmbeddedResourcesProject(assembly, "MentorPlatform.WebApi")
+        .UseEmbeddedResourcesProject(assembly, nameof(MentorPlatform.WebApi))
         .UseMemoryCachingProvider()
         .Build()
 );
