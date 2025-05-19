@@ -1,5 +1,5 @@
 import type { CreateAxiosDefaults } from "axios";
 
 export const ROOT_API: CreateAxiosDefaults = {
-    baseURL: "http://localhost:5196/api",
+    baseURL: import.meta.env.VITE_API_URL_ROOT,
 };

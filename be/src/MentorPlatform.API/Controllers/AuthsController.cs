@@ -46,6 +46,15 @@ public class AuthsController : ApiControllerBase
 
         return ProcessResult(result);
     }
+    
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPasswordAsync([FromBody] ResetPasswordRequest resetPasswordRequest)
+    {
+        var result = await _authServices.ResetPasswordAsync(resetPasswordRequest);
+
+        return ProcessResult(result);
+    }
+    
     [HttpPost("refresh-token")]
     public async Task<IActionResult> RefreshTokenAsync([FromBody] RefreshTokenRequest refresTokenRequest)
     {
@@ -77,6 +86,7 @@ public class AuthsController : ApiControllerBase
     }
 
     [HttpPost("register")]
+    [Consumes("multipart/form-data")]
     public async Task<IActionResult> RegisterAsync([FromForm] RegisterRequest registerRequest)
     {
         var result = await _authServices.RegisterAsync(registerRequest);

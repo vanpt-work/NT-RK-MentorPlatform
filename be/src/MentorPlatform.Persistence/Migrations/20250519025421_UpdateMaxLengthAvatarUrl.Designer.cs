@@ -4,6 +4,7 @@ using MentorPlatform.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MentorPlatform.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250519025421_UpdateMaxLengthAvatarUrl")]
+    partial class UpdateMaxLengthAvatarUrl
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,9 +86,6 @@ namespace MentorPlatform.Persistence.Migrations
                     b.Property<string>("Education")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool?>("IsApproved")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -459,6 +459,45 @@ namespace MentorPlatform.Persistence.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("MentorPlatform.Domain.Entities.UserCourse", b =>
+                {
+                    b.Property<Guid>("LearnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CourseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("JoinDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("LearnerId", "CourseId");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("UserCourses");
+                });
+
             modelBuilder.Entity("MentorPlatform.Domain.Entities.UserCourseCategory", b =>
                 {
                     b.Property<Guid>("UserId")
@@ -683,6 +722,25 @@ namespace MentorPlatform.Persistence.Migrations
                     b.Navigation("Mentor");
                 });
 
+            modelBuilder.Entity("MentorPlatform.Domain.Entities.UserCourse", b =>
+                {
+                    b.HasOne("MentorPlatform.Domain.Entities.Course", "Course")
+                        .WithMany("UserCourses")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MentorPlatform.Domain.Entities.User", "Learner")
+                        .WithMany("UserCourses")
+                        .HasForeignKey("LearnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Learner");
+                });
+
             modelBuilder.Entity("MentorPlatform.Domain.Entities.UserCourseCategory", b =>
                 {
                     b.HasOne("MentorPlatform.Domain.Entities.CourseCategory", "CourseCategory")
@@ -742,6 +800,8 @@ namespace MentorPlatform.Persistence.Migrations
                     b.Navigation("CourseResources");
 
                     b.Navigation("MentoringSessions");
+
+                    b.Navigation("UserCourses");
                 });
 
             modelBuilder.Entity("MentorPlatform.Domain.Entities.CourseCategory", b =>
@@ -770,6 +830,8 @@ namespace MentorPlatform.Persistence.Migrations
                     b.Navigation("Schedules");
 
                     b.Navigation("UserCourseCategories");
+
+                    b.Navigation("UserCourses");
 
                     b.Navigation("UserDetail")
                         .IsRequired();

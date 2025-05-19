@@ -44,7 +44,7 @@ public class UserServices : IUserServices
         var dbUsers = await _userRepository
             .ToListAsync(dbQuery.OrderBy(u => u.Id)
                 .Skip((query.PageNumber - 1) * query.PageSize)
-                .Take(query.PageSize), nameof(User.UserDetail));
+                .Take(query.PageSize), [nameof(User.UserDetail), nameof(User.ApplicationRequests)]);
         var userCount = await _userRepository.CountAsync(dbQuery);
         var pagination = new PaginationResult<UserResponse>(query.PageSize, query.PageNumber, userCount, dbUsers.Select(user => user.ToResponse()).ToList());
         return pagination;

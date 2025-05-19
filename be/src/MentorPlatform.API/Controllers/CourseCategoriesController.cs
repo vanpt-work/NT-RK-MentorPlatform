@@ -1,6 +1,8 @@
 ﻿using MentorPlatform.Application.Commons.Models.Query;
 using MentorPlatform.Application.Commons.Models.Requests.CourseCategory;
 using MentorPlatform.Application.UseCases.CourseCategory;
+using MentorPlatform.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MentorPlatform.WebApi.Controllers;
@@ -30,6 +32,7 @@ public class CourseCategoriesController : ApiControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = nameof(Role.Admin))]
     public async Task<IActionResult> CreateAsync([FromBody] CreateCourseCategoryRequest createRequest)
     {
         var result = await _courseCategoryService.CreateAsync(createRequest);
@@ -37,6 +40,7 @@ public class CourseCategoriesController : ApiControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize(Roles = nameof(Role.Admin))]
     public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] UpdateCourseCategoryRequest updateRequest)
     {
         var result = await _courseCategoryService.UpdateAsync(id, updateRequest);
@@ -44,6 +48,7 @@ public class CourseCategoriesController : ApiControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Roles = nameof(Role.Admin))]
     public async Task<IActionResult> DeleteAsync(Guid id)
     {
         var result = await _courseCategoryService.DeleteAsync(id);

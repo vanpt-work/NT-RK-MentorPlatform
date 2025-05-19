@@ -18,29 +18,34 @@ public class CloudinaryStorageServices : INamedFileStorageServices
         _cloudinaryStorageOptions = cloudinaryStorageOptions.Value;
         _cloudinary = SetupCloudinary();
     }
-    
+    public CloudinaryStorageServices(CloudinaryStorageOptions cloudinaryStorageOptions)
+    {
+        _cloudinaryStorageOptions = cloudinaryStorageOptions;
+        _cloudinary = SetupCloudinary();
+    }
+
     private Cloudinary SetupCloudinary()
     {
         var account = new Account(
             _cloudinaryStorageOptions.CloudName,
             _cloudinaryStorageOptions.ApiKey,
             _cloudinaryStorageOptions.ApiSecret);
-            
+
         return new Cloudinary(account);
     }
-    
+
     public async Task<string> UploadFileAsync(IFormFile fileUploadRequest, CancellationToken token = default)
     {
         ValidateFile(fileUploadRequest);
-        
+
         var uploadParams = CreateUploadParams(fileUploadRequest);
         var uploadResult = await _cloudinary.UploadAsync(uploadParams, token);
-        
+
         if (uploadResult.Error != null)
         {
             throw new Exception(string.Format(ApplicationExceptionMessage.ErrorWhenUpload, uploadResult.Error.Message));
         }
-        
+
         return uploadResult.SecureUrl.ToString();
     }
 
@@ -56,7 +61,7 @@ public class CloudinaryStorageServices : INamedFileStorageServices
     {
         string fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
         string uploadFolder = DetermineUploadFolder(fileExtension);
-        
+
         return new ImageUploadParams
         {
             File = new FileDescription(file.FileName, file.OpenReadStream()),
@@ -67,7 +72,7 @@ public class CloudinaryStorageServices : INamedFileStorageServices
         };
     }
 
-    public Task<string> GetPreSignedUrlFile(string filePath)
+    public Task<string> GetPreSignedUrlFile(string filePath, CancellationToken token = default)
     {
         ValidateFilePath(filePath);
         return Task.FromResult(filePath);
@@ -76,17 +81,17 @@ public class CloudinaryStorageServices : INamedFileStorageServices
     public async Task DeleteFileAsync(string filePath, CancellationToken token = default)
     {
         ValidateFilePath(filePath);
-        
+
         string publicId = ExtractPublicIdFromUrl(filePath);
         var deleteParams = new DeletionParams(publicId);
         var result = await _cloudinary.DestroyAsync(deleteParams);
-        
+
         if (result.Error != null)
         {
             throw new Exception(string.Format(ApplicationExceptionMessage.ErrorWhenDeletingFile, result.Error.Message));
         }
     }
-    
+
     private void ValidateFilePath(string filePath)
     {
         if (string.IsNullOrEmpty(filePath))
@@ -94,40 +99,45 @@ public class CloudinaryStorageServices : INamedFileStorageServices
             throw new ArgumentException(ApplicationExceptionMessage.InvalidFilePath);
         }
     }
-    
+
     private string DetermineUploadFolder(string fileExtension)
     {
-        if (_cloudinaryStorageOptions.MediaSettings?.Images?.AllowedExtensions != null && 
+        if (_cloudinaryStorageOptions.MediaSettings?.Images?.AllowedExtensions != null &&
             _cloudinaryStorageOptions.MediaSettings.Images.AllowedExtensions.Contains(fileExtension))
         {
             return _cloudinaryStorageOptions.MediaSettings.Images.FolderPath;
         }
-        else if (_cloudinaryStorageOptions.MediaSettings?.Videos?.AllowedExtensions != null && 
+        else if (_cloudinaryStorageOptions.MediaSettings?.Videos?.AllowedExtensions != null &&
                  _cloudinaryStorageOptions.MediaSettings.Videos.AllowedExtensions.Contains(fileExtension))
         {
             return _cloudinaryStorageOptions.MediaSettings.Videos.FolderPath;
         }
-        
+        else if (_cloudinaryStorageOptions.MediaSettings?.Documents?.AllowedExtensions != null &&
+                _cloudinaryStorageOptions.MediaSettings.Documents.AllowedExtensions.Contains(fileExtension))
+        {
+            return _cloudinaryStorageOptions.MediaSettings.Documents.FolderPath;
+        }
+
         return "uploads";
     }
-    
+
     private static string ExtractPublicIdFromUrl(string url)
     {
         try
         {
             var uri = new Uri(url);
             var pathSegments = uri.AbsolutePath.Split('/');
-            
+
             int uploadIndex = Array.IndexOf(pathSegments, "upload");
             if (uploadIndex >= 0 && pathSegments.Length > uploadIndex + 1)
             {
                 string fileName = Path.GetFileNameWithoutExtension(pathSegments[pathSegments.Length - 1]);
-                
+
                 var publicIdSegments = pathSegments
                     .Skip(uploadIndex + 1)
                     .Take(pathSegments.Length - uploadIndex - 2)
                     .ToList();
-                
+
                 publicIdSegments.Add(fileName);
                 return string.Join("/", publicIdSegments);
             }
@@ -136,7 +146,7 @@ public class CloudinaryStorageServices : INamedFileStorageServices
         {
             throw new ArgumentException(string.Format(ApplicationExceptionMessage.CouldNotExtractPublicId, url), ex);
         }
-        
+
         throw new ArgumentException(string.Format(ApplicationExceptionMessage.CouldNotExtractPublicId, url));
     }
 

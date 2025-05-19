@@ -9,12 +9,13 @@ public static class UserMappings
 {
     public static UserResponse ToResponse(this User user)
     {
+        var isRequestPending = user.ApplicationRequests != null && user.ApplicationRequests.Any() && user.ApplicationRequests.MaxBy(r => r.ModifiedAt).IsApproved == null;
         return new UserResponse
         {
             Id = user.Id,
             Email = user.Email,
             Role = user.Role,
-            IsActive = user.IsActive,
+            Status = user.IsActive ? UserStatus.Active : (isRequestPending ? UserStatus.PendingForApproval : UserStatus.Inactive),
             IsDeleted = user.IsDeleted,
             IsNotification = user.IsNotification,
             IsPrivateProfile = user.IsPrivateProfile,
@@ -50,8 +51,8 @@ public static class UserMappings
     {
         var user = new User
         {
-            Email = registerRequest.Email,
-            Password = HashingHelper.HashData(registerRequest.Password),
+            Email = registerRequest.Email!,
+            Password = HashingHelper.HashData(registerRequest.Password!),
             Role = (Role)registerRequest.Role,
             IsNotification = registerRequest.IsNotification,
             IsPrivateProfile = registerRequest.IsPrivateProfile,
@@ -59,7 +60,7 @@ public static class UserMappings
         };
         user.UserDetail = new UserDetail
         {
-            FullName = registerRequest.FullName,
+            FullName = registerRequest.FullName!,
             Bio = registerRequest.Bio,
             Experience = registerRequest.Experience,
             CommunicationPreference = registerRequest.CommunicationPreference is not null

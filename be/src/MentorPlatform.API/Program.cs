@@ -1,4 +1,4 @@
-using MentorPlatform.Application.Services.Security;
+﻿using MentorPlatform.Application.Services.Security;
 using MentorPlatform.WebApi.Extensions;
 using MentorPlatform.WebApi.Middlewares;
 using MentorPlatform.WebApi.OpenApi;

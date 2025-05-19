@@ -7,6 +7,7 @@ import React, {
     useState,
 } from "react";
 
+import LoadingSpinner from "../components/loading-spinner";
 import { PATH } from "../constants/paths";
 import {
     getAccessToken,
@@ -139,7 +140,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         verify,
     };
     return loading ? (
-        <div>Loading....</div>
+        <LoadingSpinner />
     ) : (
         <AuthContext.Provider value={contextValue}>
             {children}

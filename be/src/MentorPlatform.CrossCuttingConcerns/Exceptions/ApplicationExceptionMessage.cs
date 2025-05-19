@@ -16,4 +16,9 @@ public static class ApplicationExceptionMessage
     public const string InvalidFilePath = "Invalid file path";
     public const string ErrorWhenDeletingFile = "Error when deleting file: {0}";
     public const string CouldNotExtractPublicId = "Could not extract Public ID from URL: {0}";
+    public const string FileStorageServiceDIError = "An error happened when injecting file service {0}.";
+    public const string AWSS3UninitializedError = "The S3 bucket is not initialized.";
+    public const string AWSS3Error = "An S3 error occurred.";
+    public const string AWSClientError = "An AWS client error occurred.";
+    public const string AWSServerError = "An AWS service error occurred.";
 }

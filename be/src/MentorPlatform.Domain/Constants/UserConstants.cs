@@ -12,7 +12,7 @@ public static class UserConstants
     public const int MinLengthFullName = 3;
     public const int MaxLengthProfessionalSkills = 200;
     public const int MaxLengthBio = 2000;
-    public const int MaxLengthAvatarUrl = 100;
+    public const int MaxLengthAvatarUrl = 1000;
     public const int MaxSizeAvatarMb = 5;
     public const string ImageUrlDefault = "default-image-avatar";
     public const int MaxLengthIndustryExperience = 200;
@@ -21,4 +21,5 @@ public static class UserConstants
     public const string FullNameRegexPattern = @"^[A-Za-z._-]+(?:\s[A-Za-z._-]+)*$";
     public const string EmailRegexPattern = @"^(?=.{8,50}$)[A-Za-z0-9]+(?:\.[A-Za-z0-9]+)*@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$";
     public const string PasswordRegexPattern = @"^(?=.{8,32}$)(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).*$";
+    public const string CodeRegexPattern = @"^\d{6}$";
 }

@@ -40,6 +40,7 @@ export function PreferencesStep({
     const [categories, setCategories] = useState<CourseCategory[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+    const [previousRole, setPreviousRole] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -64,6 +65,27 @@ export function PreferencesStep({
         fetchCategories();
     }, []);
 
+    // Effect to handle clearing fields when role changes
+    useEffect(() => {
+        if (role !== previousRole) {
+            if (role === "Learner") {
+                form.setValue("teachingStyles", null, {
+                    shouldValidate: true,
+                });
+            } else if (role === "Mentor") {
+                form.setValue("learningStyle", null, {
+                    shouldValidate: true,
+                });
+            }
+
+            form.setValue("learningStyle", null, {
+                shouldValidate: true,
+            });
+
+            setPreviousRole(role);
+        }
+    }, [role, previousRole, form]);
+
     const handleTopicChange = (categoryId: string) => {
         const currentTopics = form.getValues("courseCategoryIds") || [];
         const updatedTopics = currentTopics.includes(categoryId)
@@ -78,6 +100,44 @@ export function PreferencesStep({
     const getCategoryName = (id: string) => {
         const category = categories.find((cat) => cat.id === id);
         return category ? category.name : id;
+    };
+
+    // Handle learning style selection/deselection
+    const handleLearningStyleChange = (style: string) => {
+        const currentStyle = form.getValues("learningStyle");
+
+        // If current style is selected, clear it (unselect)
+        if (currentStyle === style) {
+            form.setValue("learningStyle", null, {
+                shouldValidate: true,
+            });
+        } else {
+            // Otherwise select the new style
+            form.setValue("learningStyle", style, {
+                shouldValidate: true,
+            });
+        }
+        form.trigger("learningStyle");
+    };
+
+    // Handle teaching style selection/deselection
+    const handleTeachingStyleChange = (
+        style: "handson" | "discussion" | "project" | "lecture",
+    ) => {
+        const currentStyles = form.getValues("teachingStyles");
+
+        // If current style is selected, clear it (unselect)
+        if (currentStyles === style) {
+            form.setValue("teachingStyles", null, {
+                shouldValidate: true,
+            });
+        } else {
+            // Otherwise select the new style
+            form.setValue("teachingStyles", style, {
+                shouldValidate: true,
+            });
+        }
+        form.trigger("teachingStyles");
     };
 
     const filteredCategories = categories.filter(
@@ -219,14 +279,9 @@ export function PreferencesStep({
                                             ? "border-primary bg-primary/5"
                                             : "hover:border-gray-400"
                                     }`}
-                                    onClick={() => {
-                                        form.setValue(
-                                            "learningStyle",
-                                            "Visual",
-                                            { shouldValidate: true },
-                                        );
-                                        form.trigger("learningStyle");
-                                    }}
+                                    onClick={() =>
+                                        handleLearningStyleChange("Visual")
+                                    }
                                 >
                                     <div className="flex h-6 w-6 items-center justify-center">
                                         <Eye className="text-primary h-4 w-4" />
@@ -242,14 +297,9 @@ export function PreferencesStep({
                                             ? "border-primary bg-primary/5"
                                             : "hover:border-gray-400"
                                     }`}
-                                    onClick={() => {
-                                        form.setValue(
-                                            "learningStyle",
-                                            "Auditory",
-                                            { shouldValidate: true },
-                                        );
-                                        form.trigger("learningStyle");
-                                    }}
+                                    onClick={() =>
+                                        handleLearningStyleChange("Auditory")
+                                    }
                                 >
                                     <div className="flex h-6 w-6 items-center justify-center">
                                         <Ear className="text-primary h-4 w-4" />
@@ -265,14 +315,11 @@ export function PreferencesStep({
                                             ? "border-primary bg-primary/5"
                                             : "hover:border-gray-400"
                                     }`}
-                                    onClick={() => {
-                                        form.setValue(
-                                            "learningStyle",
+                                    onClick={() =>
+                                        handleLearningStyleChange(
                                             "Reading/Writing",
-                                            { shouldValidate: true },
-                                        );
-                                        form.trigger("learningStyle");
-                                    }}
+                                        )
+                                    }
                                 >
                                     <div className="flex h-6 w-6 items-center justify-center">
                                         <BookOpen className="text-primary h-4 w-4" />
@@ -288,14 +335,9 @@ export function PreferencesStep({
                                             ? "border-primary bg-primary/5"
                                             : "hover:border-gray-400"
                                     }`}
-                                    onClick={() => {
-                                        form.setValue(
-                                            "learningStyle",
-                                            "Kinesthetic",
-                                            { shouldValidate: true },
-                                        );
-                                        form.trigger("learningStyle");
-                                    }}
+                                    onClick={() =>
+                                        handleLearningStyleChange("Kinesthetic")
+                                    }
                                 >
                                     <div className="flex h-6 w-6 items-center justify-center">
                                         <Hammer className="text-primary h-4 w-4" />
@@ -332,14 +374,9 @@ export function PreferencesStep({
                                                 ? "border-primary bg-primary/5"
                                                 : "hover:border-gray-400"
                                         }`}
-                                        onClick={() => {
-                                            form.setValue(
-                                                "teachingStyles",
-                                                "handson",
-                                                { shouldValidate: true },
-                                            );
-                                            form.trigger("teachingStyles");
-                                        }}
+                                        onClick={() =>
+                                            handleTeachingStyleChange("handson")
+                                        }
                                     >
                                         <div className="flex h-6 w-6 items-center justify-center">
                                             <Hammer className="text-primary h-4 w-4" />
@@ -355,14 +392,11 @@ export function PreferencesStep({
                                                 ? "border-primary bg-primary/5"
                                                 : "hover:border-gray-400"
                                         }`}
-                                        onClick={() => {
-                                            form.setValue(
-                                                "teachingStyles",
+                                        onClick={() =>
+                                            handleTeachingStyleChange(
                                                 "discussion",
-                                                { shouldValidate: true },
-                                            );
-                                            form.trigger("teachingStyles");
-                                        }}
+                                            )
+                                        }
                                     >
                                         <div className="flex h-6 w-6 items-center justify-center">
                                             <MessagesSquare className="text-primary h-4 w-4" />
@@ -378,14 +412,9 @@ export function PreferencesStep({
                                                 ? "border-primary bg-primary/5"
                                                 : "hover:border-gray-400"
                                         }`}
-                                        onClick={() => {
-                                            form.setValue(
-                                                "teachingStyles",
-                                                "project",
-                                                { shouldValidate: true },
-                                            );
-                                            form.trigger("teachingStyles");
-                                        }}
+                                        onClick={() =>
+                                            handleTeachingStyleChange("project")
+                                        }
                                     >
                                         <div className="flex h-6 w-6 items-center justify-center">
                                             <Lightbulb className="text-primary h-4 w-4" />
@@ -401,14 +430,9 @@ export function PreferencesStep({
                                                 ? "border-primary bg-primary/5"
                                                 : "hover:border-gray-400"
                                         }`}
-                                        onClick={() => {
-                                            form.setValue(
-                                                "teachingStyles",
-                                                "lecture",
-                                                { shouldValidate: true },
-                                            );
-                                            form.trigger("teachingStyles");
-                                        }}
+                                        onClick={() =>
+                                            handleTeachingStyleChange("lecture")
+                                        }
                                     >
                                         <div className="flex h-6 w-6 items-center justify-center">
                                             <GraduationCap className="text-primary h-4 w-4" />
