@@ -13,16 +13,16 @@ namespace MentorPlatform.Infrastructure.FileStorage;
 public class AWSS3StorageServices : INamedFileStorageServices
 {
     private readonly AWSS3StorageOptions _awsS3StorageOptions;
-    private readonly IAmazonS3 _s3;
+    private readonly IAmazonS3? _s3;
     private readonly ILogger<AWSS3StorageServices> _logger;
 
-    public AWSS3StorageServices(IAmazonS3 s3, ILogger<AWSS3StorageServices> logger, AWSS3StorageOptions awsS3StorageOptions)
+    public AWSS3StorageServices(IAmazonS3? s3, ILogger<AWSS3StorageServices> logger, AWSS3StorageOptions awsS3StorageOptions)
     {
         _s3 = s3;
         _logger = logger;
         _awsS3StorageOptions = awsS3StorageOptions;
     }
-    public AWSS3StorageServices(IAmazonS3 s3, ILogger<AWSS3StorageServices> logger, IOptions<AWSS3StorageOptions> awsS3StorageOptions)
+    public AWSS3StorageServices(IAmazonS3? s3, ILogger<AWSS3StorageServices> logger, IOptions<AWSS3StorageOptions> awsS3StorageOptions)
     {
         _s3 = s3;
         _logger = logger;
@@ -30,6 +30,8 @@ public class AWSS3StorageServices : INamedFileStorageServices
     }
     public async Task<string> UploadFileAsync(IFormFile fileUploadRequest, CancellationToken token = default)
     {
+        CheckS3Initialized();
+
         if (fileUploadRequest == null || fileUploadRequest.Length == 0)
             throw new ArgumentException(ApplicationExceptionMessage.InvalidFile);
 
@@ -79,6 +81,8 @@ public class AWSS3StorageServices : INamedFileStorageServices
 
     public async Task<string> GetPreSignedUrlFile(string filePath, CancellationToken token = default)
     {
+        CheckS3Initialized();
+
         try
         {
             var urlRequest = new GetPreSignedUrlRequest
@@ -108,6 +112,8 @@ public class AWSS3StorageServices : INamedFileStorageServices
 
     public async Task DeleteFileAsync(string filePath, CancellationToken token = default)
     {
+        CheckS3Initialized();
+
         try
         {
             var deleteRequest = new DeleteObjectRequest
@@ -129,6 +135,14 @@ public class AWSS3StorageServices : INamedFileStorageServices
         catch (AmazonServiceException ex)
         {
             _logger.LogError(ex, ApplicationExceptionMessage.AWSServerError);
+        }
+    }
+
+    private void CheckS3Initialized()
+    {
+        if (_s3 == null)
+        {
+            throw new ArgumentNullException(ApplicationExceptionMessage.AWSS3UninitializedError);
         }
     }
 
