@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace MentorPlatform.WebApi.Controllers;
 
 [Route("api/course-categories")]
-[Authorize(Roles = nameof(Role.Admin))]
 public class CourseCategoriesController : ApiControllerBase
 {
     private readonly ICourseCategoryServices _courseCategoryService;
@@ -33,6 +32,7 @@ public class CourseCategoriesController : ApiControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = nameof(Role.Admin))]
     public async Task<IActionResult> CreateAsync([FromBody] CreateCourseCategoryRequest createRequest)
     {
         var result = await _courseCategoryService.CreateAsync(createRequest);
@@ -40,6 +40,7 @@ public class CourseCategoriesController : ApiControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize(Roles = nameof(Role.Admin))]
     public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] UpdateCourseCategoryRequest updateRequest)
     {
         var result = await _courseCategoryService.UpdateAsync(id, updateRequest);
@@ -47,6 +48,7 @@ public class CourseCategoriesController : ApiControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Roles = nameof(Role.Admin))]
     public async Task<IActionResult> DeleteAsync(Guid id)
     {
         var result = await _courseCategoryService.DeleteAsync(id);

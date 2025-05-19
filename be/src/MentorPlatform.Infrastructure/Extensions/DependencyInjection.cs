@@ -4,6 +4,8 @@ using MentorPlatform.Application.Services.File;
 using MentorPlatform.Application.Services.HostedServices;
 using MentorPlatform.Application.Services.Mail;
 using MentorPlatform.Application.Services.Security;
+using MentorPlatform.CrossCuttingConcerns.Exceptions;
+using MentorPlatform.CrossCuttingConcerns.Helpers;
 using MentorPlatform.Infrastructure.Emails;
 using MentorPlatform.Infrastructure.FileStorage;
 using MentorPlatform.Infrastructure.HostedServices;
@@ -49,9 +51,19 @@ public static class DependencyInjection
             })
             .AddScoped<INamedFileStorageServices, AWSS3StorageServices>((serviceProvider) =>
             {
-                var s3 = serviceProvider.GetRequiredService<IAmazonS3>();
                 var logger = serviceProvider.GetRequiredService<ILogger<AWSS3StorageServices>>();
                 var options = serviceProvider.GetRequiredService<IOptions<FileStorageOptions>>().Value;
+
+                IAmazonS3? s3;
+                try
+                {
+                    s3 = serviceProvider.GetRequiredService<IAmazonS3>();
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, StringHelper.ReplacePlaceholders(ApplicationExceptionMessage.FileStorageServiceDIError, nameof(AWSS3StorageServices)));
+                    s3 = null;
+                }
                 return new AWSS3StorageServices(s3, logger, options.AWSS3StorageOptions!);
             });
         services.AddScoped<IFileStorageFactory, FileStorageFactory>();
