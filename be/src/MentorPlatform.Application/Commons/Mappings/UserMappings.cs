@@ -14,7 +14,7 @@ public static class UserMappings
             Id = user.Id,
             Email = user.Email,
             Role = user.Role,
-            IsActive = user.IsActive,
+            Status = user.IsActive ? UserStatus.Active : (user.ApplicationRequests == null || !user.ApplicationRequests.Any() ? UserStatus.Inactive : UserStatus.PendingForApproval),
             IsDeleted = user.IsDeleted,
             IsNotification = user.IsNotification,
             IsPrivateProfile = user.IsPrivateProfile,
