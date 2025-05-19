@@ -21,7 +21,6 @@ public class User : AuditableEntity, IHasKey<Guid>, ISoftDeleteEntity
     [JsonIgnore]
     public UserDetail UserDetail { get; set; } = default!;
     public virtual ICollection<UserExpertise>? UserExpertises { get; set; } = default;
-    public virtual ICollection<UserCourse>? UserCourses { get; set; }
     public virtual ICollection<MentoringSession>? MentoringSessions { get; set; }
     public virtual ICollection<Schedule>? Schedules { get; set; }
     public virtual ICollection<ApplicationRequest>? ApplicationRequests { get; set; }
