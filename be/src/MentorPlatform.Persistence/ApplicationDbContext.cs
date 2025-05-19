@@ -21,7 +21,6 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
     public DbSet<CourseCategory> CourseCategories { get; set; } = default!;
     public DbSet<Course> Courses { get; set; } = default!;
     public DbSet<UserCourseCategory> UserCourseCategories { get; set; } = default!;
-    public DbSet<UserCourse> UserCourses { get; set; } = default!;
     public DbSet<UserDetail> UserDetails { get; set; } = default!;
     public DbSet<UserExpertise> UserExpertises { get; set; } = default!;
     public DbSet<Expertise> Expertises { get; set; } = default!;
