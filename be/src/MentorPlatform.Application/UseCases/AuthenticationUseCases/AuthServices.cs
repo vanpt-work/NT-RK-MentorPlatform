@@ -28,7 +28,7 @@ using System.Security.Claims;
 
 namespace MentorPlatform.Application.UseCases.Authentication;
 
-public class AuthServices: IAuthServices
+public class AuthServices : IAuthServices
 {
     private readonly IJwtTokenServices _jwtServices;
     private readonly IUserRepository _userRepository;
@@ -48,7 +48,7 @@ public class AuthServices: IAuthServices
         IUnitOfWork unitOfWork,
         IUserRepository userRepository,
         IFileStorageFactory fileStorageFactory,
-        IOptions<JwtTokenOptions> jwtTokenOptions, 
+        IOptions<JwtTokenOptions> jwtTokenOptions,
         IExecutionContext executionContext,
         IRepository<Domain.Entities.CourseCategory, Guid> courseCategoryRepository,
         IRepository<RefreshToken, Guid> refreshTokenRepository,
@@ -57,7 +57,7 @@ public class AuthServices: IAuthServices
         IMemoryCache memoryCache,
         IBackgroundTaskQueue<Func<IServiceProvider, CancellationToken, ValueTask>> mailQueue)
     {
-         _expertiseRepository = expertiseRepository;
+        _expertiseRepository = expertiseRepository;
         _mailQueue = mailQueue;
         _logger = logger;
         _executionContext = executionContext;
@@ -97,7 +97,7 @@ public class AuthServices: IAuthServices
             return new LoginResponse
             {
                 AccessToken = string.Empty,
-                RefreshToken = string.Empty, 
+                RefreshToken = string.Empty,
                 IsVerifyEmail = false
             };
         }
@@ -105,7 +105,9 @@ public class AuthServices: IAuthServices
         var refreshToken = _jwtServices.GenerateRefreshToken();
         var freshTokenObject = new RefreshToken
         {
-            Value = refreshToken, Expired = DateTime.UtcNow.AddDays(_jwtTokenOptions.ExpireRefreshTokenDays),
+            UserId = user.Id,
+            Value = HashingHelper.HashData(refreshToken),
+            Expired = DateTime.UtcNow.AddDays(_jwtTokenOptions.ExpireRefreshTokenDays),
         };
         _refreshTokenRepository.Add(freshTokenObject);
 
@@ -140,8 +142,8 @@ public class AuthServices: IAuthServices
         var user = registerRequest.ToUser();
         user.UserCourseCategories = userCourseCategories;
         user.UserExpertises = userExpertises;
-            
-        var userAvatarUrl =  await UploadImageAndGetAvatarUrlAsync(registerRequest.AvatarUrl);
+
+        var userAvatarUrl = await UploadImageAndGetAvatarUrlAsync(registerRequest.AvatarUrl);
         user.UserDetail.AvatarUrl = userAvatarUrl;
 
 
@@ -192,6 +194,7 @@ public class AuthServices: IAuthServices
         var refreshToken = _jwtServices.GenerateRefreshToken();
         var freshTokenObject = new RefreshToken
         {
+            UserId = user.Id,
             Value = HashingHelper.HashData(refreshToken),
             Expired = DateTime.UtcNow.AddDays(_jwtTokenOptions.ExpireRefreshTokenDays),
         };
@@ -212,7 +215,7 @@ public class AuthServices: IAuthServices
     }
 
     public async Task<Result> ResendVerifyEmailAsync(ResendVerifyEmailRequest resendVerifyEmailRequest)
-    { 
+    {
         var userByEmail = await _userRepository.GetByEmailAsync(resendVerifyEmailRequest.Email);
         if (userByEmail == null)
         {
@@ -235,6 +238,7 @@ public class AuthServices: IAuthServices
         var refreshToken = _jwtServices.GenerateRefreshToken();
         var freshTokenObject = new RefreshToken
         {
+            UserId = user!.Id,
             Value = HashingHelper.HashData(refreshToken),
             Expired = DateTime.UtcNow.AddDays(_jwtTokenOptions.ExpireRefreshTokenDays),
         };
@@ -373,7 +377,7 @@ public class AuthServices: IAuthServices
     }
     private static Guid GetUserIdFromTokenClaims(ClaimsPrincipal claimsPrincipal)
     {
-        if (Guid.TryParse(claimsPrincipal.FindFirst(JwtRegisteredClaimNames.Sid)!.Value, out Guid userId))
+        if (!Guid.TryParse(claimsPrincipal.FindFirst(JwtRegisteredClaimNames.Sid)!.Value, out Guid userId))
         {
             throw new BadRequestException(ApplicationExceptionMessage.UserIdInExecutionContextInvalid);
         }
@@ -382,7 +386,7 @@ public class AuthServices: IAuthServices
 
     private static Guid GetRefreshTokenIdFromTokenClaims(ClaimsPrincipal claimsPrincipal)
     {
-        if (Guid.TryParse(claimsPrincipal.FindFirst(JwtRegisteredClaimNames.Jti)!.Value, out Guid userId))
+        if (!Guid.TryParse(claimsPrincipal.FindFirst(JwtRegisteredClaimNames.Jti)!.Value, out Guid userId))
         {
             throw new BadRequestException(ApplicationExceptionMessage.RefreshTokenIdInExecutionContextInvalid);
         }
@@ -397,7 +401,7 @@ public class AuthServices: IAuthServices
             {
                 imageUrl = await _fileStorageServices.UploadFileAsync(formFile);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
             }
@@ -410,7 +414,9 @@ public class AuthServices: IAuthServices
 
         var sendMailData = new SendMailData
         {
-            ToEmail = user.Email, Subject = MailInformationConstants.TitleVerifyCodeEmail, Body = mailContent,
+            ToEmail = user.Email,
+            Subject = MailInformationConstants.TitleVerifyCodeEmail,
+            Body = mailContent,
         };
 
         await AddEmailWorkItemIntoQueueAsync(sendMailData);
