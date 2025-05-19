@@ -6,7 +6,6 @@ using MentorPlatform.CrossCuttingConcerns.Helpers;
 using MentorPlatform.Domain.Entities;
 using MentorPlatform.Domain.Repositories;
 using MentorPlatform.Persistence;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.JsonWebTokens;
 using System.Net;

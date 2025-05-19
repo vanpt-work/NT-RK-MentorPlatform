@@ -51,8 +51,8 @@ public static class UserMappings
     {
         var user = new User
         {
-            Email = registerRequest.Email,
-            Password = HashingHelper.HashData(registerRequest.Password),
+            Email = registerRequest.Email!,
+            Password = HashingHelper.HashData(registerRequest.Password!),
             Role = (Role)registerRequest.Role,
             IsNotification = registerRequest.IsNotification,
             IsPrivateProfile = registerRequest.IsPrivateProfile,
@@ -60,7 +60,7 @@ public static class UserMappings
         };
         user.UserDetail = new UserDetail
         {
-            FullName = registerRequest.FullName,
+            FullName = registerRequest.FullName!,
             Bio = registerRequest.Bio,
             Experience = registerRequest.Experience,
             CommunicationPreference = registerRequest.CommunicationPreference is not null
