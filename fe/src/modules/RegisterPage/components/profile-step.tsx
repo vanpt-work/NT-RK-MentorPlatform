@@ -36,6 +36,9 @@ export function ProfileStep({
 }: ProfileStepProps) {
     const [expertises, setExpertises] = useState<Expertise[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [previousRole, setPreviousRole] = useState<"Learner" | "Mentor">(
+        form.getValues("role") || "Learner",
+    );
 
     // Fetch expertise list when component mounts
     useEffect(() => {
@@ -60,6 +63,17 @@ export function ProfileStep({
 
         fetchExpertises();
     }, []);
+
+    // Watch for role changes
+    useEffect(() => {
+        const subscription = form.watch((value, { name }) => {
+            if (name === "role" && value.role !== previousRole) {
+                setPreviousRole(value.role || "Learner");
+            }
+        });
+
+        return () => subscription.unsubscribe();
+    }, [form, previousRole]);
 
     // Handle expertise selection
     const handleExpertiseChange = (expertiseId: string) => {
@@ -120,9 +134,18 @@ export function ProfileStep({
     const handleCommunicationChange = (
         method: "Video call" | "Audio call" | "Text chat",
     ) => {
-        form.setValue("communicationPreference", method, {
-            shouldValidate: true,
-        });
+        const currentMethod = form.getValues("communicationPreference");
+        // If the current method is already selected, use default value instead
+        if (currentMethod === method) {
+            // Set to a default value instead of null
+            form.setValue("communicationPreference", "Video call", {
+                shouldValidate: true,
+            });
+        } else {
+            form.setValue("communicationPreference", method, {
+                shouldValidate: true,
+            });
+        }
     };
 
     // Character count functions
@@ -160,11 +183,11 @@ export function ProfileStep({
                                     ? "border-primary bg-primary/5"
                                     : "hover:border-gray-400"
                             }`}
-                            onClick={() =>
+                            onClick={() => {
                                 form.setValue("role", "Learner", {
                                     shouldValidate: true,
-                                })
-                            }
+                                });
+                            }}
                         >
                             <div className="mb-2 flex h-16 w-16 items-center justify-center">
                                 <GraduationCap className="text-primary h-12 w-12" />
@@ -181,11 +204,11 @@ export function ProfileStep({
                                     ? "border-primary bg-primary/5"
                                     : "hover:border-gray-400"
                             }`}
-                            onClick={() =>
+                            onClick={() => {
                                 form.setValue("role", "Mentor", {
                                     shouldValidate: true,
-                                })
-                            }
+                                });
+                            }}
                         >
                             <div className="mb-2 flex h-16 w-16 items-center justify-center">
                                 <Users className="text-primary h-12 w-12" />
