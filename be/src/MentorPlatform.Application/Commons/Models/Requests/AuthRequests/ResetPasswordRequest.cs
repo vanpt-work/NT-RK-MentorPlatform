@@ -22,9 +22,9 @@ public class ResetPasswordRequestValidator : AbstractValidator<ResetPasswordRequ
             .WithMessage(AuthModelsValidationMessages.FormatEmailInvalid);
 
         RuleFor(x => x.Code)
-            .NotEmpty().WithMessage("Code is required.")
-            .Matches(@"^\d{6}$")
-            .WithMessage("Code must consist of exactly 6 digits.");
+            .NotEmpty().WithMessage(AuthModelsValidationMessages.CodeNotEmpty)
+            .Matches(UserConstants.CodeRegexPattern)
+            .WithMessage(AuthModelsValidationMessages.FormatCodeInvalid);
 
         RuleFor(x => x.NewPassword)
             .NotEmpty()
