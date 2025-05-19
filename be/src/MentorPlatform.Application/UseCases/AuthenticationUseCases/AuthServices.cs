@@ -22,8 +22,8 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.JsonWebTokens;
 using RazorLight;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace MentorPlatform.Application.UseCases.Authentication;
@@ -104,7 +104,7 @@ public class AuthServices: IAuthServices
         var refreshToken = _jwtServices.GenerateRefreshToken();
         var freshTokenObject = new RefreshToken
         {
-            Value = refreshToken, Expired = DateTime.UtcNow.AddDays(_jwtTokenOptions.ExpireRefreshTokenDays),
+            Value = HashingHelper.HashData(refreshToken), Expired = DateTime.UtcNow.AddDays(_jwtTokenOptions.ExpireRefreshTokenDays),
         };
         _refreshTokenRepository.Add(freshTokenObject);
 
@@ -234,6 +234,7 @@ public class AuthServices: IAuthServices
         var refreshToken = _jwtServices.GenerateRefreshToken();
         var freshTokenObject = new RefreshToken
         {
+            UserId = userId,
             Value = HashingHelper.HashData(refreshToken),
             Expired = DateTime.UtcNow.AddDays(_jwtTokenOptions.ExpireRefreshTokenDays),
         };
@@ -351,7 +352,7 @@ public class AuthServices: IAuthServices
     }
     private static Guid GetUserIdFromTokenClaims(ClaimsPrincipal claimsPrincipal)
     {
-        if (Guid.TryParse(claimsPrincipal.FindFirst(JwtRegisteredClaimNames.Sid)!.Value, out Guid userId))
+        if (!Guid.TryParse(claimsPrincipal.FindFirst(JwtRegisteredClaimNames.Sid)!.Value, out Guid userId))
         {
             throw new BadRequestException(ApplicationExceptionMessage.UserIdInExecutionContextInvalid);
         }
@@ -360,7 +361,7 @@ public class AuthServices: IAuthServices
 
     private static Guid GetRefreshTokenIdFromTokenClaims(ClaimsPrincipal claimsPrincipal)
     {
-        if (Guid.TryParse(claimsPrincipal.FindFirst(JwtRegisteredClaimNames.Jti)!.Value, out Guid userId))
+        if (!Guid.TryParse(claimsPrincipal.FindFirst(JwtRegisteredClaimNames.Jti)!.Value, out Guid userId))
         {
             throw new BadRequestException(ApplicationExceptionMessage.RefreshTokenIdInExecutionContextInvalid);
         }

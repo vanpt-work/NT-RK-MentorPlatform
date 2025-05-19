@@ -1,11 +1,14 @@
 ﻿using MentorPlatform.Application.Commons.Models.Query;
 using MentorPlatform.Application.Commons.Models.Requests.CourseCategory;
 using MentorPlatform.Application.UseCases.CourseCategory;
+using MentorPlatform.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MentorPlatform.WebApi.Controllers;
 
 [Route("api/course-categories")]
+[Authorize(Roles = nameof(Role.Admin))]
 public class CourseCategoriesController : ApiControllerBase
 {
     private readonly ICourseCategoryServices _courseCategoryService;
