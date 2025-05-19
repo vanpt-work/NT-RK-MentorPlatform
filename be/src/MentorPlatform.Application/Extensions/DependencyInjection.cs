@@ -32,8 +32,10 @@ public static class DependencyInjection
     }
     public static IServiceCollection ConfigureFluentValidation(this IServiceCollection services)
     {
+        ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         services.AddFluentValidationAutoValidation(fv => {
+
             fv.DisableDataAnnotationsValidation = true;
         });
         return services;
