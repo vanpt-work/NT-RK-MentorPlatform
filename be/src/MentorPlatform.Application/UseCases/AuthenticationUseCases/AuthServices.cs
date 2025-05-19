@@ -266,6 +266,27 @@ public class AuthServices: IAuthServices
         return Result<string>.Success(AuthCommandMessages.VerifyForgotPasswordCodeSuccessfully);
     }
 
+    public async Task<Result> ResetPasswordAsync(ResetPasswordRequest resetPasswordRequest)
+    {
+        var user = await _userRepository.GetByEmailAsync(resetPasswordRequest.Email);
+        if (user == null)
+        {
+            return Result.Failure(400, UserErrors.EmailNotAlreadyRegister);
+        }
+
+        var code = GetForgotPasswordCodeFromMemory(user);
+        if (code != resetPasswordRequest.Code)
+        {
+            return Result.Failure(400, UserErrors.VerifyEmailCodeIncorrect);
+        }
+        
+        user.Password = HashingHelper.HashData(resetPasswordRequest.NewPassword);
+        _userRepository.Update(user);
+        await _unitOfWork.SaveChangesAsync();
+        
+        return Result<string>.Success(AuthCommandMessages.ResetPasswordSuccessfully);
+    }
+
     public async Task<Result> GetCurrentUserAsync()
     {
         var userId = _executionContext.GetUserId();

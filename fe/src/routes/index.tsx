@@ -6,9 +6,9 @@ import ManageUsersPage from "@/modules/AdminPage/ManageUsersPage";
 import HomePage from "@/modules/HomePage";
 import Login from "@/modules/LoginPage";
 import OTPVerificationPage from "@/modules/OTPVerificationPage";
+import ForgotPassword from "@/modules/PasswordResetPage";
 
 import MainLayout from "../layouts/main-layout";
-import ForgotPassword from "../modules/PasswordResetPage";
 import ProfilePage from "../modules/ProfilePage";
 import Register from "../modules/RegisterPage";
 
