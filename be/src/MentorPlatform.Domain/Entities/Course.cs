@@ -10,6 +10,8 @@ public class Course : AuditableEntity, IHasKey<Guid>, ISoftDeleteEntity
     public string Title { get; set; } = default!;
     public string Description { get; set; } = default!;
     public int Level { get; set; } = default!;
+    public Guid MentorId { get; set; } = default!;
+    public User Mentor { get; set; } = default!;
     public Guid CourseCategoryId { get; set; } = default!;
     public CourseCategory CourseCategory { get;set; } = default!;
     public virtual ICollection<CourseResource>? CourseResources { get; set; }
