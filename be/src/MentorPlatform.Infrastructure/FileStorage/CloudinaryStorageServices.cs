@@ -92,6 +92,11 @@ public class CloudinaryStorageServices : INamedFileStorageServices
         }
     }
 
+    public string GetOriginFilePathFromFileSignedPath(string filePathSigned)
+    {
+        return filePathSigned;
+    }
+
     private void ValidateFilePath(string filePath)
     {
         if (string.IsNullOrEmpty(filePath))

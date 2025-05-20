@@ -138,6 +138,11 @@ public class AWSS3StorageServices : INamedFileStorageServices
         }
     }
 
+    public string GetOriginFilePathFromFileSignedPath(string filePathSigned)
+    {
+        return filePathSigned;
+    }
+
     private void CheckS3Initialized()
     {
         if (_s3 == null)

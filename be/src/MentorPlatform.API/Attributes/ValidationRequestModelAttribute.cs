@@ -109,7 +109,7 @@ public class ValidationRequestModelAttribute : ActionFilterAttribute
                     continue;
 
                 var propVal = prop.GetValue(obj);
-                if (propVal == null)
+                if (propVal == null || prop.Name == "Password")
                     continue;
 
                 if (prop.PropertyType == typeof(string))

@@ -20,6 +20,9 @@
     <EmbeddedResource Include="Templates\*.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Remove="Templates\ApplicationRequestStatusChangeMailTemplate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\MentorPlatform.Application\MentorPlatform.Application.csproj" />
     <ProjectReference Include="..\MentorPlatform.CrossCuttingConcerns\MentorPlatform.CrossCuttingConcerns.csproj" />
     <ProjectReference Include="..\MentorPlatform.Infrastructure\MentorPlatform.Infrastructure.csproj" />
