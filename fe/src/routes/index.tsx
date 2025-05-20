@@ -1,10 +1,14 @@
 import { createBrowserRouter } from "react-router-dom";
 
+import PermissionRoute from "@/common/components/routes/PermissionRoute";
 import PrivateRoute from "@/common/components/routes/PrivateRoute";
+import { Role } from "@/common/types/auth";
+import MentorLayout from "@/layouts/mentor-layout";
 import ManageCourseCategoryPage from "@/modules/AdminPage/ManageCourseCategoryPage";
 import ManageUsersPage from "@/modules/AdminPage/ManageUsersPage";
 import HomePage from "@/modules/HomePage";
 import Login from "@/modules/LoginPage";
+import RequestApplicationPage from "@/modules/MentorPage";
 import OTPVerificationPage from "@/modules/OTPVerificationPage";
 import ForgotPassword from "@/modules/PasswordResetPage";
 
@@ -75,37 +79,30 @@ const router = createBrowserRouter([
         ],
     },
 
-    //   // Mentor routes
-    //   {
-    //     path: "/mentor",
-    //     element: <MainLayout userRole="mentor" />,
-    //     children: [
-    //       {
-    //         path: "dashboard",
-    //         element: <DashboardPage />,
-    //       },
-    //       {
-    //         path: "resources",
-    //         element: <ResourcesPage />,
-    //       },
-    //       {
-    //         path: "availability",
-    //         element: <AvailabilityPage />,
-    //       },
-    //       {
-    //         path: "manage-courses",
-    //         element: <ManageCoursesPage />,
-    //       },
-    //       {
-    //         path: "messages",
-    //         element: <MessagesPage />,
-    //       },
-    //       {
-    //         path: "profile",
-    //         element: <ProfilePage />,
-    //       },
-    //     ],
-    //   },
+    {
+        path: "/mentor",
+        element: (
+            <PermissionRoute role={Role.Mentor}>
+                {/* <MentorApplicationRoute> */}
+                <MentorLayout />
+                {/* </MentorApplicationRoute> */}
+            </PermissionRoute>
+        ),
+        children: [
+            // {
+            //     path: "applications/status",
+            //     element: <ApplicationStatusPage />,
+            // },
+            {
+                path: "request-application",
+                element: <RequestApplicationPage />,
+            },
+            {
+                path: "profile",
+                element: <ProfilePage />,
+            },
+        ],
+    },
 
     //   // Learner routes
     //   {

@@ -18,13 +18,14 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
 
 import { cn } from "../lib/utils";
+import { Role } from "../types/auth";
 
 type SidebarProps = {
     onToggle?: (isOpen: boolean) => void;
-    userRole?: "admin" | "mentor" | "learner";
+    userRole?: Role;
 };
 
-const Sidebar = ({ onToggle, userRole = "admin" }: SidebarProps) => {
+const Sidebar = ({ onToggle, userRole = Role.Admin }: SidebarProps) => {
     const location = useLocation();
     const [mounted, setMounted] = useState(false);
     const [isOpen, setIsOpen] = useState(true);
@@ -149,9 +150,9 @@ const Sidebar = ({ onToggle, userRole = "admin" }: SidebarProps) => {
     ];
 
     const menuItems =
-        userRole === "admin"
+        userRole === Role.Admin
             ? adminMenuItems
-            : userRole === "mentor"
+            : userRole === Role.Mentor
               ? mentorMenuItems
               : learnerMenuItems;
 
@@ -174,14 +175,14 @@ const Sidebar = ({ onToggle, userRole = "admin" }: SidebarProps) => {
             >
                 <Button
                     onClick={toggleSidebar}
-                    variant="outline"
-                    className="border-border bg-background hover:bg-accent absolute top-6 -right-3 z-40 flex h-6 w-6 items-center justify-center rounded-full border p-0 shadow-sm transition-colors dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
+                    variant="ghost"
+                    className="absolute top-6 -right-3 z-40 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow-md dark:bg-gray-800"
                     aria-label={isOpen ? "Collapse sidebar" : "Expand sidebar"}
                 >
                     {isOpen ? (
-                        <ChevronLeft className="text-foreground h-3.5 w-3.5 dark:text-gray-300" />
+                        <ChevronLeft size={16} />
                     ) : (
-                        <ChevronRight className="text-foreground h-3.5 w-3.5 dark:text-gray-300" />
+                        <ChevronRight size={16} />
                     )}
                 </Button>
 
