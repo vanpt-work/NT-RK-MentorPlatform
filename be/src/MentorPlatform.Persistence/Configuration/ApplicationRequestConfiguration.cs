@@ -9,9 +9,9 @@ public class ApplicationRequestConfiguration : IEntityTypeConfiguration<Applicat
 {
     public void Configure(EntityTypeBuilder<ApplicationRequest> builder)
     {
-        builder.HasOne(ar => ar.User)
+        builder.HasOne(ar => ar.Mentor)
             .WithMany(u => u.ApplicationRequests)
-            .HasForeignKey(ar => ar.UserId)
+            .HasForeignKey(ar => ar.MentorId)
             .OnDelete(DeleteBehavior.NoAction);
         builder.HasQueryFilter(cc => !cc.IsDeleted);
     }

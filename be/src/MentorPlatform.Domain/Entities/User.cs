@@ -23,6 +23,7 @@ public class User : AuditableEntity, IHasKey<Guid>, ISoftDeleteEntity
     public virtual ICollection<UserExpertise>? UserExpertises { get; set; } = default;
     public virtual ICollection<MentoringSession>? MentoringSessions { get; set; }
     public virtual ICollection<Schedule>? Schedules { get; set; }
+    public virtual ICollection<Course>? Courses { get; set; }
     public virtual ICollection<ApplicationRequest>? ApplicationRequests { get; set; }
     public virtual ICollection<UserCourseCategory>? UserCourseCategories { get; set; } = default;
 
