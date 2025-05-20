@@ -28,7 +28,8 @@ public class CourseServices : ICourseServices
 
         var searchValue = queryParameters?.Search?.Trim();
         var queryFilter = _courseRepository.GetQueryable()
-                        .Where(x => (string.IsNullOrEmpty(searchValue) || x.Title.Contains(searchValue) || x.Description.Contains(searchValue))
+                        .Where(x => queryParameters != null || 
+                                    (string.IsNullOrEmpty(searchValue) || x.Title.Contains(searchValue) || x.Description.Contains(searchValue))
                                     && (queryParameters!.CategoryId != null || x.CourseCategoryId == queryParameters.CategoryId)
                                     && (queryParameters.Level != null || x.Level == queryParameters.Level)
                                     && (selectedUser!.Role == Role.Learner && (queryParameters.MentorId != null || x.MentorId == queryParameters.MentorId)));
@@ -84,10 +85,11 @@ public class CourseServices : ICourseServices
                     AvatarUrl = x.Mentor.UserDetail.AvatarUrl,
                     Experience = x.Mentor.UserDetail.Experience
                 },
-                Resources =
-                    (x.CourseResources != null 
-                    && x.MentoringSessions != null 
-                    && x.MentoringSessions.Any(s => s.CourseId == id && s.LearnerId == userId))
+                Resources = x.CourseResources != null &&
+                    (
+                        selectedUser.Role == Role.Mentor ||
+                        (x.MentoringSessions != null && x.MentoringSessions.Any(s => s.CourseId == id && s.LearnerId == userId))
+                    )
                     ? x.CourseResources.Select(r => new ResourceResponse()
                     {
                         Title = r.Title,

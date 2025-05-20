@@ -79,15 +79,11 @@ app.UseCors(corsOptions.PolicyName);
 
 app.UseCors(corsOptions.PolicyName);
 app.UseExceptionHandler((_) => { });
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    await app.InitializeDatabaseAsync();
-}
 
-
+await app.InitializeDatabaseAsync();
+app.MapOpenApi();
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
