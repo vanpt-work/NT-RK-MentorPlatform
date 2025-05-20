@@ -1,5 +1,5 @@
 import type { ColumnDef, Row } from "@tanstack/react-table";
-import { Pencil, Plus, Trash } from "lucide-react";
+import { Eye, Pencil, Plus, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -10,6 +10,7 @@ import DataTableColumnHeader from "@/common/components/table/data-table-column-h
 import DataTablePagination from "@/common/components/table/data-table-pagination";
 import TableTopBar from "@/common/components/table/data-table-topbar";
 import { Button } from "@/common/components/ui/button";
+import { COURSE_CATEGORY_MESSAGES } from "@/common/constants/validation-messages/course-category";
 import { type QueryParameters, defaultQuery } from "@/common/types/query";
 import {
     type ConfirmDialogState,
@@ -48,7 +49,7 @@ export default function ManageCourseCategoryPage() {
             id: "actions",
             header: ({ column }) => (
                 <DataTableColumnHeader
-                    className="mr-22 text-end"
+                    className="text-center"
                     column={column}
                     title="Action"
                 />
@@ -56,13 +57,20 @@ export default function ManageCourseCategoryPage() {
             cell: ({ row }) => (
                 <div className="flex justify-end space-x-2">
                     <Button
+                        onClick={() => handleFormAction(FormMode.VIEW, row)}
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 py-0"
+                    >
+                        <Eye size={14} />
+                    </Button>
+                    <Button
                         onClick={() => handleFormAction(FormMode.EDIT, row)}
                         variant="outline"
-                        size="sm"
-                        className="h-8 px-2 py-0"
+                        size="icon"
+                        className="h-8 w-8 py-0"
                     >
-                        <Pencil size={14} className="mr-1" />
-                        Edit
+                        <Pencil size={14} />
                     </Button>
                     <Button
                         onClick={() =>
@@ -73,11 +81,10 @@ export default function ManageCourseCategoryPage() {
                             })
                         }
                         variant="outline"
-                        size="sm"
-                        className="h-8 px-2 py-0"
+                        size="icon"
+                        className="h-8 w-8 py-0"
                     >
-                        <Trash size={14} className="mr-1" />
-                        Delete
+                        <Trash size={14} />
                     </Button>
                 </div>
             ),
@@ -110,7 +117,7 @@ export default function ManageCourseCategoryPage() {
     ) => {
         if (mode == FormMode.ADD) {
             setDetail(defaultCourseCategoryDetail);
-        } else if (row && mode == FormMode.EDIT) {
+        } else if (row && (mode == FormMode.EDIT || mode == FormMode.VIEW)) {
             const id = row.original.id;
             courseCategoryService.getById(id).then((res) => {
                 if (res.data) setDetail(res.data);
@@ -129,8 +136,8 @@ export default function ManageCourseCategoryPage() {
                 handleGetList();
             });
         } else if (formSetting.mode == FormMode.EDIT) {
-            courseCategoryService.update(detail!.id, data).then((res) => {
-                toast.success(res.data);
+            courseCategoryService.update(detail!.id, data).then(() => {
+                toast.success(COURSE_CATEGORY_MESSAGES.UPDATED_SUCCESSFULLY);
                 handleGetList();
             });
         }
@@ -139,8 +146,8 @@ export default function ManageCourseCategoryPage() {
 
     //DELETE HANDLER
     const handleConfirmDelete = () => {
-        courseCategoryService.delete(openDeleteDialog.id).then((res) => {
-            toast.success(res.data);
+        courseCategoryService.delete(openDeleteDialog.id).then(() => {
+            toast.success(COURSE_CATEGORY_MESSAGES.DELETED_SUCCESSFULLY);
             handleGetList();
         });
         setOpenDeleteDialog({ ...openDeleteDialog, open: false });
@@ -171,7 +178,7 @@ export default function ManageCourseCategoryPage() {
                     loading={tableLoading}
                 />
                 <DataTablePagination
-                    pageSizeList={[5, 8, 10]}
+                    pageSizeList={[1, 5, 8, 10]}
                     pageSize={query?.pageSize}
                     pageNumber={query?.pageNumber}
                     totalRecords={totalCount}

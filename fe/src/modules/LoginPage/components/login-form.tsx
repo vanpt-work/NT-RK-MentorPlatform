@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Github } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import type { z } from "zod";
 
 import LoadingSpinner from "@/common/components/loading-spinner";
@@ -225,12 +225,12 @@ export function LoginForm() {
             <CardFooter className="flex flex-col items-center justify-center space-y-2">
                 <div className="text-muted-foreground text-sm">
                     Don't have an account?{" "}
-                    <a
-                        href="/register"
+                    <Link
+                        to="/register"
                         className="text-primary underline-offset-4 hover:underline"
                     >
                         Sign up
-                    </a>
+                    </Link>
                 </div>
             </CardFooter>
         </Card>

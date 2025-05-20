@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MentorPlatform.WebApi.Controllers;
 
-[ValidationRequestModel]
+[ServiceFilter(typeof(ValidationRequestModelAttribute))]
 [ApiController]
 public abstract class ApiControllerBase : ControllerBase
 {
