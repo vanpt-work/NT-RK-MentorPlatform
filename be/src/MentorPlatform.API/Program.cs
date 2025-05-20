@@ -4,7 +4,6 @@ using MentorPlatform.WebApi.Middlewares;
 using MentorPlatform.WebApi.OpenApi;
 using MentorPlatform.WebApi.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.IdentityModel.Tokens;
 using RazorLight;
 using System.Reflection;
