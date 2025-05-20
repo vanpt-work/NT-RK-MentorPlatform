@@ -1,6 +1,5 @@
 ﻿using MentorPlatform.Application.Commons.Models.Requests;
 using MentorPlatform.Application.UseCases.CourseUseCases;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MentorPlatform.WebApi.Controllers;
@@ -21,8 +20,6 @@ public class CoursesController : ApiControllerBase
         {
             return BadRequest("File is required.");
         }
-        // Process the file here
-        // For example, save it to a directory or database
         return Ok(request.File.FileName);
     }
 }
