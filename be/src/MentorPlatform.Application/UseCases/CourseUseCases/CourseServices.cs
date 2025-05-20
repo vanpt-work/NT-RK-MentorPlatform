@@ -1,4 +1,4 @@
-﻿using MentorPlatform.Application.Commons.Mappings;
+using MentorPlatform.Application.Commons.Mappings;
 using MentorPlatform.Application.Commons.Models.Requests.CourseRequests;
 using MentorPlatform.Application.Commons.Models.Requests.ResourseRequests;
 using MentorPlatform.Application.Identity;
@@ -41,7 +41,7 @@ public class CourseServices : ICourseServices
         newCourse.MentorId = userId;
 
         newCourse.CourseResources = new List<CourseResource>();
-        await AddResources(newCourse, courseRequest.Resourses);
+        await AddResources(courseRequest.Resourses, newCourse);
 
         _courseRepository.Add(newCourse);
         await _unitOfWork.SaveChangesAsync();
@@ -57,47 +57,81 @@ public class CourseServices : ICourseServices
         if (dbCourse == null)
         {
             throw new BadRequestException(ApplicationExceptionMessage.CourseNotFound);
-        } 
-
-        if (dbCourse.CourseResources != null && dbCourse.CourseResources.Count > 0 && courseRequest.Resourses.Count > 0)
-        {
-            dbCourse.CourseResources = new List<CourseResource>();
         }
 
         CopyData(courseRequest, dbCourse);
+
         await AddResources(courseRequest.Resourses, dbCourse);
-        
+
         await _unitOfWork.SaveChangesAsync();
+
+        return Result.Success();
     }
 
-    public Task<Result> DeleteCourseAsync(Guid courseId)
+    public async Task<Result> DeleteCourseAsync(Guid courseId)
     {
-        throw new NotImplementedException();
+        var dbCourse = await _courseRepository.GetByIdAsync(courseId);
+        if (dbCourse == null)
+        {
+            throw new BadRequestException(ApplicationExceptionMessage.CourseNotFound);
+        }
+
+        return Result.Success();
     }
 
-    private async Task<string> UploadFile(IFormFile file)
+    private async Task UploadFile(ResourceRequest request, CourseResource resource)
     {
         try
         {
-            var fileUrl = await _fileStorage.UploadFileAsync(file);
-            return fileUrl;
+            var fileUrl = await _fileStorage.UploadFileAsync(request.File);
+            resource.FilePath = fileUrl;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, ex.Message);
-            return string.Empty;
         }
     }
 
+    private const long MaxFileSizeInBytes = 150 * 1024 * 1024;
+    private readonly string[] AllowedExtensions = ["png", "doc", "jpeg"];
+
     private async Task AddResources(List<ResourceRequest> resources, Course course)
     {
-        foreach (var resource in resources)
+        if (course.CourseResources != null
+            && course.CourseResources.Count > 0
+            && resources.Count > 0)
         {
-            var newResource = resource.ToEntity();
-            course.CourseResources.Add(newResource);
-            newResource.FilePath = await UploadFile(resource.File);
-            // newResource need file type
-            newResource.IsDeleted = false;
+            course.CourseResources = new List<CourseResource>();
+            foreach (var resource in resources)
+            {
+                if (resource.File == null)
+                {
+                    continue;
+                }
+
+                if (resource.File.Length > MaxFileSizeInBytes)
+                {
+                    continue;
+                }
+
+                if (AllowedExtensions.Contains(Path.GetExtension(resource.File.FileName)))
+                {
+                    continue;
+                }
+
+                var newResource = resource.ToEntity();
+                course.CourseResources.Add(newResource);
+                await UploadFile(resource, newResource);
+                newResource.IsDeleted = false;
+            }
         }
+    }
+
+    private static void CopyData(EditCourseRequest request, Course course)
+    {
+        course.Title = request.Title;
+        course.Description = request.Description;
+        course.Level = request.Level;
+        course.CourseCategoryId = request.CourseCategoryId;
     }
 }
