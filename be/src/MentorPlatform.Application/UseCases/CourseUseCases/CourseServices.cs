@@ -1,9 +1,15 @@
-﻿using MentorPlatform.Application.Commons.Models.Requests.CourseRequests;
+﻿using MentorPlatform.Application.Commons.Mappings;
+using MentorPlatform.Application.Commons.Models.Requests.CourseRequests;
+using MentorPlatform.Application.Commons.Models.Requests.ResourseRequests;
 using MentorPlatform.Application.Identity;
 using MentorPlatform.Application.Services.File;
 using MentorPlatform.Application.Services.FileStorage;
+using MentorPlatform.CrossCuttingConcerns.Exceptions;
+using MentorPlatform.Domain.Entities;
 using MentorPlatform.Domain.Repositories;
 using MentorPlatform.Domain.Shared;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace MentorPlatform.Application.UseCases.CourseUseCases;
 public class CourseServices : ICourseServices
@@ -12,29 +18,56 @@ public class CourseServices : ICourseServices
     private readonly IFileStorageServices _fileStorage;
     private readonly IExecutionContext _executionContext;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<CourseServices> _logger;
 
     public CourseServices(ICourseRepository courseRepository,
-        IFileStorageFactory fileStorageFactory, 
+        IFileStorageFactory fileStorageFactory,
         IExecutionContext executionContext,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ILogger<CourseServices> logger)
     {
         _courseRepository = courseRepository;
         _fileStorage = fileStorageFactory.Get();
         _executionContext = executionContext;
         _unitOfWork = unitOfWork;
+        _logger = logger;
     }
 
-    public Task<Result> AddCourseAsync(CreateCourseRequest courseRequest)
+    public async Task<Result> AddCourseAsync(CreateCourseRequest courseRequest)
     {
-        // Get user Id
         var userId = _executionContext.GetUserId();
 
-        // Parse data to course entity
+        var newCourse = courseRequest.ToEntity();
+        newCourse.MentorId = userId;
 
-        // Add to context and save change
+        newCourse.CourseResources = new List<CourseResource>();
+        await AddResources(newCourse, courseRequest.Resourses);
 
-        // Return the entity
-        return Task.FromResult(Result.Success());
+        _courseRepository.Add(newCourse);
+        await _unitOfWork.SaveChangesAsync();
+
+        return Result.Success();
+    }
+
+    public async Task<Result> UpdateCourseAsync(EditCourseRequest courseRequest)
+    {
+        var userId = _executionContext.GetUserId();
+
+        var dbCourse = await _courseRepository.GetByIdAsync(courseRequest.Id, nameof(Course.CourseResources));
+        if (dbCourse == null)
+        {
+            throw new BadRequestException(ApplicationExceptionMessage.CourseNotFound);
+        } 
+
+        if (dbCourse.CourseResources != null && dbCourse.CourseResources.Count > 0 && courseRequest.Resourses.Count > 0)
+        {
+            dbCourse.CourseResources = new List<CourseResource>();
+        }
+
+        CopyData(courseRequest, dbCourse);
+        await AddResources(courseRequest.Resourses, dbCourse);
+        
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public Task<Result> DeleteCourseAsync(Guid courseId)
@@ -42,8 +75,29 @@ public class CourseServices : ICourseServices
         throw new NotImplementedException();
     }
 
-    public Task<Result> UpdateCourseAsync(Guid courseId, EditCourseRequest courseRequest)
+    private async Task<string> UploadFile(IFormFile file)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var fileUrl = await _fileStorage.UploadFileAsync(file);
+            return fileUrl;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return string.Empty;
+        }
+    }
+
+    private async Task AddResources(List<ResourceRequest> resources, Course course)
+    {
+        foreach (var resource in resources)
+        {
+            var newResource = resource.ToEntity();
+            course.CourseResources.Add(newResource);
+            newResource.FilePath = await UploadFile(resource.File);
+            // newResource need file type
+            newResource.IsDeleted = false;
+        }
     }
 }
