@@ -2,8 +2,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import type { Resolver } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 import LoadingSpinner from "@/common/components/loading-spinner";
 import { Button } from "@/common/components/ui/button";
@@ -23,19 +24,20 @@ import { PreferencesStep } from "./preferences-step";
 import { PrivacyDialog } from "./privacy-dialog";
 import { ProfileStep } from "./profile-step";
 import { TermsDialog } from "./terms-dialog";
+
+import { registerService } from "../services/registerServices";
 import type {
     AccountFormValues,
     PreferencesFormValues,
     ProfileFormValues,
 } from "../types";
+import { Role } from "../types";
+import { mapFormDataToRegisterRequest } from "../utils/mapper";
 import {
     accountSchema,
     preferencesSchema,
     profileSchema,
 } from "../utils/schemas";
-import { useNavigate } from "react-router-dom";
-import { registerService } from "../services/registerServices";
-import { mapFormDataToRegisterRequest } from "../utils/mapper";
 
 export function RegisterForm() {
     const [step, setStep] = useState(1);
@@ -75,12 +77,15 @@ export function RegisterForm() {
     });
 
     const preferencesForm = useForm<PreferencesFormValues>({
-        resolver: zodResolver(preferencesSchema) as Resolver<PreferencesFormValues>,
+        resolver: zodResolver(
+            preferencesSchema,
+        ) as Resolver<PreferencesFormValues>,
         defaultValues: {
             courseCategoryIds: [],
             sessionFrequency: "Weekly",
             duration: "1 hour",
-            learningStyle: "Visual",
+            learningStyle: null,
+            teachingStyles: null,
             privacySettings: {
                 isPrivateProfile: false,
                 isReceiveMessage: true,
@@ -112,73 +117,121 @@ export function RegisterForm() {
             const accountValid = await accountForm.trigger();
             const profileValid = await profileForm.trigger();
             const preferencesValid = await preferencesForm.trigger();
-            
+
             if (!accountValid || !profileValid || !preferencesValid) {
-                toast.error("Please fix the validation errors before submitting.");
+                toast.error(
+                    "Please fix the validation errors before submitting.",
+                );
                 setIsLoading(false);
                 return;
             }
-            
+
             // Combine all form data and map to RegisterRequest
             const registerData = mapFormDataToRegisterRequest(
                 accountForm.getValues(),
                 profileForm.getValues(),
-                preferencesForm.getValues()
+                preferencesForm.getValues(),
             );
-            
-            // Log the request data for debugging
-            console.log("Register request data:", JSON.stringify(registerData, null, 2));
-            
+
             const formData = new FormData();
-            
-            formData.append('email', registerData.email);
-            formData.append('password', registerData.password);
-            formData.append('fullName', registerData.fullName);
-            formData.append('role', String(registerData.role));
-            if (registerData.bio) formData.append('bio', registerData.bio);
-            if (registerData.isNotification !== undefined) formData.append('isNotification', String(registerData.isNotification));
-            if (registerData.isReceiveMessage !== undefined) formData.append('isReceiveMessage', String(registerData.isReceiveMessage));
-            if (registerData.isPrivateProfile !== undefined) formData.append('isPrivateProfile', String(registerData.isPrivateProfile));
-            if (registerData.professionalSkill) formData.append('professionalSkill', registerData.professionalSkill);
-            if (registerData.experience) formData.append('experience', registerData.experience);
-            if (registerData.communicationPreference !== undefined) formData.append('communicationPreference', String(registerData.communicationPreference));
-            if (registerData.goals) formData.append('goals', registerData.goals);
-            formData.append('sessionFrequency', String(registerData.sessionFrequency));
-            formData.append('duration', String(registerData.duration));
-            if (registerData.learningStyle !== undefined) formData.append('learningStyle', String(registerData.learningStyle));
-            if (registerData.avatarUrl && registerData.avatarUrl instanceof File) {
-                formData.append('avatarUrl', registerData.avatarUrl);
+
+            console.log(
+                "Register request data:",
+                JSON.stringify(registerData, null, 2),
+            );
+
+            formData.append("email", registerData.email);
+            formData.append("password", registerData.password);
+            formData.append("fullName", registerData.fullName);
+            formData.append("role", String(registerData.role));
+            if (registerData.bio) formData.append("bio", registerData.bio);
+            if (registerData.isNotification !== undefined)
+                formData.append(
+                    "isNotification",
+                    String(registerData.isNotification),
+                );
+            if (registerData.isReceiveMessage !== undefined)
+                formData.append(
+                    "isReceiveMessage",
+                    String(registerData.isReceiveMessage),
+                );
+            if (registerData.isPrivateProfile !== undefined)
+                formData.append(
+                    "isPrivateProfile",
+                    String(registerData.isPrivateProfile),
+                );
+            if (registerData.professionalSkill)
+                formData.append(
+                    "professionalSkill",
+                    registerData.professionalSkill,
+                );
+            if (registerData.experience)
+                formData.append("experience", registerData.experience);
+            if (registerData.communicationPreference !== undefined)
+                formData.append(
+                    "communicationPreference",
+                    String(registerData.communicationPreference),
+                );
+            if (registerData.goals)
+                formData.append("goals", registerData.goals);
+            formData.append(
+                "sessionFrequency",
+                String(registerData.sessionFrequency),
+            );
+            formData.append("duration", String(registerData.duration));
+            if (registerData.learningStyle !== undefined)
+                formData.append(
+                    "learningStyle",
+                    String(registerData.learningStyle),
+                );
+            if (
+                registerData.avatarUrl &&
+                registerData.avatarUrl instanceof File
+            ) {
+                formData.append("avatarUrl", registerData.avatarUrl);
             }
             if (registerData.expertises && registerData.expertises.length > 0) {
                 registerData.expertises.forEach((expertise) => {
-                    formData.append('expertises', expertise);
+                    formData.append("expertises", expertise);
                 });
             }
-            if (registerData.courseCategoryIds && registerData.courseCategoryIds.length > 0) {
+            if (
+                registerData.courseCategoryIds &&
+                registerData.courseCategoryIds.length > 0
+            ) {
                 registerData.courseCategoryIds.forEach((categoryId) => {
-                    formData.append('courseCategoryIds', categoryId);
+                    formData.append("courseCategoryIds", categoryId);
                 });
             }
-            if (registerData.availability && registerData.availability.length > 0) {
+            if (
+                registerData.availability &&
+                registerData.availability.length > 0
+            ) {
                 registerData.availability.forEach((avail) => {
-                    formData.append('availability', String(avail));
+                    formData.append("availability", String(avail));
                 });
             }
-            if (registerData.teachingStyles && registerData.teachingStyles.length > 0) {
+            if (
+                registerData.role === Role.Mentor &&
+                registerData.teachingStyles &&
+                registerData.teachingStyles.length > 0
+            ) {
                 registerData.teachingStyles.forEach((style) => {
-                    formData.append('teachingStyles', String(style));
+                    formData.append("teachingStyles", String(style));
                 });
             }
-            
+
             await registerService.registerWithFormData(formData);
-            
+
             toast.success(
                 "Account created successfully! Redirecting to email verification...",
             );
-            
+
             setTimeout(() => {
                 const email = accountForm.getValues().email;
-                navigate(`/verify-otp?email=${encodeURIComponent(email)}&purpose=registration`);
+                navigate(
+                    `/verify-otp?email=${encodeURIComponent(email)}&purpose=registration`,
+                );
             }, 1500);
         } catch (error) {
             console.error("Registration failed:", error);
@@ -216,7 +269,7 @@ export function RegisterForm() {
                 return "Create an account";
         }
     };
-    
+
     const getStepDescription = () => {
         switch (step) {
             case 1:
@@ -234,7 +287,10 @@ export function RegisterForm() {
         <Card className="mx-auto w-full max-w-4xl">
             <CardHeader className="space-y-1">
                 <CardTitle className="text-center text-2xl">
-                    {getStepTitle()}
+                    {getStepTitle()}{" "}
+                    <span className="text-muted-foreground text-lg">
+                        ({step}/3)
+                    </span>
                 </CardTitle>
                 <CardDescription className="text-center">
                     {getStepDescription()}

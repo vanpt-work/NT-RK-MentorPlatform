@@ -13,5 +13,10 @@ public class CourseConfiguration : IEntityTypeConfiguration<Course>
             .WithMany(cc => cc.Courses)
             .HasForeignKey(c => c.CourseCategoryId);
         builder.HasQueryFilter(cc => !cc.IsDeleted);
+
+        builder.HasOne(c => c.Mentor)
+            .WithMany(u => u.Courses)
+            .HasForeignKey(c => c.MentorId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

@@ -11,8 +11,15 @@ public class UserResponse
     public bool IsReceiveMessage { get; set; }
     public bool IsPrivateProfile { get; set; }
     public bool IsVerifyEmail { get; set; }
-    public bool IsActive { get; set; }
+    public UserStatus Status { get; set; }
     public DateTime LastActive { get; set; }
     public DateTime CreatedAt { get; set; }
     public UserDetailResponse UserDetail { get; set; }
+}
+
+public enum UserStatus
+{
+    Active = 0,
+    Inactive = 1,
+    PendingForApproval = 2
 }

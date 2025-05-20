@@ -20,12 +20,12 @@ public class User : AuditableEntity, IHasKey<Guid>, ISoftDeleteEntity
     public DateTime LastActive { get; set; } = default!;
     [JsonIgnore]
     public UserDetail UserDetail { get; set; } = default!;
-    public virtual ICollection<UserExpertise>? UserExpertises { get; set; } = default;
-    public virtual ICollection<UserCourse>? UserCourses { get; set; }
+    public virtual ICollection<UserExpertise>? UserExpertises { get; set; } 
     public virtual ICollection<MentoringSession>? MentoringSessions { get; set; }
     public virtual ICollection<Schedule>? Schedules { get; set; }
+    public virtual ICollection<Course>? Courses { get; set; }
     public virtual ICollection<ApplicationRequest>? ApplicationRequests { get; set; }
-    public virtual ICollection<UserCourseCategory>? UserCourseCategories { get; set; } = default;
+    public virtual ICollection<UserCourseCategory>? UserCourseCategories { get; set; }
 
 
 }

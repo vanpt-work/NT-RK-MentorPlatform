@@ -120,7 +120,7 @@ public class AuthServices : IAuthServices
 
     public async Task<Result> RegisterAsync(RegisterRequest registerRequest)
     {
-        var userByEmail = await _userRepository.GetByEmailAsync(registerRequest.Email);
+        var userByEmail = await _userRepository.GetByEmailAsync(registerRequest.Email!);
         if (userByEmail != null)
         {
             return Result.Failure(400, UserErrors.EmailAlreadyRegister);
