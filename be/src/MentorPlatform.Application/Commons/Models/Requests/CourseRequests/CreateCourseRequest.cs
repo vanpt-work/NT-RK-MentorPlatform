@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 using MentorPlatform.Application.Commons.Errors;
+using MentorPlatform.Application.Commons.Models.Requests.ResourseRequests;
 
 namespace MentorPlatform.Application.Commons.Models.Requests.CourseRequests;
 public class CreateCourseRequest
 {
-    public bool IsDeleted { get; set; }
     public string Title { get; set; } = default!;
     public string Description { get; set; } = default!;
     public int Level { get; set; } = default!;

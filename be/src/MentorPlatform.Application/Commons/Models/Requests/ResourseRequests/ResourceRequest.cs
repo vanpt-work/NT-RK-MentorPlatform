@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace MentorPlatform.Application.Commons.Models.Requests;
+namespace MentorPlatform.Application.Commons.Models.Requests.ResourseRequests;
 public class ResourceRequest
 {
     public string Title { get; set; }

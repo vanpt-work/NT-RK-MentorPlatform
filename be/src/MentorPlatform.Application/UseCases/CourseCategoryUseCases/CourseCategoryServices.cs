@@ -1,7 +1,7 @@
 ﻿using MentorPlatform.Application.Commons.CommandMessages;
 using MentorPlatform.Application.Commons.Errors;
 using MentorPlatform.Application.Commons.Models.Query;
-using MentorPlatform.Application.Commons.Models.Requests.CourseCategory;
+using MentorPlatform.Application.Commons.Models.Requests.CourseCategoryRequests;
 using MentorPlatform.Application.Commons.Models.Responses.Course;
 using MentorPlatform.Application.Commons.Models.Responses.CourseCategory;
 using MentorPlatform.Domain.Entities;

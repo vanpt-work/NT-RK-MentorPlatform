@@ -1,4 +1,5 @@
 ﻿using MentorPlatform.Application.Commons.Models.Requests.CourseRequests;
+using MentorPlatform.Application.Commons.Models.Responses.Course;
 using MentorPlatform.Domain.Shared;
 
 namespace MentorPlatform.Application.UseCases.CourseUseCases;

@@ -1,4 +1,4 @@
-﻿using MentorPlatform.Application.Commons.Models.Requests;
+﻿using MentorPlatform.Application.Commons.Models.Requests.ResourseRequests;
 using MentorPlatform.Application.UseCases.CourseUseCases;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,12 +14,12 @@ public class CoursesController : ApiControllerBase
     }
 
     [HttpPost]
-    public IActionResult Test([FromForm] ResourceRequest request)
+    public IActionResult Test([FromForm] List<ResourceRequest> request)
     {
-        if (request.File == null)
+        if (request[0].File == null)
         {
             return BadRequest("File is required.");
         }
-        return Ok(request.File.FileName);
+        return Ok(request[0].File.FileName);
     }
 }
