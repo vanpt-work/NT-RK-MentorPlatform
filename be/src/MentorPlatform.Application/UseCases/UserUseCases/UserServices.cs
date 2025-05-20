@@ -9,6 +9,7 @@ using MentorPlatform.Domain.Shared;
 using System.Data;
 
 namespace MentorPlatform.Application.UseCases.UserManagement;
+
 public class UserServices : IUserServices
 {
     private readonly IUserRepository _userRepository;
@@ -36,7 +37,7 @@ public class UserServices : IUserServices
 
     public async Task<Result<PaginationResult<UserResponse>>> GetUsersByQueryAsync(UserQueryParameters query)
     {
-        var keyword = query.Search.Trim().ToLower();
+        var keyword = query.Search?.Trim().ToLower() ?? string.Empty;
         var roleList = query.Role.Select(x => (Role)x);
         var dbQuery = _userRepository
             .GetQueryable()
