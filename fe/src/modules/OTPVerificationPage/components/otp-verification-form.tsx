@@ -3,7 +3,6 @@ import { ArrowLeft } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import LoadingSpinner from "@/common/components/loading-spinner";
@@ -17,8 +16,8 @@ import {
     CardTitle,
 } from "@/common/components/ui/card";
 import { Input } from "@/common/components/ui/input";
-import { Label } from "@/common/components/ui/label";
 import { useAuthContext } from "@/common/context/auth-context";
+import authService from "@/common/services/authServices";
 
 import type { OTPFormValues } from "../types";
 import { otpSchema } from "../utils/schemas";
@@ -36,14 +35,14 @@ export function OTPVerificationForm({
     onBack,
     purpose,
 }: OTPVerificationFormProps) {
-    const [isLoading, setIsLoading] = useState(false);
+    const [isVerifying, setIsVerifying] = useState(false);
+    const [isResending, setIsResending] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [otpValues, setOtpValues] = useState<string[]>(Array(6).fill(""));
     const [canResendOtp, setCanResendOtp] = useState(false);
     const [resendCountdown, setResendCountdown] = useState(60);
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
     const { verify } = useAuthContext();
-    const navigate = useNavigate();
     // Form state for OTP verification
     const otpForm = useForm<OTPFormValues>({
         resolver: zodResolver(otpSchema),
@@ -134,37 +133,31 @@ export function OTPVerificationForm({
         return () => clearInterval(timer);
     }, [canResendOtp]);
 
-    // Send OTP verification request
-    const sendOtpVerification = async () => {
-        setIsLoading(true);
+    // Resend OTP
+    const resendOtp = async () => {
+        if (!canResendOtp) return;
+
+        setIsResending(true);
         setError(null);
         try {
-            await verify({
+            await authService.resendVerifyEmail({
                 email: email,
-                code: otpValues.join(""),
             });
 
             toast.success("OTP has been sent! Please check your email.");
             setCanResendOtp(false);
             setResendCountdown(60);
-            navigate("/home");
         } catch (error) {
-            console.error("Failed to send OTP:", error);
-            setError("Failed to send OTP. Please try again.");
+            console.error("Failed to resend OTP:", error);
+            setError("Failed to resend OTP. Please try again.");
         } finally {
-            setIsLoading(false);
+            setIsResending(false);
         }
-    };
-
-    // Resend OTP
-    const resendOtp = async () => {
-        if (!canResendOtp) return;
-        await sendOtpVerification();
     };
 
     // Verify OTP
     const verifyOtp = async (values: OTPFormValues) => {
-        setIsLoading(true);
+        setIsVerifying(true);
         setError(null);
         try {
             await verify({
@@ -182,7 +175,7 @@ export function OTPVerificationForm({
             console.error("OTP verification failed:", error);
             setError("OTP verification failed. Please try again.");
         } finally {
-            setIsLoading(false);
+            setIsVerifying(false);
         }
     };
 
@@ -202,8 +195,6 @@ export function OTPVerificationForm({
                     className="space-y-4"
                 >
                     <div className="space-y-2">
-                        <Label htmlFor="otp-inputs">OTP</Label>
-
                         <div
                             className="mx-auto flex justify-center"
                             onPaste={handleOtpPaste}
@@ -254,21 +245,28 @@ export function OTPVerificationForm({
                                 type="button"
                                 variant="outline"
                                 onClick={resendOtp}
-                                disabled={!canResendOtp || isLoading}
+                                disabled={!canResendOtp || isResending}
                             >
-                                {canResendOtp
-                                    ? "Resend OTP"
-                                    : `Resend after ${resendCountdown}s`}
+                                {isResending ? (
+                                    <div className="flex items-center justify-center gap-2">
+                                        <LoadingSpinner size="sm" />
+                                        <span>Sending...</span>
+                                    </div>
+                                ) : canResendOtp ? (
+                                    "Resend OTP"
+                                ) : (
+                                    `Resend after ${resendCountdown}s`
+                                )}
                             </Button>
                         </div>
                     </div>
 
                     <Button
-                        disabled={isLoading}
+                        disabled={isVerifying}
                         type="submit"
                         className="w-full"
                     >
-                        {isLoading ? (
+                        {isVerifying ? (
                             <div className="flex items-center justify-center gap-2">
                                 <LoadingSpinner size="sm" />
                                 <span>Verifying...</span>
