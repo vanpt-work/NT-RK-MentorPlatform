@@ -307,6 +307,11 @@ public class AuthServices : IAuthServices
         return Result<CurrentUserResponse>.Success(currentUser);
     }
 
+    public Task<Result> GetCurrentUserDetailAsync()
+    {
+        throw new Exception();
+    }
+
 
     public async Task<Result> EditingProfileUserAsync(EditingUserProfileRequest editingUserProfileRequest)
     {
