@@ -82,7 +82,11 @@ app.UseExceptionHandler((_) => { });
 await app.InitializeDatabaseAsync();
 app.MapOpenApi();
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Mentor Platform API Swagger");
+    c.RoutePrefix = string.Empty;
+});
 
 app.UseHttpsRedirection();
 
