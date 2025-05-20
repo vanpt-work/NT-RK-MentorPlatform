@@ -48,23 +48,6 @@ public static class DependencyInjection
             {
                 var options = serviceProvider.GetRequiredService<IOptions<FileStorageOptions>>().Value;
                 return new CloudinaryStorageServices(options.CloudinaryStorageOptions!);
-            })
-            .AddScoped<INamedFileStorageServices, AWSS3StorageServices>((serviceProvider) =>
-            {
-                var logger = serviceProvider.GetRequiredService<ILogger<AWSS3StorageServices>>();
-                var options = serviceProvider.GetRequiredService<IOptions<FileStorageOptions>>().Value;
-
-                IAmazonS3? s3;
-                try
-                {
-                    s3 = serviceProvider.GetRequiredService<IAmazonS3>();
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, StringHelper.ReplacePlaceholders(ApplicationExceptionMessage.FileStorageServiceDIError, nameof(AWSS3StorageServices)));
-                    s3 = null;
-                }
-                return new AWSS3StorageServices(s3, logger, options.AWSS3StorageOptions!);
             });
         services.AddScoped<IFileStorageFactory, FileStorageFactory>();
         return services;
