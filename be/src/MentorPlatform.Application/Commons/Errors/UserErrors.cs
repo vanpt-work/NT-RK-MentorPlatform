@@ -1,5 +1,4 @@
-﻿
-using MentorPlatform.Domain.Shared;
+﻿using MentorPlatform.Domain.Shared;
 
 namespace MentorPlatform.Application.Commons.Errors;
 

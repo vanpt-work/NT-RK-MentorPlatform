@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MentorPlatform.Application.Commons.Models.Responses.Course;
+﻿namespace MentorPlatform.Application.Commons.Models.Responses.Course;
 public class CourseResponse
 {
     public Guid Id { get; set; }

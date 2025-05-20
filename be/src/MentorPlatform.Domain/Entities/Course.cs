@@ -18,5 +18,4 @@ public class Course : AuditableEntity, IHasKey<Guid>, ISoftDeleteEntity
     public CourseCategory CourseCategory { get;set; } = default!;
     public virtual ICollection<CourseResource>? CourseResources { get; set; }
     public virtual ICollection<MentoringSession>? MentoringSessions { get; set; }
-
 }

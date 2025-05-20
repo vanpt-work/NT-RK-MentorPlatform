@@ -1,13 +1,8 @@
 ﻿using FluentValidation;
 using MentorPlatform.Application.Commons.ValidationMessages;
 using MentorPlatform.Domain.Constants;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace MentorPlatform.Application.Commons.Models.Requests.CourseCategory;
+namespace MentorPlatform.Application.Commons.Models.Requests.CourseCategoryRequests;
 public class UpdateCourseCategoryRequest
 {
     public string Name { get; set; }
