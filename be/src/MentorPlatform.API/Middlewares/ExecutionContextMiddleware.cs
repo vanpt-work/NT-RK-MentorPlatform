@@ -5,6 +5,7 @@ using MentorPlatform.CrossCuttingConcerns.Exceptions;
 using MentorPlatform.CrossCuttingConcerns.Helpers;
 using MentorPlatform.Domain.Entities;
 using MentorPlatform.Domain.Repositories;
+using MentorPlatform.Persistence;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.JsonWebTokens;
 using System.Net;
@@ -21,7 +22,7 @@ public class ExecutionContextMiddleware
         _next = next;
     }
 
-    public async Task InvokeAsync(HttpContext context, IUserRepository userRepository,
+    public async Task InvokeAsync(HttpContext context, IUserRepository userRepository, ApplicationDbContext applicationDbContext,
         IExecutionContext executionContext, IMemoryCache memoryCache)
     {
         if (context.User.Identity?.IsAuthenticated == true)
@@ -50,7 +51,10 @@ public class ExecutionContextMiddleware
             {
                 throw new UnAuthorizedException(UserErrorMessages.UserHasNotBeenVerified);
             }
-            
+
+            user.LastActive = DateTime.UtcNow;
+            applicationDbContext.Users.Update(user);
+            await applicationDbContext.SaveChangesAsync();
             executionContext.SetCurrentUser(user);
             executionContext.SetIdentityTokenId(jti);
 

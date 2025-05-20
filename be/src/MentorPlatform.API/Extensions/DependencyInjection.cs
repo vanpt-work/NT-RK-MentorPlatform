@@ -696,26 +696,35 @@ public static class DependencyInjection
 
     private static async Task SeedCourseDataAsync(ApplicationDbContext context)
     {
-        if (!await context.Courses.AnyAsync())
+        if (!await context.Courses.AnyAsync() && await context.Users.Where(u => u.Role == Role.Mentor).AnyAsync())
         {
+            var mentors = await context.Users.Where(u => u.Role == Role.Mentor).Take(10).ToListAsync();
             var categories = await context.CourseCategories.ToListAsync();
             var courses = new List<Course>();
             foreach (var category in categories)
             {
                 for (int i = 1; i <= 10; i++)
                 {
+                    var mentor = mentors[RandomInRange(1, mentors.Count) - 1];
                     courses.Add(new Course
                     {
                         Title = $"{category.Name} Course {i}",
                         Description = $"This is {category.Name} Course {i} description.",
                         Level = (CourseLevel)(i % 3 + 1),
                         CourseCategoryId = category.Id,
-                        IsDeleted = false
+                        IsDeleted = false,
+                        Mentor = mentor
                     });
                 }
             }
             context.Courses.AddRange(courses);
             await context.SaveChangesAsync();
         }
+    }
+
+    private static int RandomInRange(int startRange, int endRange)
+    {
+        var rnd = new Random();
+        return rnd.Next(startRange, endRange + 1);
     }
 }

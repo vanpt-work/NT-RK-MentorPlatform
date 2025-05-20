@@ -9,12 +9,14 @@ public static class UserMappings
 {
     public static UserResponse ToResponse(this User user)
     {
+        var isRequestPending = user.Role == Role.Mentor 
+                               && (!user.ApplicationRequests?.Any(ar => ar.Status == ApplicationRequestStatus.Approved) ?? true);
         return new UserResponse
         {
             Id = user.Id,
             Email = user.Email,
             Role = user.Role,
-            IsActive = user.IsActive,
+            Status = isRequestPending ? UserStatus.PendingForApproval : GetUserStatusResponse(user.IsActive),
             IsDeleted = user.IsDeleted,
             IsNotification = user.IsNotification,
             IsPrivateProfile = user.IsPrivateProfile,
@@ -26,6 +28,10 @@ public static class UserMappings
         };
     }
 
+    public static UserStatus GetUserStatusResponse(bool isUserActive)
+    {
+        return isUserActive ? UserStatus.Active : UserStatus.Inactive;
+    }
     public static UserDetailResponse ToResponse(this UserDetail userDetail)
     {
         return new UserDetailResponse
@@ -50,34 +56,34 @@ public static class UserMappings
     {
         var user = new User
         {
-            Email = registerRequest.Email,
-            Password = HashingHelper.HashData(registerRequest.Password),
+            Email = registerRequest.Email!,
+            Password = HashingHelper.HashData(registerRequest.Password!),
             Role = (Role)registerRequest.Role,
             IsNotification = registerRequest.IsNotification,
             IsPrivateProfile = registerRequest.IsPrivateProfile,
-            IsReceiveMessage = registerRequest.IsReceiveMessage
-        };
-        user.UserDetail = new UserDetail
-        {
-            FullName = registerRequest.FullName,
-            Bio = registerRequest.Bio,
-            Experience = registerRequest.Experience,
-            CommunicationPreference = registerRequest.CommunicationPreference is not null
-                ? (CommunicationPreference)registerRequest.CommunicationPreference.Value
-                : default,
-            ProfessionalSkill = registerRequest.ProfessionalSkill,
-            Goals = registerRequest.Goals,
-            Duration = registerRequest.Duration,
-            SessionFrequency = (SessionFrequency)registerRequest.SessionFrequency,
-            LearningStyle = registerRequest.LearningStyle is not null
-                ? (LearningStyle?)registerRequest.LearningStyle.Value
-                : null,
-            TeachingStyles = registerRequest.TeachingStyles?
-                .Select(t => (TeachingStyle)t)
-                .ToList(),
-            Availability = registerRequest.Availability?
-                .Select(a => (UserAvailability)a)
-                .ToList()
+            IsReceiveMessage = registerRequest.IsReceiveMessage,
+            UserDetail = new UserDetail
+            {
+                FullName = registerRequest.FullName!,
+                Bio = registerRequest.Bio,
+                Experience = registerRequest.Experience,
+                CommunicationPreference = registerRequest.CommunicationPreference is not null
+                    ? (CommunicationPreference)registerRequest.CommunicationPreference.Value
+                    : default,
+                ProfessionalSkill = registerRequest.ProfessionalSkill,
+                Goals = registerRequest.Goals,
+                Duration = registerRequest.Duration,
+                SessionFrequency = (SessionFrequency)registerRequest.SessionFrequency,
+                LearningStyle = registerRequest.LearningStyle is not null
+                    ? (LearningStyle?)registerRequest.LearningStyle.Value
+                    : null,
+                TeachingStyles = registerRequest.TeachingStyles?
+                    .Select(t => (TeachingStyle)t)
+                    .ToList(),
+                Availability = registerRequest.Availability?
+                    .Select(a => (UserAvailability)a)
+                    .ToList()
+            }
         };
 
         return user;
@@ -88,29 +94,29 @@ public static class UserMappings
         {
             IsNotification = registerRequest.IsNotification,
             IsPrivateProfile = registerRequest.IsPrivateProfile,
-            IsReceiveMessage = registerRequest.IsReceiveMessage
-        };
-        user.UserDetail = new UserDetail
-        {
-            FullName = registerRequest.FullName,
-            Bio = registerRequest.Bio,
-            Experience = registerRequest.Experience,
-            CommunicationPreference = registerRequest.CommunicationPreference is not null
-                ? (CommunicationPreference)registerRequest.CommunicationPreference.Value
-                : default,
-            ProfessionalSkill = registerRequest.ProfessionalSkill,
-            Goals = registerRequest.Goals,
-            Duration = registerRequest.Duration,
-            SessionFrequency = (SessionFrequency)registerRequest.SessionFrequency,
-            LearningStyle = registerRequest.LearningStyle is not null
-                ? (LearningStyle?)registerRequest.LearningStyle.Value
-                : null,
-            TeachingStyles = registerRequest.TeachingStyles?
-                .Select(t => (TeachingStyle)t)
-                .ToList(),
-            Availability = registerRequest.Availability?
-                .Select(a => (UserAvailability)a)
-                .ToList()
+            IsReceiveMessage = registerRequest.IsReceiveMessage,
+            UserDetail = new UserDetail
+            {
+                FullName = registerRequest.FullName,
+                Bio = registerRequest.Bio,
+                Experience = registerRequest.Experience,
+                CommunicationPreference = registerRequest.CommunicationPreference is not null
+                    ? (CommunicationPreference)registerRequest.CommunicationPreference.Value
+                    : default,
+                ProfessionalSkill = registerRequest.ProfessionalSkill,
+                Goals = registerRequest.Goals,
+                Duration = registerRequest.Duration,
+                SessionFrequency = (SessionFrequency)registerRequest.SessionFrequency,
+                LearningStyle = registerRequest.LearningStyle is not null
+                    ? (LearningStyle?)registerRequest.LearningStyle.Value
+                    : null,
+                TeachingStyles = registerRequest.TeachingStyles?
+                    .Select(t => (TeachingStyle)t)
+                    .ToList(),
+                Availability = registerRequest.Availability?
+                    .Select(a => (UserAvailability)a)
+                    .ToList()
+            }
         };
 
         return user;

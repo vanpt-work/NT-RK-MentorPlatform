@@ -18,7 +18,5 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(UserConstants.MaxLengthGmail);
         builder.Property(u => u.Password)
             .HasMaxLength(UserConstants.MaxLengthPasswordHash);
-
-        builder.HasQueryFilter(cc => !cc.IsDeleted);
     }
 }

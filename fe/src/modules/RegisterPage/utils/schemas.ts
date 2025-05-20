@@ -144,12 +144,15 @@ export const preferencesSchema = z.object({
         .refine(
             (val) => typeof val === "string",
             PREFERRED_LEARNING_STYLE_IS_INVALID,
-        ),
+        )
+        .nullable()
+        .optional(),
 
     teachingStyles: z
         .enum(["handson", "discussion", "project", "lecture"], {
             required_error: PREFERRED_TEACHING_METHOD_IS_INVALID,
         })
+        .nullable()
         .optional(),
 
     privacySettings: z

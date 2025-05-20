@@ -86,6 +86,7 @@ public class AuthsController : ApiControllerBase
     }
 
     [HttpPost("register")]
+    [Consumes("multipart/form-data")]
     public async Task<IActionResult> RegisterAsync([FromForm] RegisterRequest registerRequest)
     {
         var result = await _authServices.RegisterAsync(registerRequest);

@@ -22,7 +22,7 @@ export default function OTPVerificationPage() {
             | "login";
 
         if (!emailParam) {
-            setError("Email không được cung cấp. Vui lòng thử lại.");
+            setError("Email is required. Please try again.");
             return;
         }
 
