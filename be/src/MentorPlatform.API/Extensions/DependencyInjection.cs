@@ -7,6 +7,7 @@ using MentorPlatform.Domain.Enums;
 using MentorPlatform.Infrastructure.Extensions;
 using MentorPlatform.Persistence;
 using MentorPlatform.Persistence.Extensions;
+using MentorPlatform.WebApi.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +17,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection ConfigureEntireLayers(this IServiceCollection services, IConfiguration config)
     {
+        services.AddScoped<ValidationRequestModelAttribute>();
         services.Configure<ApiBehaviorOptions>(options =>
         {
             options.SuppressModelStateInvalidFilter = true;
