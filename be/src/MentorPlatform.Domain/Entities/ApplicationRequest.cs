@@ -13,6 +13,8 @@ public class ApplicationRequest : AuditableEntity, IHasKey<Guid>, ISoftDeleteEnt
     public string Description { get; set; } = default!;
     public string? Note { get; set; } = default!;
     public ApplicationRequestStatus Status { get; set; }
+    
+    public DateTime Submitted { get; set; }
     public List<string>? Certifications { get; set; } = default;
     public Guid MentorId { get; set; }
     [JsonIgnore]

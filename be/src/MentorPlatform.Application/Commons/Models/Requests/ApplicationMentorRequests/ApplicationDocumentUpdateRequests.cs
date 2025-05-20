@@ -20,7 +20,7 @@ public class ApplicationDocumentUpdateRequestsValidator: AbstractValidator<Appli
         RuleFor(x => x.FilePath)
             .NotEmpty().WithMessage(ApplicationRequestValidationMessages.FilePathNotEmpty)
             .MaximumLength(ApplicationRequestConstants.MaxLengthFilePath).WithMessage(ApplicationRequestValidationMessages.FilePathMaxLength);
-        RuleFor(x => x.FilePath)
+        RuleFor(x => x.FileName)
             .NotEmpty().WithMessage(ApplicationRequestValidationMessages.FileNameNotEmpty)
             .MaximumLength(ApplicationRequestConstants.MaxLengthFileName).WithMessage(ApplicationRequestValidationMessages.FileNameMaxLength);
         RuleFor(x => x.FileContent)

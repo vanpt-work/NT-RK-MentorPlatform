@@ -2,7 +2,9 @@
 using MentorPlatform.Application.Commons.Errors;
 using MentorPlatform.Application.Commons.Mappings;
 using MentorPlatform.Application.Commons.Models.Mail;
+using MentorPlatform.Application.Commons.Models.Query;
 using MentorPlatform.Application.Commons.Models.Requests.ApplicationMentorRequests;
+using MentorPlatform.Application.Commons.Models.Responses.ApplicationRequestResponses;
 using MentorPlatform.Application.Identity;
 using MentorPlatform.Application.Services.File;
 using MentorPlatform.Application.Services.FileStorage;
@@ -14,6 +16,7 @@ using MentorPlatform.Domain.Repositories;
 using MentorPlatform.Domain.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using RazorLight;
+using System.Linq;
 
 namespace MentorPlatform.Application.UseCases.ApplicationRequestUseCases;
 
@@ -133,6 +136,7 @@ public class ApplicationRequestServices : IApplicationRequestServices
             }
         }
 
+        applicationRequest.Submitted = DateTime.UtcNow;
         applicationRequest.Description = updateApplicationRequestMentorRequest.Description;
         applicationRequest.Education = updateApplicationRequestMentorRequest.Education;
         applicationRequest.Certifications = updateApplicationRequestMentorRequest.Certifications;
@@ -168,6 +172,83 @@ public class ApplicationRequestServices : IApplicationRequestServices
                                                                ApplicationRequestStatus.UnderReview);
 
         return Result<string>.Success(ApplicationRequestCommandMessages.RequestMentorUpdateApplicationRequestSuccess);
+    }
+
+    public async Task<Result<PaginationResult<ApplicationRequestResponse>>> GetAsync(ApplicationRequestQueryParameters applicationRequestQueryParameters)
+    {
+        var applicationRequestQuery = _applicationRequestRepository.GetQueryable();
+        applicationRequestQuery = applicationRequestQuery
+            .Where(u =>
+                (string.IsNullOrEmpty(applicationRequestQueryParameters.Search)
+                 || u.Mentor.UserDetail.FullName
+                     .Contains(applicationRequestQueryParameters.Search)
+                 || u.Mentor.Email
+                     .Contains(applicationRequestQueryParameters.Search))
+                && applicationRequestQueryParameters.ApplicationRequestStatuses.Contains((int)u.Status)
+            );
+
+        var totalCount = await _applicationRequestRepository.CountAsync(applicationRequestQuery);
+
+        var applicationResponseQuery = applicationRequestQuery
+            .Skip(applicationRequestQueryParameters.PageSize * (applicationRequestQueryParameters.PageNumber - 1))
+            .Take(applicationRequestQueryParameters.PageNumber)
+            .Select(u => new ApplicationRequestResponse
+            {
+                Summitted = u.Submitted,
+                Description = u.Description,
+                Education = u.Education,
+                WorkExperience = u.WorkExperience,
+                Status = u.Status,
+                FullName = u.Mentor.UserDetail.FullName
+            });
+        var dataResponse = await _applicationRequestRepository.ToListAsync(applicationResponseQuery);
+
+        return PaginationResult<ApplicationRequestResponse>.Create(applicationRequestQueryParameters.PageNumber,
+            applicationRequestQueryParameters.PageSize,
+            totalCount, dataResponse);
+    }
+
+    public async Task<Result<ApplicationRequestDetailResponse>> GetDetailAsync(Guid id)
+    {
+        var applicationDetailQuery = _applicationRequestRepository.GetQueryable().Where(u => u.Id == id)
+            .Select(u => new ApplicationRequestDetailResponse
+            {
+                Summitted = u.Submitted,
+                Description = u.Description,
+                Education = u.Education,
+                WorkExperience = u.WorkExperience,
+                Status = u.Status,
+                FullName = u.Mentor.UserDetail.FullName,
+                Note = u.Note,
+                ApplicationRequestDocuments = u.ApplicationDocuments != null ? u.ApplicationDocuments
+                    .Select(ad => new ApplicationRequestDocumentResponse
+                    {
+                        FilePath = ad.FilePath,
+                        FileName = ad.FileName
+                    }).ToList() : default!
+            });
+        
+        var applicationDetailResponse = await _applicationRequestRepository.FirstOrDefaultAsync(applicationDetailQuery);
+
+        if (applicationDetailResponse == null)
+        {
+            return default!;
+        }
+
+        if (applicationDetailResponse.ApplicationRequestDocuments != null)
+        {
+            var getSignedApplicationDocumentPath = applicationDetailResponse.ApplicationRequestDocuments
+                .Select(ad => _fileStorageServices.GetPreSignedUrlFile(ad.FilePath)).ToList();
+
+            await Task.WhenAll(getSignedApplicationDocumentPath);
+
+            for (int i = 0; i < applicationDetailResponse.ApplicationRequestDocuments.Count; i++)
+            {
+                applicationDetailResponse.ApplicationRequestDocuments[i].FilePath = getSignedApplicationDocumentPath[i].Result;
+            }
+        }
+
+        return applicationDetailResponse;
     }
 
 

@@ -15,6 +15,7 @@ public static class ApplicationRequestMappings
             Description = createApplicationRequestMentorRequest.Description,
             Certifications = createApplicationRequestMentorRequest.Certifications,
             Status = createApplicationRequestMentorRequest.Status,
+            Submitted = DateTime.UtcNow
         };
     }
 }

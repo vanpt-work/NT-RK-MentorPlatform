@@ -1,4 +1,5 @@
-﻿using MentorPlatform.Application.Commons.Models.Requests.ApplicationMentorRequests;
+﻿using MentorPlatform.Application.Commons.Models.Query;
+using MentorPlatform.Application.Commons.Models.Requests.ApplicationMentorRequests;
 using MentorPlatform.Application.UseCases.ApplicationRequestUseCases;
 using MentorPlatform.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
@@ -17,7 +18,7 @@ public class ApplicationRequestsController : ApiControllerBase
     }
     [Authorize(Roles = nameof(Role.Mentor))]
     [HttpPost]
-    public async Task<IActionResult> CreateAsync([FromBody] CreateApplicationRequestMentorRequest createApplicationRequestMentorRequest)
+    public async Task<IActionResult> CreateAsync([FromForm] CreateApplicationRequestMentorRequest createApplicationRequestMentorRequest)
     {
         var result = await _applicationRequestServices.CreateAsync(createApplicationRequestMentorRequest);
 
@@ -26,7 +27,7 @@ public class ApplicationRequestsController : ApiControllerBase
 
     [Authorize(Roles = nameof(Role.Mentor))]
     [HttpPut]
-    public async Task<IActionResult> UpdateAsync([FromBody] UpdateApplicationRequestMentorRequest updateApplicationRequestMentorRequest)
+    public async Task<IActionResult> UpdateAsync([FromForm] UpdateApplicationRequestMentorRequest updateApplicationRequestMentorRequest)
     {
         var result = await _applicationRequestServices.UpdateAsync(updateApplicationRequestMentorRequest);
 
@@ -42,4 +43,22 @@ public class ApplicationRequestsController : ApiControllerBase
         return ProcessResult(result);
     }
 
+    [Authorize(Roles = nameof(Role.Admin))]
+    [HttpGet]
+    public async Task<IActionResult> GetAsync([FromQuery] ApplicationRequestQueryParameters applicationRequestQueryParameters)
+    {
+        var result = await _applicationRequestServices.GetAsync(applicationRequestQueryParameters);
+
+        return ProcessResult(result);
+    }
+
+    [Authorize(Roles = nameof(Role.Admin))]
+    [HttpGet("{id:guid}")]
+
+    public async Task<IActionResult> GetDetailAsync(Guid id)
+    {
+        var result = await _applicationRequestServices.GetDetailAsync(id);
+
+        return ProcessResult(result);
+    }
 }

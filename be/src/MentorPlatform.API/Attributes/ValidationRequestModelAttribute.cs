@@ -1,6 +1,7 @@
 ﻿
 using FluentValidation;
 using FluentValidation.Results;
+using MentorPlatform.Domain.Entities;
 using MentorPlatform.Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -68,6 +69,8 @@ public class ValidationRequestModelAttribute : ActionFilterAttribute
     }
     private object TrimRecursively(object obj)
     {
+        if (obj is IFormFile)
+            return obj;
         if (obj is string s)
         {
             return s.Trim();
@@ -114,6 +117,8 @@ public class ValidationRequestModelAttribute : ActionFilterAttribute
 
                 if (prop.PropertyType == typeof(string))
                 {
+                    if (prop.PropertyType.Name == nameof(User.Password))
+                        break;
                     var trimmed = ((string)propVal).Trim();
                     prop.SetValue(obj, trimmed);
                 }
