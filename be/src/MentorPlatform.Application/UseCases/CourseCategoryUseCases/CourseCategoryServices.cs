@@ -61,7 +61,7 @@ public class CourseCategoryServices : ICourseCategoryServices
                                                         Id = c.Id,
                                                         Title = c.Title,
                                                         Description = c.Description,
-                                                        Level = c.Level
+                                                        Level = (int)c.Level
                                                     }).ToList() : new List<CourseResponse>()
                                                 });
 

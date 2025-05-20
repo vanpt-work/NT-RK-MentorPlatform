@@ -4,7 +4,6 @@ using MentorPlatform.WebApi.Middlewares;
 using MentorPlatform.WebApi.OpenApi;
 using MentorPlatform.WebApi.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.IdentityModel.Tokens;
 using RazorLight;
 using System.Reflection;
@@ -79,15 +78,15 @@ app.UseCors(corsOptions.PolicyName);
 
 app.UseCors(corsOptions.PolicyName);
 app.UseExceptionHandler((_) => { });
-if (app.Environment.IsDevelopment())
+
+await app.InitializeDatabaseAsync();
+app.MapOpenApi();
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.MapOpenApi();
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    await app.InitializeDatabaseAsync();
-}
-
-
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Mentor Platform API Swagger");
+    c.RoutePrefix = string.Empty;
+});
 
 app.UseHttpsRedirection();
 

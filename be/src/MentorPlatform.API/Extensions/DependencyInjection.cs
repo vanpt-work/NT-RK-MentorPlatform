@@ -7,6 +7,7 @@ using MentorPlatform.Domain.Enums;
 using MentorPlatform.Infrastructure.Extensions;
 using MentorPlatform.Persistence;
 using MentorPlatform.Persistence.Extensions;
+using MentorPlatform.WebApi.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +17,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection ConfigureEntireLayers(this IServiceCollection services, IConfiguration config)
     {
+        services.AddScoped<ValidationRequestModelAttribute>();
         services.Configure<ApiBehaviorOptions>(options =>
         {
             options.SuppressModelStateInvalidFilter = true;
@@ -710,7 +712,7 @@ public static class DependencyInjection
                     {
                         Title = $"{category.Name} Course {i}",
                         Description = $"This is {category.Name} Course {i} description.",
-                        Level = i % 3 + 1,
+                        Level = (CourseLevel)(i % 3 + 1),
                         CourseCategoryId = category.Id,
                         IsDeleted = false,
                         Mentor = mentor
