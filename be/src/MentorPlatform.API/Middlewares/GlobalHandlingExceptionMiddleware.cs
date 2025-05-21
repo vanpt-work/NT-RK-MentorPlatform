@@ -34,7 +34,7 @@ public class GlobalHandlingExceptionMiddleware :  IExceptionHandler
             BadRequestException => (int)HttpStatusCode.BadRequest,
             NotFoundException => (int)HttpStatusCode.NotFound,
             ValidationException => (int)HttpStatusCode.BadRequest,
-            UnAuthorizedException => (int)HttpStatusCode.Unauthorized,
+            UnauthorizedException => (int)HttpStatusCode.Unauthorized,
             _ => (int)HttpStatusCode.InternalServerError
         };
     }
@@ -46,7 +46,7 @@ public class GlobalHandlingExceptionMiddleware :  IExceptionHandler
             BadRequestException => nameof(HttpStatusCode.BadRequest),
             NotFoundException => nameof(HttpStatusCode.NotFound),
             ValidationException => nameof(HttpStatusCode.UnprocessableEntity),
-            UnAuthorizedException => nameof(HttpStatusCode.Unauthorized),
+            UnauthorizedException => nameof(HttpStatusCode.Unauthorized),
             _ => nameof(HttpStatusCode.InternalServerError),
         };
     }

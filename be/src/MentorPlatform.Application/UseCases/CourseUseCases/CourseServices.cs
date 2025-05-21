@@ -1,11 +1,8 @@
 using MentorPlatform.Application.Commons.Errors;
 using MentorPlatform.Application.Commons.Mappings;
 using MentorPlatform.Application.Commons.Models.Requests.CourseRequests;
-using MentorPlatform.Application.Commons.Models.Requests.ResourseRequests;
 using MentorPlatform.Application.Commons.Models.Responses.Course;
 using MentorPlatform.Application.Identity;
-using MentorPlatform.Application.Services.File;
-using MentorPlatform.Application.Services.FileStorage;
 using MentorPlatform.CrossCuttingConcerns.Exceptions;
 using MentorPlatform.Domain.Entities;
 using MentorPlatform.Domain.Enums;
@@ -17,21 +14,18 @@ namespace MentorPlatform.Application.UseCases.CourseUseCases;
 public class CourseServices : ICourseServices
 {
     private readonly ICourseRepository _courseRepository;
-    private readonly IFileStorageServices _fileStorage;
     private readonly IExecutionContext _executionContext;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CourseServices> _logger;
     private readonly IRepository<User, Guid> _userRepository;
 
     public CourseServices(ICourseRepository courseRepository,
-        IFileStorageFactory fileStorageFactory,
         IExecutionContext executionContext,
         IUnitOfWork unitOfWork,
         ILogger<CourseServices> logger,
-        IRepository<User,Guid> userRepository)
+        IRepository<User, Guid> userRepository)
     {
         _courseRepository = courseRepository;
-        _fileStorage = fileStorageFactory.Get();
         _executionContext = executionContext;
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -72,8 +66,35 @@ public class CourseServices : ICourseServices
         {
             throw new BadRequestException(ApplicationExceptionMessage.CourseNotFound);
         }
+        if (dbCourse.MentorId != userId)
+        {
+            throw new UnauthorizedException(ApplicationExceptionMessage.CourseNotFound);
+        }
 
-        CopyData(courseRequest, dbCourse);
+        dbCourse.Title = courseRequest.Title;
+        dbCourse.Description = courseRequest.Description;
+        dbCourse.Level = courseRequest.Level;
+        dbCourse.CourseCategoryId = courseRequest.CourseCategoryId;
+
+        foreach (var resourceId in courseRequest.ResourceIds)
+        {
+            if (dbCourse.CourseResources.Any(c => c.ResourceId == resourceId))
+            {
+                continue;
+            }
+            dbCourse.CourseResources.Add(new CourseResource
+            {
+                ResourceId = resourceId,
+            });
+        }
+        foreach (var courseResource in dbCourse.CourseResources)
+        {
+            if (courseRequest.OldResourceIds.Any(r => r.Equals(courseResource.ResourceId)))
+            {
+                continue;
+            }
+            dbCourse.CourseResources.Remove(courseResource);
+        }
 
         await _unitOfWork.SaveChangesAsync();
 
@@ -82,11 +103,18 @@ public class CourseServices : ICourseServices
 
     public async Task<Result> DeleteCourseAsync(Guid courseId)
     {
-        var dbCourse = await _courseRepository.GetByIdAsync(courseId, nameof(Course.MentoringSessions), nameof(Course.CourseResources));
+        var userId = _executionContext.GetUserId();
 
+        var dbCourse = await _courseRepository.GetByIdAsync(courseId, nameof(Course.MentoringSessions), nameof(Course.CourseResources));
+        
         if (dbCourse == null)
         {
             throw new BadRequestException(ApplicationExceptionMessage.CourseNotFound);
+        }
+
+        if (dbCourse.MentorId != userId)
+        {
+            throw new UnauthorizedException(ApplicationExceptionMessage.CourseNotFound);
         }
 
         if (dbCourse.MentoringSessions != null && dbCourse.MentoringSessions.Count > 0)
@@ -95,16 +123,6 @@ public class CourseServices : ICourseServices
         }
 
         return Result.Success();
-    }
-
-    private static void CopyData(EditCourseRequest request, Course course)
-    {
-        course.Title = request.Title;
-        course.Description = request.Description;
-        course.Level = request.Level;
-        course.CourseCategoryId = request.CourseCategoryId;
-        //check if resourceIds is include
-        // check if old resourceIds is not include in new resourceIds
     }
 
     public async Task<Result> GetAllAsync(CourseQueryParameters queryParameters)
