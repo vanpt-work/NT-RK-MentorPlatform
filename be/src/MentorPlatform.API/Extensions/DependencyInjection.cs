@@ -9,6 +9,7 @@ using MentorPlatform.Persistence;
 using MentorPlatform.Persistence.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics.Internal;
 
 namespace MentorPlatform.WebApi.Extensions;
 
@@ -40,6 +41,7 @@ public static class DependencyInjection
         await SeedCourseCategoryDataAsync(context);
         await SeedExpertiseDataAsync(context);
         await SeedCourseDataAsync(context);
+        await SeedResourceDataAsync(context);
         await SeedCourseResourseDataAsync(context);
     }
     private static async Task SeedUserDataAsync(ApplicationDbContext context)
@@ -736,6 +738,55 @@ public static class DependencyInjection
         }
     }
 
+    private static async Task SeedResourceDataAsync(ApplicationDbContext context)
+    {
+        if(!await context.Resources.AnyAsync())
+        {
+            var resources = new List<Resource>()
+            {
+                new()
+                {
+                    Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+                    MentorId = Guid.Parse("b2c3d4e5-f678-9012-bcde-f23456789012"),
+                    FileType = "PDF",
+                    FilePath = "https://storage.example.com/courses/csharp-basics-guide.pdf",
+                    Title = "C# Programming Guide",
+                    Description = "A detailed guide to C# syntax and object-oriented programming concepts.",
+                },
+                new()
+                {
+                    Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
+                    MentorId = Guid.Parse("b8c9d0e1-2345-6789-1234-890123456789"), // User với Role = 1
+                    FileType = "Video",
+                    FilePath = "https://storage.example.com/courses/design-patterns.mp4",
+                    Title = "Design Patterns in C#",
+                    Description = "Comprehensive video on common design patterns in C# development.",
+                },
+                new()
+                {
+                    Id = Guid.Parse("33333333-3333-3333-3333-333333333333"),
+                    MentorId = Guid.Parse("b8c9d0e1-2345-6789-1234-890123456789"), // User với Role = 1
+                    FileType = "Document",
+                    FilePath = "https://storage.example.com/courses/ux-checklist.docx",
+                    Title = "UX Design Checklist",
+                    Description = "A checklist for ensuring great user experience in web and mobile apps.",
+                },
+                new()
+                {
+                    Id = Guid.Parse("44444444-4444-4444-4444-444444444444"),
+                    MentorId = Guid.Parse("b8c9d0e1-2345-6789-1234-890123456789"), // User với Role = 1
+                    FileType = "PDF",
+                    FilePath = "https://storage.example.com/courses/project-management-guide.pdf",
+                    Title = "Project Management Guide",
+                    Description = "Step-by-step guide to managing software projects efficiently.",
+                }
+               
+            };
+            context.AddRange(resources);
+            await context.SaveChangesAsync();
+        }
+    }
+
     private static async Task SeedCourseResourseDataAsync(ApplicationDbContext context)
     {
         if (!await context.CourseResources.AnyAsync())
@@ -744,204 +795,33 @@ public static class DependencyInjection
             {
                 new CourseResource
                 {
-                    Id = Guid.Parse("b1c2d3e4-a5b6-7890-1234-56789abcdef2"),
+                    Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
                     CourseId = Guid.Parse("1a2b3c4d-5e6f-7890-1234-56789abcdef0"),
-                    FileType = "PDF",
-                    FilePath = "https://storage.example.com/courses/csharp-basics-guide.pdf",
-                    Title = "C# Programming Guide",
-                    Description = "A detailed guide to C# syntax and object-oriented programming concepts.",
+                    ResourceId = Guid.Parse("22222222-2222-2222-2222-222222222222"),
                     IsDeleted = false
                 },
                 new CourseResource
                 {
-                    Id = Guid.Parse("c2d3e4f5-b6c7-8901-2345-6789abcdef23"),
-                    CourseId = Guid.Parse("2b3c4d5e-6f7a-8901-2345-6789abcdef01"),
-                    FileType = "Video",
-                    FilePath = "https://storage.example.com/courses/ml-techniques.mp4",
-                    Title = "Machine Learning Tutorial",
-                    Description = "Video tutorial covering advanced machine learning algorithms.",
+                    Id = Guid.Parse("33333333-3333-3333-3333-333333333333"),
+                    CourseId = Guid.Parse("1a2b3c4d-5e6f-7890-1234-56789abcdef0"),
+                    ResourceId = Guid.Parse("33333333-3333-3333-3333-333333333333"),
                     IsDeleted = false
                 },
                 new CourseResource
                 {
-                    Id = Guid.Parse("d3e4f5a6-c7d8-9012-3456-789abcdef234"),
-                    CourseId = Guid.Parse("3c4d5e6f-7a8b-9012-3456-789abcdef012"),
-                    FileType = "Document",
-                    FilePath = "https://storage.example.com/courses/business-plan-template.docx",
-                    Title = "Business Plan Template",
-                    Description = "Template for creating strategic business plans.",
+                    Id = Guid.Parse("44444444-4444-4444-4444-444444444444"),
+                    CourseId = Guid.Parse("1a2b3c4d-5e6f-7890-1234-56789abcdef0"),
+                    ResourceId = Guid.Parse("44444444-4444-4444-4444-444444444444"),
                     IsDeleted = false
                 },
                 new CourseResource
                 {
-                    Id = Guid.Parse("e4f5a6b7-d8e9-0123-4567-89abcdef2345"),
-                    CourseId = Guid.Parse("4d5e6f7a-8b9c-0123-4567-89abcdef0123"),
-                    FileType = "Image",
-                    FilePath = "https://storage.example.com/courses/uiux-mockup.png",
-                    Title = "UI/UX Mockup Example",
-                    Description = "Sample mockup for designing user-friendly interfaces.",
+                    Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+                    CourseId = Guid.Parse("1a2b3c4d-5e6f-7890-1234-56789abcdef0"),
+                    ResourceId = Guid.Parse("11111111-1111-1111-1111-111111111111"),
                     IsDeleted = false
                 },
-                new CourseResource
-                {
-                    Id = Guid.Parse("f5a6b7c8-e9f0-1234-5678-9abcdef23456"),
-                    CourseId = Guid.Parse("5e6f7a8b-9c0d-1234-5678-9abcdef01234"),
-                    FileType = "PDF",
-                    FilePath = "https://storage.example.com/courses/seo-strategies.pdf",
-                    Title = "SEO Strategies",
-                    Description = "Guide to effective search engine optimization techniques.",
-                    IsDeleted = false
-                },
-                new CourseResource
-                {
-                    Id = Guid.Parse("a6b7c8d9-f0a1-2345-6789-abcdef234567"),
-                    CourseId = Guid.Parse("6f7a8b9c-0d1e-2345-6789-abcdef012345"),
-                    FileType = "Video",
-                    FilePath = "https://storage.example.com/courses/time-management-tips.mp4",
-                    Title = "Time Management Tips",
-                    Description = "Video on improving personal productivity techniques.",
-                    IsDeleted = false
-                },
-                new CourseResource
-                {
-                    Id = Guid.Parse("b7c8d9e0-a1b2-3456-7890-bcdef2345678"),
-                    CourseId = Guid.Parse("7a8b9c0d-1e2f-3456-7890-bcdef0123456"),
-                    FileType = "Document",
-                    FilePath = "https://storage.example.com/courses/budget-template.xlsx",
-                    Title = "Personal Budget Template",
-                    Description = "Spreadsheet for managing personal finances.",
-                    IsDeleted = false
-                },
-                new CourseResource
-                {
-                    Id = Guid.Parse("c8d9e0f1-b2c3-4567-8901-cdef23456789"),
-                    CourseId = Guid.Parse("8b9c0d1e-2f3a-4567-8901-cdef01234567"),
-                    FileType = "PDF",
-                    FilePath = "https://storage.example.com/courses/french-phrases.pdf",
-                    Title = "French Common Phrases",
-                    Description = "List of common French phrases for beginner learners.",
-                    IsDeleted = false
-                },
-                new CourseResource
-                {
-                    Id = Guid.Parse("d9e0f1a2-c3d4-5678-9012-def234567890"),
-                    CourseId = Guid.Parse("9c0d1e2f-3a4b-5678-9012-def012345678"),
-                    FileType = "Video",
-                    FilePath = "https://storage.example.com/courses/mindfulness-exercises.mp4",
-                    Title = "Mindfulness Exercises",
-                    Description = "Guided video for mindfulness meditation practices.",
-                    IsDeleted = false
-                },
-                new CourseResource
-                {
-                    Id = Guid.Parse("e0f1a2b3-d4e5-6789-0123-ef2345678901"),
-                    CourseId = Guid.Parse("0d1e2f3a-4b5c-6789-0123-ef0123456789"),
-                    FileType = "Document",
-                    FilePath = "https://storage.example.com/courses/civil-engineering-overview.docx",
-                    Title = "Civil Engineering Overview",
-                    Description = "Introduction to key civil engineering principles.",
-                    IsDeleted = false
-                },
-                new CourseResource
-                {
-                    Id = Guid.Parse("f1a2b3c4-e5f6-7890-1234-f0234567890a"),
-                    CourseId = Guid.Parse("1e2f3a4b-5c6d-7890-1234-f0123456789a"),
-                    FileType = "PDF",
-                    FilePath = "https://storage.example.com/courses/classroom-techniques.pdf",
-                    Title = "Classroom Techniques",
-                    Description = "Guide to effective classroom management strategies.",
-                    IsDeleted = false
-                },
-                new CourseResource
-                {
-                    Id = Guid.Parse("a2b3c4d5-f6a7-8901-2345-0123456789ab"),
-                    CourseId = Guid.Parse("2f3a4b5c-6d7e-8901-2345-0123456789ab"),
-                    FileType = "Video",
-                    FilePath = "https://storage.example.com/courses/network-security-basics.mp4",
-                    Title = "Network Security Basics",
-                    Description = "Video tutorial on securing computer networks.",
-                    IsDeleted = false
-                },
-                new CourseResource
-                {
-                    Id = Guid.Parse("b3c4d5e6-a7b8-9012-3456-123456789abc"),
-                    CourseId = Guid.Parse("3a4b5c6d-7e8f-9012-3456-123456789abc"),
-                    FileType = "PDF",
-                    FilePath = "https://storage.example.com/courses/javascript-reference.pdf",
-                    Title = "JavaScript Reference",
-                    Description = "Quick reference guide for JavaScript programming concepts.",
-                    IsDeleted = false
-                },
-                new CourseResource
-                {
-                    Id = Guid.Parse("c4d5e6f7-b8c9-0123-4567-23456789abcd"),
-                    CourseId = Guid.Parse("4b5c6d7e-8f9a-0123-4567-23456789abcd"),
-                    FileType = "Document",
-                    FilePath = "https://storage.example.com/courses/pandas-quick-guide.docx",
-                    Title = "Pandas Quick Guide",
-                    Description = "Guide to using Python's Pandas library for data analysis.",
-                    IsDeleted = false
-                },
-                new CourseResource
-                {
-                    Id = Guid.Parse("d5e6f7a8-c9d0-1234-5678-3456789abcde"),
-                    CourseId = Guid.Parse("5c6d7e8f-9a0b-1234-5678-3456789abcde"),
-                    FileType = "PDF",
-                    FilePath = "https://storage.example.com/courses/entrepreneurship-tips.pdf",
-                    Title = "Entrepreneurship Tips",
-                    Description = "Tips for starting and growing a successful business.",
-                    IsDeleted = false
-                },
-                new CourseResource
-                {
-                    Id = Guid.Parse("e6f7a8b9-d0e1-2345-6789-456789abcdef"),
-                    CourseId = Guid.Parse("6d7e8f9a-0b1c-2345-6789-456789abcdef"),
-                    FileType = "Image",
-                    FilePath = "https://storage.example.com/courses/photoshop-tools-guide.png",
-                    Title = "Photoshop Tools Guide",
-                    Description = "Visual guide to Photoshop tools and techniques.",
-                    IsDeleted = false
-                },
-                new CourseResource
-                {
-                    Id = Guid.Parse("f7a8b9c0-e1f2-3456-7890-56789abcdef0"),
-                    CourseId = Guid.Parse("7e8f9a0b-1c2d-3456-7890-56789abcdef0"),
-                    FileType = "Video",
-                    FilePath = "https://storage.example.com/courses/content-strategy-tutorial.mp4",
-                    Title = "Content Strategy Tutorial",
-                    Description = "Video on developing effective content marketing strategies.",
-                    IsDeleted = false
-                },
-                new CourseResource
-                {
-                    Id = Guid.Parse("a8b9c0d1-f2a3-4567-8901-6789abcdef01"),
-                    CourseId = Guid.Parse("8f9a0b1c-2d3e-4567-8901-6789abcdef01"),
-                    FileType = "PDF",
-                    FilePath = "https://storage.example.com/courses/public-speaking-tips.pdf",
-                    Title = "Public Speaking Tips",
-                    Description = "Guide to effective public speaking techniques.",
-                    IsDeleted = true
-                },
-                new CourseResource
-                {
-                    Id = Guid.Parse("b9c0d1e2-a3b4-5678-9012-789abcdef012"),
-                    CourseId = Guid.Parse("9a0b1c2d-3e4f-5678-9012-789abcdef012"),
-                    FileType = "Document",
-                    FilePath = "https://storage.example.com/courses/accounting-principles.docx",
-                    Title = "Accounting Principles",
-                    Description = "Overview of basic accounting concepts and practices.",
-                    IsDeleted = false
-                },
-                new CourseResource
-                {
-                    Id = Guid.Parse("c0d1e2f3-b4c5-6789-0123-89abcdef0123"),
-                    CourseId = Guid.Parse("0b1c2d3e-4f5a-6789-0123-89abcdef0123"),
-                    FileType = "PDF",
-                    FilePath = "https://storage.example.com/courses/spanish-vocabulary-guide.pdf",
-                    Title = "Advanced Spanish Vocabulary",
-                    Description = "Vocabulary guide for advanced Spanish learners.",
-                    IsDeleted = false
-                }
+
             };
             context.AddRange(courseResources);
             await context.SaveChangesAsync();

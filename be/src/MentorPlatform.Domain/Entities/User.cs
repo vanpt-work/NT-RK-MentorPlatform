@@ -27,5 +27,6 @@ public class User : AuditableEntity, IHasKey<Guid>, ISoftDeleteEntity
     public virtual ICollection<ApplicationRequest>? ApplicationRequests { get; set; }
     public virtual ICollection<UserCourseCategory>? UserCourseCategories { get; set; }
 
+    public virtual ICollection<Resource>? Resources { get; set; }
 
 }

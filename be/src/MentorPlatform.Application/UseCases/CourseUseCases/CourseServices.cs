@@ -94,10 +94,10 @@ public class CourseServices : ICourseServices
                     )
                     ? x.CourseResources.Select(r => new ResourceResponse()
                     {
-                        Title = r.Title,
-                        Description = r.Description,
-                        FilePath = r.FilePath,
-                        FileType = r.FileType
+                        Title = r.Resource.Title,
+                        Description = r.Resource.Description,
+                        FilePath = r.Resource.FilePath,
+                        FileType = r.Resource.FileType
                     }).ToList()
                     : new List<ResourceResponse>()
             });
