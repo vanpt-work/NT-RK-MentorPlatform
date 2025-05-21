@@ -2,6 +2,7 @@
 using FluentValidation;
 using MentorPlatform.Application.Options;
 using MentorPlatform.Application.Services.Security;
+using MentorPlatform.Application.UseCases.ApplicationRequestUseCases;
 using MentorPlatform.Application.UseCases.Authentication;
 using MentorPlatform.Application.UseCases.CourseCategoryUseCases;
 using MentorPlatform.Application.UseCases.CourseUseCases;
@@ -28,6 +29,7 @@ public static class DependencyInjection
         services.AddScoped<IAuthServices, AuthServices>();
         services.AddScoped<ICourseCategoryServices, CourseCategoryServices>();
         services.AddScoped<IUserServices, UserServices>();
+        services.AddScoped<IApplicationRequestServices, ApplicationRequestServices>();
         services.AddScoped<ICourseServices, CourseServices>();
         services.AddScoped<IExpertiseUseCases, ExpertiseUseCases>();
         services.AddScoped<ICourseServices, CourseServices>();
