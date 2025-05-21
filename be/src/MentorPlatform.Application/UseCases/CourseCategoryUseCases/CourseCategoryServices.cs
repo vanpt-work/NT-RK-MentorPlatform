@@ -37,7 +37,7 @@ public class CourseCategoryServices : ICourseCategoryServices
                             });
         var res = PaginationResult<CourseCategoryResponse>.Create(data: await _courseCategoryRepository.ToListAsync(queryPagination),
                                                                   totalCount: await _courseCategoryRepository.CountAsync(queryAll),
-                                                                  pageIndex: queryParameters.PageNumber,
+                                                                  pageNumber: queryParameters.PageNumber,
                                                                   pageSize: queryParameters.PageSize);
        
         return Result<PaginationResult<CourseCategoryResponse>>.Success(res);

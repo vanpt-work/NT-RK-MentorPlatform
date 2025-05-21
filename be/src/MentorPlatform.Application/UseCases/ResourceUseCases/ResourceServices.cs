@@ -55,7 +55,7 @@ public class ResourceServices : IResourceServices
                             });
         var res = PaginationResult<ResourceResponse>.Create(data: await _resourceRepository.ToListAsync(queryPagination),
                                                                   totalCount: await _resourceRepository.CountAsync(queryFilter),
-                                                                  pageIndex: queryParameters.PageNumber,
+                                                                  pageNumber: queryParameters.PageNumber,
                                                                   pageSize: queryParameters.PageSize);
 
         return Result<PaginationResult<ResourceResponse>>.Success(res);
