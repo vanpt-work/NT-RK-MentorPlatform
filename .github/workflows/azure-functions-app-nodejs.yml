@@ -28,6 +28,7 @@ env:
   AZURE_FUNCTIONAPP_NAME: 'MentorPlatformGR2'   # set this to your function app name on Azure
   AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'       # set this to the path to your function app project, defaults to the repository root
   NODE_VERSION: '22.x'                      # set this to the node version to use (e.g. '8.x', '10.x', '12.x')
+  VITE_API_URL_ROOT: 'https://mentorplatformgr2-be-gwa0fhb2aud4gjew.southeastasia-01.azurewebsites.net/api'
 defaults:
   run:
     working-directory: './fe'
