@@ -10,6 +10,10 @@ public static class CourseErrorMessage
     public const string DescriptionMaxLength = "Description cannot exceed 500 characters";
     public const string LevelInvalid = "Level must be between 0 and 3";
     public const string CourseCategoryNotExists = "Course category does not exists.";
+    public const string CourseNotExists = "Course does not exists";
+    public const string CourseDuplicateName = "Course name is duplicated";
+    public const string CourseIsUsed = "Course is currently used";
+    public const string MentorCanNotViewCourse = "Mentor do not have permission to view this course";
 }
 
 public static class CourseErrors
@@ -21,4 +25,15 @@ public static class CourseErrors
     public static Error DescriptionMaxLength => new(nameof(DescriptionMaxLength), CourseErrorMessage.DescriptionMaxLength);
     public static Error LevelInvalid => new(nameof(LevelInvalid), CourseErrorMessage.LevelInvalid);
     public static Error CourseCategoryNotExists => new(nameof(CourseCategoryNotExists), CourseErrorMessage.CourseCategoryNotExists);
+    public static Error CourseNotExists => new(nameof(CourseNotExists),
+        CourseErrorMessages.CourseNotExists);
+
+    public static Error CourseDuplicateName => new(nameof(CourseDuplicateName),
+        CourseErrorMessages.CourseDuplicateName);
+
+    public static Error CourseIsUsed => new(nameof(CourseIsUsed),
+       CourseErrorMessages.CourseIsUsed);
+
+    public static Error MentorCanNotViewCourse => new(nameof(MentorCanNotViewCourse),
+       CourseErrorMessages.MentorCanNotViewCourse);
 }

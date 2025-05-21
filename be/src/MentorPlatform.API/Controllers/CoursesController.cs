@@ -1,25 +1,33 @@
-﻿using MentorPlatform.Application.Commons.Models.Requests.ResourseRequests;
-using MentorPlatform.Application.UseCases.CourseUseCases;
+﻿using MentorPlatform.Application.Commons.Models.Requests.CourseRequests;
+using MentorPlatform.Application.UseCases.Course;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MentorPlatform.WebApi.Controllers;
 
 [Route("api/courses")]
+[Authorize]
 public class CoursesController : ApiControllerBase
 {
-    private readonly ICourseServices _courseServices;
-    public CoursesController(ICourseServices courseServices)
+    private readonly ICourseServices _courseService;
+
+    public CoursesController(ICourseServices courseService)
     {
-        _courseServices = courseServices;
+        _courseService = courseService;
     }
 
-    [HttpPost]
-    public IActionResult Test([FromForm] List<ResourceRequest> request)
+    [HttpGet]
+    public async Task<IActionResult> GetAllAsync([FromQuery] CourseQueryParameters queryParameters)
     {
-        if (request[0].File == null)
-        {
-            return BadRequest("File is required.");
-        }
-        return Ok(request[0].File.FileName);
+        var result = await _courseService.GetAllAsync(queryParameters);
+        return ProcessResult(result);
     }
+
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetByIdAsync(Guid id)
+    {
+        var result = await _courseService.GetByIdAsync(id);
+        return ProcessResult(result);
+    }
+
 }

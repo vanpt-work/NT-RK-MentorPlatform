@@ -56,13 +56,13 @@ public class CourseCategoryServices : ICourseCategoryServices
                                                     Description = x.Description,
                                                     CourseCount = x.Courses != null ? x.Courses.Count : 0,
                                                     IsActive = x.IsActive,
-                                                    Courses = x.Courses != null ? x.Courses.Select(c => new CourseResponse()
+                                                    Courses = x.Courses != null ? x.Courses.Select(c => new CourseInforForCategoryResponse()
                                                     {
                                                         Id = c.Id,
                                                         Title = c.Title,
                                                         Description = c.Description,
-                                                        Level = (int)c.Level
-                                                    }).ToList() : new List<CourseResponse>()
+                                                        Level = c.Level
+                                                    }).ToList() : new List<CourseInforForCategoryResponse>()
                                                 });
 
         var selectedCategory = await _courseCategoryRepository.FirstOrDefaultAsync(query);

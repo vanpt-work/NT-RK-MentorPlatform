@@ -3,6 +3,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using MentorPlatform.Application.Services.Security;
 using MentorPlatform.Application.UseCases.Authentication;
+using MentorPlatform.Application.UseCases.Course;
 using MentorPlatform.Application.UseCases.CourseCategory;
 using MentorPlatform.Application.UseCases.CourseUseCases;
 using MentorPlatform.Application.UseCases.ExpertisesUseCases;
@@ -30,6 +31,7 @@ public static class DependencyInjection
         services.AddScoped<IUserServices, UserServices>();
         services.AddScoped<ICourseServices, CourseServices>();
         services.AddScoped<IExpertiseUseCases, ExpertiseUseCases>();
+        services.AddScoped<ICourseServices, CourseServices>();
         return services;
     }
     public static IServiceCollection ConfigureFluentValidation(this IServiceCollection services)
