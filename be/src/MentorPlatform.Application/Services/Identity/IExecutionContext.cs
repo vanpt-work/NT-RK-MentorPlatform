@@ -6,6 +6,7 @@ namespace MentorPlatform.Application.Identity;
 public interface IExecutionContext
 {
     Guid GetUserId();
+    User? GetUser();
     Guid GetIdentityTokenId();
 
     void SetCurrentUser(User user);

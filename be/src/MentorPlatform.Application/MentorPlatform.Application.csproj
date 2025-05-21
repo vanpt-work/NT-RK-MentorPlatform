@@ -31,8 +31,4 @@
     <ProjectReference Include="..\MentorPlatform.Domain\MentorPlatform.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Commons\Models\Requests\ResourseRequests\" />
-  </ItemGroup>
-
 </Project>
