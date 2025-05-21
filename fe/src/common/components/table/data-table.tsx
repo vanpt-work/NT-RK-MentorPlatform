@@ -28,6 +28,8 @@ type DataTableProps<TData, TValue> = {
     onDataSelected?: (data: TData[]) => void;
 };
 
+const emptyData: any[] = [];
+
 export default function DataTable<TData, TValue>(
     props: DataTableProps<TData, TValue>,
 ) {
@@ -45,7 +47,7 @@ export default function DataTable<TData, TValue>(
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
     const table = useReactTable({
-        data: data ?? [],
+        data: data ?? emptyData,
         columns,
         state: {
             columnVisibility,
