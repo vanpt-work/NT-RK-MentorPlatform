@@ -44,8 +44,18 @@ public class CourseServices : ICourseServices
 
         var newCourse = courseRequest.ToEntity();
         newCourse.MentorId = userId;
-
-        newCourse.CourseResources = new List<CourseResource>();
+        if (courseRequest.ResourceIds.Count > 0)
+        {
+            newCourse.CourseResources = new List<CourseResource>();
+            foreach (var resourceRequestId in courseRequest.ResourceIds)
+            {
+                var courseResource = new CourseResource()
+                {
+                    ResourceId = resourceRequestId,
+                };
+                newCourse.CourseResources.Add(courseResource);
+            }
+        }
 
         _courseRepository.Add(newCourse);
         await _unitOfWork.SaveChangesAsync();
@@ -87,19 +97,19 @@ public class CourseServices : ICourseServices
         return Result.Success();
     }
 
-    private async Task UploadFile(ResourceRequest request, CourseResource resource)
-    {
-        try
-        {
-            var fileUrl = await _fileStorage.UploadFileAsync(request.File);
-            //resource.FilePath = fileUrl;
-            //resource.FileType = Path.GetExtension(request.File.FileName);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, ex.Message);
-        }
-    }
+    //private async Task UploadFile(ResourceRequest request, CourseResource resource)
+    //{
+    //    try
+    //    {
+    //        var fileUrl = await _fileStorage.UploadFileAsync(request.File);
+    //        //resource.FilePath = fileUrl;
+    //        //resource.FileType = Path.GetExtension(request.File.FileName);
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        _logger.LogError(ex, ex.Message);
+    //    }
+    //}
 
     private static void CopyData(EditCourseRequest request, Course course)
     {
