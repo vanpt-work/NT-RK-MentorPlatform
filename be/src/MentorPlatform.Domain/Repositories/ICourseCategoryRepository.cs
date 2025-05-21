@@ -1,4 +1,5 @@
 ﻿
+
 using MentorPlatform.Domain.Entities;
 
 namespace MentorPlatform.Domain.Repositories;

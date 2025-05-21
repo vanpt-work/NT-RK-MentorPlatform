@@ -1,10 +1,11 @@
 ﻿
 using FluentValidation;
-using FluentValidation.AspNetCore;
+using MentorPlatform.Application.Options;
 using MentorPlatform.Application.Services.Security;
 using MentorPlatform.Application.UseCases.ApplicationRequestUseCases;
 using MentorPlatform.Application.UseCases.Authentication;
-using MentorPlatform.Application.UseCases.CourseCategory;
+using MentorPlatform.Application.UseCases.CourseCategoryUseCases;
+using MentorPlatform.Application.UseCases.CourseUseCases;
 using MentorPlatform.Application.UseCases.ExpertisesUseCases;
 using MentorPlatform.Application.UseCases.ExpertiseUseCases;
 using MentorPlatform.Application.UseCases.UserManagement;
@@ -29,7 +30,11 @@ public static class DependencyInjection
         services.AddScoped<ICourseCategoryServices, CourseCategoryServices>();
         services.AddScoped<IUserServices, UserServices>();
         services.AddScoped<IApplicationRequestServices, ApplicationRequestServices>();
+        services.AddScoped<ICourseServices, CourseServices>();
         services.AddScoped<IExpertiseUseCases, ExpertiseUseCases>();
+        services.AddScoped<ICourseServices, CourseServices>();
+        var config = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+        services.Configure<CloudinaryStorageOptions>(config.GetSection($"FileStorageOptions:{nameof(CloudinaryStorageOptions)}"));
         return services;
     }
     public static IServiceCollection ConfigureFluentValidation(this IServiceCollection services)
