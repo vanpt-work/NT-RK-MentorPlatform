@@ -32,7 +32,6 @@ import { courseCategorySchema } from "../schemas/course-category-schema";
 import type { CourseCategoryRequest } from "../types/course-request";
 import type {
     CourseCategoryDetailResponse,
-    CourseCategoryResponse,
 } from "../types/course-response";
 
 type FormDetailProps = {
