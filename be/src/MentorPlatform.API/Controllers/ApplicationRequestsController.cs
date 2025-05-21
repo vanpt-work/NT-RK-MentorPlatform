@@ -54,10 +54,18 @@ public class ApplicationRequestsController : ApiControllerBase
 
     [Authorize(Roles = nameof(Role.Admin))]
     [HttpGet("{id:guid}")]
-
     public async Task<IActionResult> GetDetailAsync(Guid id)
     {
         var result = await _applicationRequestServices.GetDetailAsync(id);
+
+        return ProcessResult(result);
+    }
+
+    [Authorize(Roles = nameof(Role.Mentor))]
+    [HttpGet("current-user")]
+    public async Task<IActionResult> GetCurrentUserApplicationAsync()
+    {
+        var result = await _applicationRequestServices.GetCurrentUserApplicationAsync();
 
         return ProcessResult(result);
     }

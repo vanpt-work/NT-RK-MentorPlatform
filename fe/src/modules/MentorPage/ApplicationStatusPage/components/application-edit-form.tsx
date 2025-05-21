@@ -13,14 +13,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/common/components/ui/accordion";
-import {
-    Avatar,
-    AvatarFallback,
-    AvatarImage,
-} from "@/common/components/ui/avatar";
-import { Badge } from "@/common/components/ui/badge";
 import { Button } from "@/common/components/ui/button";
-import { Card, CardContent } from "@/common/components/ui/card";
 import {
     Form,
     FormControl,
@@ -31,42 +24,61 @@ import {
 } from "@/common/components/ui/form";
 import { Input } from "@/common/components/ui/input";
 import { Label } from "@/common/components/ui/label";
-import { Progress } from "@/common/components/ui/progress";
 import { Separator } from "@/common/components/ui/separator";
 import { Textarea } from "@/common/components/ui/textarea";
-import authService from "@/common/services/authServices";
-import type { CurrentUser } from "@/common/types/auth";
 import type { Result } from "@/common/types/result";
 
-import FilePreviewDialog from "./file-preview-dialog";
-
-import { applicationStatusService } from "../../ApplicationStatusPage/services/applicationStatusService";
-import { mentorApplicationService } from "../services/mentorApplicationService";
-import { ApplicationStatus } from "../types";
-import type { ApplicationRequest, FormValues } from "../types";
-import { formSchema } from "../utils/schemas";
-
-// File extensions từ schemas.ts
-const ALLOWED_EXTENSIONS = {
-    // Images
-    images: [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"],
-    // Videos
-    videos: [".mp4", ".avi", ".mov", ".wmv", ".webm"],
-    // Documents
-    documents: [".pdf", ".docx", ".doc", ".pptx", ".ppt", ".txt"],
-};
+import FilePreviewDialog from "../../RequestApplicationPage/components/file-preview-dialog";
+import { ApplicationStatus } from "../../RequestApplicationPage/types";
+import type {
+    ApplicationRequest,
+    ApplicationRequestDocument,
+    FormValues,
+} from "../../RequestApplicationPage/types";
+import { formSchema } from "../../RequestApplicationPage/utils/schemas";
+import { applicationStatusService } from "../services/applicationStatusService";
 
 // Mảng phẳng chứa tất cả các extension được phép
 const ALL_ALLOWED_EXTENSIONS = [
-    ...ALLOWED_EXTENSIONS.images,
-    ...ALLOWED_EXTENSIONS.videos,
-    ...ALLOWED_EXTENSIONS.documents,
+    // Images
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".gif",
+    ".webp",
+    ".svg",
+    // Videos
+    ".mp4",
+    ".avi",
+    ".mov",
+    ".wmv",
+    ".webm",
+    // Documents
+    ".pdf",
+    ".docx",
+    ".doc",
+    ".pptx",
+    ".ppt",
+    ".txt",
 ];
 
-export const ApplicationForm = () => {
-    const [progress, setProgress] = useState(0);
+type ApplicationEditFormProps = {
+    application: ApplicationRequest;
+    onUpdateSuccess: () => void;
+};
+
+export const ApplicationEditForm: React.FC<ApplicationEditFormProps> = ({
+    application,
+    onUpdateSuccess,
+}) => {
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [files, setFiles] = useState<File[]>([]);
-    const [certificationList, setCertificationList] = useState<string[]>([]);
+    const [existingFiles, setExistingFiles] = useState<
+        ApplicationRequestDocument[]
+    >([]);
+    const [certificationList, setCertificationList] = useState<string[]>(
+        application.certifications || [],
+    );
     const [previewFile, setPreviewFile] = useState<{
         file: File;
         url: string;
@@ -74,163 +86,99 @@ export const ApplicationForm = () => {
     } | null>(null);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewError, setPreviewError] = useState(false);
-    const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [existingApplication, setExistingApplication] =
-        useState<ApplicationRequest | null>(null);
-    const [canSubmit, setCanSubmit] = useState(true);
     const navigate = useNavigate();
 
-    // Fetch current user data and check existing application
+    // Initialize existing files from application
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-
-                const userResponse = await authService.getCurrentUser();
-                if (userResponse.data) {
-                    setCurrentUser(userResponse.data);
-                }
-
-                try {
-                    const applicationResponse =
-                        (await applicationStatusService.getCurrentUserApplication()) as Result<ApplicationRequest>;
-                    if (applicationResponse.data) {
-                        const applicationData = applicationResponse.data;
-                        setExistingApplication(applicationData);
-
-                        // Kiểm tra trạng thái của đơn đăng ký
-                        const status = applicationData.status;
-                        if (
-                            status === ApplicationStatus.PENDING ||
-                            status === ApplicationStatus.UNDER_REVIEW ||
-                            status === ApplicationStatus.APPROVED
-                        ) {
-                            setCanSubmit(false);
-
-                            toast.info(
-                                "You have an application pending review or has been approved.",
-                            );
-                            setTimeout(() => {
-                                navigate("/mentor/applications/status");
-                            }, 2000);
-                        }
-                    }
-                } catch (error) {
-                    console.log(error);
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-    }, [navigate]);
+        if (application.applicationRequestDocuments) {
+            setExistingFiles(application.applicationRequestDocuments);
+        }
+    }, [application]);
 
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema) as any,
         defaultValues: {
-            education: "",
-            workExperience: "",
-            certifications: [],
-            description: "",
-            status: ApplicationStatus.PENDING,
+            education: application.education,
+            workExperience: application.workExperience,
+            certifications: application.certifications || [],
+            description: application.description,
+            status: application.status,
             applicationDocuments: [],
-            note: null,
+            note: application.note || null,
         },
     });
 
-    const calculateProgress = () => {
-        const formValues = form.getValues();
-        let fieldsCompleted = 0;
-        let totalFields = 0;
-
-        // Check required fields
-        if (formValues.education?.length >= 10) fieldsCompleted++;
-        if (formValues.workExperience?.length >= 10) fieldsCompleted++;
-        if (formValues.description?.length >= 10) fieldsCompleted++;
-        totalFields += 3;
-
-        // Check certifications
-        if (formValues.certifications && formValues.certifications.length > 0) {
-            fieldsCompleted++;
-        }
-        totalFields += 1;
-
-        // Calculate percentage
-        const newProgress = Math.round((fieldsCompleted / totalFields) * 100);
-        setProgress(newProgress);
-    };
-
-    useEffect(() => {
-        const subscription = form.watch(() => calculateProgress());
-        return () => subscription.unsubscribe();
-    }, [form.watch]);
-
     const onSubmit: SubmitHandler<FormValues> = async (values) => {
-        try {
-            // Kiểm tra lại một lần nữa trước khi gửi
-            if (!canSubmit) {
-                toast.error(
-                    "You have an application pending review or has been approved.",
-                );
-                navigate("/mentor/applications/status");
-                return;
-            }
-
-            if (files.length > 0) {
-                const formData = new FormData();
-
-                formData.append("education", values.education);
-                formData.append("workExperience", values.workExperience);
-                formData.append("description", values.description);
-                formData.append("status", values.status.toString());
-
-                if (values.certifications && values.certifications.length > 0) {
-                    values.certifications.forEach((cert, index) => {
-                        formData.append(`certifications[${index}]`, cert);
-                    });
-                }
-
-                if (values.note) {
-                    formData.append("note", values.note);
-                }
-
-                files.forEach((file, index) => {
-                    formData.append(
-                        `applicationDocuments[${index}].fileName`,
-                        file.name || "document_" + index,
-                    );
-                    formData.append(
-                        `applicationDocuments[${index}].fileContent`,
-                        file,
-                    );
-                    formData.append(
-                        `applicationDocuments[${index}].filePath`,
-                        file.name || "document_" + index,
-                    );
-                });
-
-                await mentorApplicationService.createApplicationWithFormData(
-                    formData,
-                );
-            } else {
-                await mentorApplicationService.createApplication(values);
-            }
-
-            toast.success("Application submitted successfully!");
-
-            // Navigate to status page after successful submission
-            setTimeout(() => {
-                navigate("/mentor/applications/status");
-            }, 1500);
-        } catch (error) {
-            console.error("Error submitting application:", error);
+        if (application.status !== ApplicationStatus.UNDER_REVIEW) {
             toast.error(
-                "An error occurred while submitting your application. Please try again.",
+                "You can only update applications that are under review.",
             );
+            return;
+        }
+
+        try {
+            setIsSubmitting(true);
+            const formData = new FormData();
+
+            // Add application ID
+            formData.append("id", application.id || "");
+            formData.append("education", values.education);
+            formData.append("workExperience", values.workExperience);
+            formData.append("description", values.description);
+
+            // Add certifications
+            if (values.certifications && values.certifications.length > 0) {
+                values.certifications.forEach((cert, index) => {
+                    formData.append(`certifications[${index}]`, cert);
+                });
+            }
+
+            // Add existing files that were not removed
+            existingFiles.forEach((file, index) => {
+                formData.append(
+                    `applicationDocuments[${index}].fileName`,
+                    file.fileName,
+                );
+                formData.append(
+                    `applicationDocuments[${index}].filePath`,
+                    file.filePath,
+                );
+            });
+
+            // Add new files
+            files.forEach((file, index) => {
+                const fileIndex = existingFiles.length + index;
+                formData.append(
+                    `applicationDocuments[${fileIndex}].fileName`,
+                    file.name || "document_" + index,
+                );
+                formData.append(
+                    `applicationDocuments[${fileIndex}].fileContent`,
+                    file,
+                );
+                formData.append(
+                    `applicationDocuments[${fileIndex}].filePath`,
+                    file.name || "document_" + index,
+                );
+            });
+
+            const response = (await applicationStatusService.updateApplication(
+                formData,
+            )) as Result<string>;
+
+            if (response.isSuccess) {
+                toast.success("Application updated successfully!");
+                onUpdateSuccess();
+            } else {
+                toast.error("Failed to update application.");
+            }
+        } catch (error) {
+            console.error("Error updating application:", error);
+            toast.error(
+                "An error occurred while updating your application. Please try again.",
+            );
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -260,46 +208,67 @@ export const ApplicationForm = () => {
         setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
     };
 
-    const getFileType = (file: File): string => {
-        const extension = file.name.split(".").pop()?.toLowerCase() || "";
-        const mimeType = file.type;
+    const handleRemoveExistingFile = (index: number) => {
+        setExistingFiles((prevFiles) =>
+            prevFiles.filter((_, i) => i !== index),
+        );
+    };
 
-        // Map file extensions to types for the FileViewer component
-        if (mimeType.startsWith("image/")) {
-            if (mimeType === "image/jpeg") return "jpeg";
-            if (mimeType === "image/png") return "png";
-            if (mimeType === "image/gif") return "gif";
+    const getFileType = (fileName: string): string => {
+        const extension = fileName.split(".").pop()?.toLowerCase() || "";
+
+        // Map file extensions to types
+        if (
+            extension === "jpg" ||
+            extension === "jpeg" ||
+            extension === "png" ||
+            extension === "gif"
+        ) {
             return "image";
-        } else if (mimeType.startsWith("video/")) {
+        } else if (
+            extension === "mp4" ||
+            extension === "avi" ||
+            extension === "mov"
+        ) {
             return "video";
-        } else if (mimeType.startsWith("audio/")) {
-            return "audio";
+        } else if (extension === "pdf") {
+            return "pdf";
+        } else if (extension === "docx" || extension === "doc") {
+            return "docx";
+        } else if (extension === "pptx" || extension === "ppt") {
+            return "pptx";
+        } else if (extension === "txt") {
+            return "txt";
         }
 
-        // For documents, use the exact format needed by react-file-viewer
-        switch (extension) {
-            case "pdf":
-                return "pdf";
-            case "docx":
-                return "docx";
-            case "doc":
-                return "docx"; // Use docx viewer for doc files
-            case "ppt":
-            case "pptx":
-                return "pptx";
-            case "txt":
-                return "txt";
-            default:
-                return "unsupported";
-        }
+        return "unsupported";
     };
 
     const handleViewFile = (file: File) => {
         const fileUrl = URL.createObjectURL(file);
-        const fileType = getFileType(file);
+        const fileType = getFileType(file.name);
         setPreviewFile({ file, url: fileUrl, type: fileType });
         setPreviewOpen(true);
         setPreviewError(false);
+    };
+
+    const handleViewExistingFile = (url: string, fileName: string) => {
+        // For existing files, we need to fetch them first
+        fetch(url)
+            .then((response) => response.blob())
+            .then((blob) => {
+                const file = new File([blob], fileName, { type: blob.type });
+                const fileUrl = URL.createObjectURL(file);
+                const fileType = getFileType(fileName);
+                setPreviewFile({ file, url: fileUrl, type: fileType });
+                setPreviewOpen(true);
+                setPreviewError(false);
+            })
+            .catch((error) => {
+                console.error("Error fetching file:", error);
+                // Fallback to opening in a new tab
+                window.open(url, "_blank");
+            });
     };
 
     const handlePreviewError = () => {
@@ -341,48 +310,12 @@ export const ApplicationForm = () => {
         );
     };
 
-    // Get initials for avatar fallback
-    const getInitials = (name: string) => {
-        return name
-            .split(" ")
-            .map((part) => part[0])
-            .join("")
-            .toUpperCase()
-            .substring(0, 2);
-    };
-
-    // Hiển thị loading khi đang kiểm tra
-    if (loading) {
+    if (application.status !== ApplicationStatus.UNDER_REVIEW) {
         return (
-            <div className="flex h-screen items-center justify-center">
-                <LoadingSpinner />
-                <p className="ml-2">Loading information...</p>
-            </div>
-        );
-    }
-
-    // Hiển thị thông báo nếu không thể tạo đơn mới
-    if (!canSubmit) {
-        return (
-            <div className="bg-card mx-auto max-w-4xl rounded-lg p-6 shadow-md dark:shadow-gray-800">
-                <h1 className="text-foreground mb-4 text-2xl font-bold">
-                    Mentor Application
-                </h1>
-                <div className="bg-muted/30 rounded-md p-6 text-center">
-                    <p className="mb-4 text-lg">
-                        You have an application pending review or has been
-                        approved.
-                    </p>
-                    <p className="mb-6">
-                        Please check the status of your application before
-                        creating a new one.
-                    </p>
-                    <Button
-                        onClick={() => navigate("/mentor/applications/status")}
-                    >
-                        View Application Status
-                    </Button>
-                </div>
+            <div className="bg-muted/30 rounded-md p-6 text-center">
+                <p className="mb-4 text-lg">
+                    You can only update applications that are under review.
+                </p>
             </div>
         );
     }
@@ -391,59 +324,13 @@ export const ApplicationForm = () => {
         <div className="bg-card mx-auto max-w-4xl rounded-lg p-6 shadow-md dark:shadow-gray-800">
             <div className="mb-6">
                 <h1 className="text-foreground mb-2 text-2xl font-bold">
-                    Mentor Application Form
+                    Update Your Application
                 </h1>
                 <p className="text-muted-foreground mb-4">
-                    Please fill out the form below to apply as a mentor.
+                    Please update the requested information and submit your
+                    application again.
                 </p>
-                <div className="mb-2 flex items-center justify-between">
-                    <span className="text-foreground text-sm font-medium">
-                        Completion: {progress}%
-                    </span>
-                </div>
-                <Progress value={progress} className="h-2" />
             </div>
-
-            {/* User Profile Information */}
-            <Card className="bg-muted/30 mb-8">
-                <CardContent className="p-6">
-                    {loading ? (
-                        <div className="flex h-20 items-center justify-center">
-                            <LoadingSpinner />
-                            <p>Loading...</p>
-                        </div>
-                    ) : currentUser ? (
-                        <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
-                            <Avatar className="h-20 w-20">
-                                {currentUser.avatarUrl ? (
-                                    <AvatarImage
-                                        src={currentUser.avatarUrl}
-                                        alt={currentUser.fullName}
-                                    />
-                                ) : (
-                                    <AvatarFallback className="bg-primary text-primary-foreground text-xl">
-                                        {getInitials(currentUser.fullName)}
-                                    </AvatarFallback>
-                                )}
-                            </Avatar>
-                            <div className="flex-1 text-center sm:text-left">
-                                <h2 className="text-xl font-semibold">
-                                    {currentUser.fullName}
-                                </h2>
-                                <p className="text-muted-foreground mb-3 text-sm">
-                                    Applicant Information
-                                </p>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="p-4 text-center">
-                            <p className="text-muted-foreground">
-                                Unable to load user information.
-                            </p>
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
 
             <Separator className="my-6" />
 
@@ -631,7 +518,7 @@ export const ApplicationForm = () => {
                                     </FormControl>
                                     <FormMessage />
                                     <p className="text-muted-foreground mt-1 text-xs">
-                                        Maximum 2000 characters. characters.
+                                        Maximum 2000 characters.
                                         {field.value?.length > 0 &&
                                             ` (${field.value.length}/2000)`}
                                     </p>
@@ -646,9 +533,65 @@ export const ApplicationForm = () => {
                             Supporting Documents
                         </h2>
                         <div className="bg-muted/40 rounded-md p-4 dark:bg-gray-800/30">
+                            {/* Existing Files */}
+                            {existingFiles.length > 0 && (
+                                <div className="mb-6">
+                                    <Label>Existing Documents</Label>
+                                    <div className="mt-2 max-h-60 space-y-2 overflow-y-auto">
+                                        {existingFiles.map((file, index) => (
+                                            <div
+                                                key={index}
+                                                className="bg-background flex items-center justify-between rounded border p-2 dark:border-gray-700"
+                                            >
+                                                <div className="flex max-w-[80%] items-center gap-2 truncate">
+                                                    <FileText size={16} />
+                                                    <span className="truncate text-sm">
+                                                        {file.fileName}
+                                                    </span>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() =>
+                                                            handleViewExistingFile(
+                                                                file.filePath,
+                                                                file.fileName,
+                                                            )
+                                                        }
+                                                        className="flex h-8 items-center px-2"
+                                                    >
+                                                        <Eye
+                                                            size={16}
+                                                            className="mr-1"
+                                                        />{" "}
+                                                        Preview
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() =>
+                                                            handleRemoveExistingFile(
+                                                                index,
+                                                            )
+                                                        }
+                                                        className="text-destructive hover:text-destructive/90 h-8 px-2"
+                                                    >
+                                                        <X size={16} />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Upload New Files */}
                             <div className="mb-4">
                                 <Label htmlFor="file-upload">
-                                    Upload Documents
+                                    Upload New Documents
                                 </Label>
                                 <p className="text-muted-foreground mb-2 text-sm">
                                     Upload any supporting documents (PDF, DOCX,
@@ -683,7 +626,7 @@ export const ApplicationForm = () => {
 
                             {files.length > 0 && (
                                 <div className="max-h-60 space-y-2 overflow-y-auto">
-                                    <Label>Uploaded Files</Label>
+                                    <Label>New Files to Upload</Label>
                                     {files.map((file, index) => (
                                         <div
                                             key={index}
@@ -730,10 +673,41 @@ export const ApplicationForm = () => {
                         </div>
                     </div>
 
+                    {/* Admin Notes Section */}
+                    {application.note && (
+                        <div className="space-y-4">
+                            <h2 className="text-foreground border-b pb-2 text-xl font-semibold">
+                                Admin Notes
+                            </h2>
+                            <div className="bg-muted/40 rounded-md p-4 dark:bg-gray-800/30">
+                                <Label>Notes from Admin</Label>
+                                <div className="bg-muted text-foreground mt-2 min-h-[100px] rounded-md p-3 text-sm">
+                                    {application.note}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Submit Button */}
-                    <div className="pt-4">
-                        <Button type="submit" className="w-full sm:w-auto">
-                            Submit Application
+                    <div className="flex justify-end gap-4 pt-4">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() =>
+                                navigate("/mentor/applications/status")
+                            }
+                        >
+                            Cancel
+                        </Button>
+                        <Button type="submit" disabled={isSubmitting}>
+                            {isSubmitting ? (
+                                <>
+                                    <LoadingSpinner className="mr-2" />
+                                    Updating...
+                                </>
+                            ) : (
+                                "Update Application"
+                            )}
                         </Button>
                     </div>
                 </form>
@@ -751,4 +725,4 @@ export const ApplicationForm = () => {
     );
 };
 
-export default ApplicationForm;
+export default ApplicationEditForm;

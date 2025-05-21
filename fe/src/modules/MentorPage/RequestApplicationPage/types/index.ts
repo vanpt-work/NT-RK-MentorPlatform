@@ -32,15 +32,25 @@ export type ApplicationDocument = {
     applicationRequestId?: string;
 };
 
+export type ApplicationRequestDocument = {
+    id?: string;
+    filePath: string;
+    fileName: string;
+};
+
 export type ApplicationRequest = {
+    id?: string;
     education: string;
     workExperience: string;
     certifications?: string[] | null;
     description: string;
     status: ApplicationStatus;
     applicationDocuments?: ApplicationDocument[] | null;
+    applicationRequestDocuments?: ApplicationRequestDocument[] | null;
     createdAt?: string;
     updatedAt?: string;
+    summitted?: string;
     isDeleted?: boolean;
     note?: string | null;
+    fullName?: string;
 };

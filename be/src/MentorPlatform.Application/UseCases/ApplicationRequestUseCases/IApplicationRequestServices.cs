@@ -15,4 +15,6 @@ public interface IApplicationRequestServices
         ApplicationRequestQueryParameters applicationRequestQueryParameters);
 
     Task<Result<ApplicationRequestDetailResponse>> GetDetailAsync(Guid id);
+    
+    Task<Result<ApplicationRequestDetailResponse>> GetCurrentUserApplicationAsync();
 }

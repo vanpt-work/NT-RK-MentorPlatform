@@ -251,6 +251,53 @@ public class ApplicationRequestServices : IApplicationRequestServices
         return applicationDetailResponse;
     }
 
+    public async Task<Result<ApplicationRequestDetailResponse>> GetCurrentUserApplicationAsync()
+    {
+        var currentUserId = _executionContext.GetUserId();
+        
+        var applicationDetailQuery = _applicationRequestRepository.GetQueryable()
+            .Where(u => u.MentorId == currentUserId && !u.IsDeleted)
+            .OrderByDescending(u => u.Submitted)
+            .Select(u => new ApplicationRequestDetailResponse
+            {
+                Id = u.Id,
+                Summitted = u.Submitted,
+                Description = u.Description,
+                Education = u.Education,
+                WorkExperience = u.WorkExperience,
+                Status = u.Status,
+                FullName = u.Mentor.UserDetail.FullName,
+                Note = u.Note,
+                ApplicationRequestDocuments = u.ApplicationDocuments != null ? u.ApplicationDocuments
+                    .Select(ad => new ApplicationRequestDocumentResponse
+                    {
+                        FilePath = ad.FilePath,
+                        FileName = ad.FileName
+                    }).ToList() : default!
+            });
+        
+        var applicationDetailResponse = await _applicationRequestRepository.FirstOrDefaultAsync(applicationDetailQuery);
+
+        if (applicationDetailResponse == null)
+        {
+            return Result<ApplicationRequestDetailResponse>.Failure(new Error("ApplicationRequest.NotFound", "No application request found for current user."));
+        }
+
+        if (applicationDetailResponse.ApplicationRequestDocuments != null && applicationDetailResponse.ApplicationRequestDocuments.Count > 0)
+        {
+            var getSignedApplicationDocumentPath = applicationDetailResponse.ApplicationRequestDocuments
+                .Select(ad => _fileStorageServices.GetPreSignedUrlFile(ad.FilePath)).ToList();
+
+            await Task.WhenAll(getSignedApplicationDocumentPath);
+
+            for (int i = 0; i < applicationDetailResponse.ApplicationRequestDocuments.Count; i++)
+            {
+                applicationDetailResponse.ApplicationRequestDocuments[i].FilePath = getSignedApplicationDocumentPath[i].Result;
+            }
+        }
+
+        return Result<ApplicationRequestDetailResponse>.Success(applicationDetailResponse);
+    }
 
     private async Task HandleSendMailWhenChangeStatusApplicationRequest(ApplicationRequest applicationRequest, 
         ApplicationRequestStatus oldStatus,

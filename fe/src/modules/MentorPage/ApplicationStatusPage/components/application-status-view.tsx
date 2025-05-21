@@ -1,4 +1,4 @@
-import { FileText, RefreshCw } from "lucide-react";
+import { Edit, FileText, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -9,7 +9,6 @@ import {
     AvatarFallback,
     AvatarImage,
 } from "@/common/components/ui/avatar";
-import { Badge } from "@/common/components/ui/badge";
 import { Button } from "@/common/components/ui/button";
 import {
     Card,
@@ -20,16 +19,15 @@ import {
 } from "@/common/components/ui/card";
 import authService from "@/common/services/authServices";
 import type { CurrentUser } from "@/common/types/auth";
+import type { Result } from "@/common/types/result";
 
+import ApplicationEditForm from "./application-edit-form";
 import ApplicationStatusSection from "./application-status";
 import DocumentViewer from "./document-viewer";
 
 import type { ApplicationRequest } from "../../RequestApplicationPage/types";
 import { ApplicationStatus } from "../../RequestApplicationPage/types";
 import { applicationStatusService } from "../services/applicationStatusService";
-
-// Danh sách kỹ năng mẫu - Trong ứng dụng thực tế, có thể lấy từ API
-const sampleSkills = ["React", "TypeScript", "Node.js", "UI/UX Design"];
 
 export default function ApplicationStatusView() {
     const [application, setApplication] = useState<ApplicationRequest | null>(
@@ -38,7 +36,7 @@ export default function ApplicationStatusView() {
     const [isLoading, setIsLoading] = useState(true);
     const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
     const [loadingUser, setLoadingUser] = useState(true);
-    const [applicationId, setApplicationId] = useState<string | null>(null);
+    const [showEditForm, setShowEditForm] = useState(false);
     const navigate = useNavigate();
 
     // Fetch current user data
@@ -63,36 +61,30 @@ export default function ApplicationStatusView() {
         fetchCurrentUser();
     }, []);
 
-    // Fetch application data
+    // Fetch application data using getCurrentUserApplication
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
             try {
-                // Trong thực tế, bạn có thể lấy ID từ URL hoặc từ user data
-                // Ví dụ: const id = params.id hoặc currentUser.applicationId
-                if (applicationId) {
-                    const response =
-                        await applicationStatusService.getApplicationRequestDetail(
-                            applicationId,
-                        );
-                    if (response.data) {
-                        setApplication(response.data as ApplicationRequest);
-                    }
-                    console.log(response);
+                const response =
+                    (await applicationStatusService.getCurrentUserApplication()) as Result<ApplicationRequest>;
+
+                if (response.isSuccess && response.data) {
+                    setApplication(response.data);
                 } else {
-                    // Nếu không có ID, có thể hiển thị thông báo hoặc chuyển hướng
                     setApplication(null);
                 }
-            } catch (error) {
+            } catch (error: any) {
                 console.error("Error fetching application:", error);
-                toast.error("Failed to load application data");
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchData();
-    }, [applicationId]);
+        if (!loadingUser) {
+            fetchData();
+        }
+    }, [loadingUser]);
 
     // Get initials for avatar fallback
     const getInitials = (name: string) => {
@@ -103,6 +95,42 @@ export default function ApplicationStatusView() {
             .toUpperCase()
             .substring(0, 2);
     };
+
+    const refreshData = async () => {
+        setIsLoading(true);
+        try {
+            const response =
+                (await applicationStatusService.getCurrentUserApplication()) as Result<ApplicationRequest>;
+            if (response.isSuccess && response.data) {
+                setApplication(response.data);
+                toast.success("Application data has been updated");
+            } else {
+                setApplication(null);
+            }
+        } catch (error: any) {
+            console.error("Error refreshing application:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleEditApplication = () => {
+        setShowEditForm(true);
+    };
+
+    const handleUpdateSuccess = () => {
+        setShowEditForm(false);
+        refreshData();
+    };
+
+    if (showEditForm && application) {
+        return (
+            <ApplicationEditForm
+                application={application}
+                onUpdateSuccess={handleUpdateSuccess}
+            />
+        );
+    }
 
     return (
         <div className="container mx-auto max-w-6xl">
@@ -116,6 +144,33 @@ export default function ApplicationStatusView() {
                             <CardDescription className="text-muted-foreground mt-1">
                                 Track the progress of your mentor application
                             </CardDescription>
+                        </div>
+                        <div className="flex gap-2">
+                            {application &&
+                                application.status ===
+                                    ApplicationStatus.UNDER_REVIEW && (
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={handleEditApplication}
+                                    >
+                                        <Edit className="mr-2 h-4 w-4" />
+                                        Edit Application
+                                    </Button>
+                                )}
+                            {application && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={refreshData}
+                                    disabled={isLoading}
+                                >
+                                    <RefreshCw
+                                        className={`mr-2 h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+                                    />
+                                    Refresh
+                                </Button>
+                            )}
                         </div>
                     </div>
                 </CardHeader>
@@ -167,18 +222,6 @@ export default function ApplicationStatusView() {
                                                 <p className="text-muted-foreground mb-3 text-sm">
                                                     Applicant Information
                                                 </p>
-                                                <div className="flex flex-wrap justify-center gap-2 sm:justify-start">
-                                                    {sampleSkills.map(
-                                                        (skill, index) => (
-                                                            <Badge
-                                                                key={index}
-                                                                variant="secondary"
-                                                            >
-                                                                {skill}
-                                                            </Badge>
-                                                        ),
-                                                    )}
-                                                </div>
                                             </div>
                                         </div>
                                     ) : (
@@ -199,8 +242,14 @@ export default function ApplicationStatusView() {
                                         ApplicationStatus.PENDING
                                     }
                                     note={application.note ?? ""}
-                                    createdAt={application.createdAt}
-                                    updatedAt={application.updatedAt}
+                                    createdAt={
+                                        application.createdAt ??
+                                        application.summitted
+                                    }
+                                    updatedAt={
+                                        application.updatedAt ??
+                                        application.summitted
+                                    }
                                     isReadOnly={true}
                                 />
                             </div>
@@ -266,11 +315,17 @@ export default function ApplicationStatusView() {
 
                             {/* Supporting Documents Section */}
                             <div>
-                                {application.applicationDocuments &&
-                                application.applicationDocuments.length > 0 ? (
+                                {(application.applicationRequestDocuments &&
+                                    application.applicationRequestDocuments
+                                        .length > 0) ||
+                                (application.applicationDocuments &&
+                                    application.applicationDocuments.length >
+                                        0) ? (
                                     <DocumentViewer
                                         documents={
-                                            application.applicationDocuments
+                                            application.applicationRequestDocuments ||
+                                            application.applicationDocuments ||
+                                            []
                                         }
                                         isReadOnly={true}
                                     />

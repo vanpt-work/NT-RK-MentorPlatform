@@ -19,10 +19,16 @@ import {
 import { Label } from "@/common/components/ui/label";
 
 import FilePreviewDialog from "../../RequestApplicationPage/components/file-preview-dialog";
-import type { ApplicationDocument } from "../../RequestApplicationPage/types";
+import type {
+    ApplicationDocument,
+    ApplicationRequestDocument,
+} from "../../RequestApplicationPage/types";
+
+// Định nghĩa kiểu DocumentType để hỗ trợ cả hai loại tài liệu
+type DocumentType = ApplicationDocument | ApplicationRequestDocument;
 
 type DocumentViewerProps = {
-    documents: ApplicationDocument[];
+    documents: DocumentType[];
     onRemoveDocument?: (id: string) => void;
     isReadOnly?: boolean;
 };
@@ -60,7 +66,6 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
             })
             .catch((error) => {
                 console.error("Error fetching file:", error);
-                // Fallback to opening in a new tab if fetch fails
                 window.open(filePath, "_blank");
             });
     };
