@@ -82,7 +82,7 @@ public class CourseServices : ICourseServices
 
     public async Task<Result> DeleteCourseAsync(Guid courseId)
     {
-        var dbCourse = await _courseRepository.GetByIdAsync(courseId, nameof(Course.MentoringSessions));
+        var dbCourse = await _courseRepository.GetByIdAsync(courseId, nameof(Course.MentoringSessions), nameof(Course.CourseResources));
 
         if (dbCourse == null)
         {
@@ -97,26 +97,14 @@ public class CourseServices : ICourseServices
         return Result.Success();
     }
 
-    //private async Task UploadFile(ResourceRequest request, CourseResource resource)
-    //{
-    //    try
-    //    {
-    //        var fileUrl = await _fileStorage.UploadFileAsync(request.File);
-    //        //resource.FilePath = fileUrl;
-    //        //resource.FileType = Path.GetExtension(request.File.FileName);
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        _logger.LogError(ex, ex.Message);
-    //    }
-    //}
-
     private static void CopyData(EditCourseRequest request, Course course)
     {
         course.Title = request.Title;
         course.Description = request.Description;
         course.Level = request.Level;
         course.CourseCategoryId = request.CourseCategoryId;
+        //check if resourceIds is include
+        // check if old resourceIds is not include in new resourceIds
     }
 
     public async Task<Result> GetAllAsync(CourseQueryParameters queryParameters)

@@ -2,4 +2,5 @@
 public class EditCourseRequest : CreateCourseRequest
 {
     public Guid Id { get; set; }
+    public List<Guid> OldResourceIds { get; set; }
 }
