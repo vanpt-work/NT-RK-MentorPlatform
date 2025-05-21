@@ -28,11 +28,11 @@ public class CourseServices : ICourseServices
 
         var searchValue = queryParameters?.Search?.Trim();
         var queryFilter = _courseRepository.GetQueryable()
-                        .Where(x => queryParameters != null || 
+                        .Where(x => queryParameters == null || 
                                     (string.IsNullOrEmpty(searchValue) || x.Title.Contains(searchValue) || x.Description.Contains(searchValue))
-                                    && (queryParameters!.CategoryId != null || x.CourseCategoryId == queryParameters.CategoryId)
-                                    && (queryParameters.Level != null || x.Level == queryParameters.Level)
-                                    && (selectedUser!.Role == Role.Learner && (queryParameters.MentorId != null || x.MentorId == queryParameters.MentorId)));
+                                    && (queryParameters!.CategoryId == null || x.CourseCategoryId == queryParameters.CategoryId)
+                                    && (queryParameters.Level == null || x.Level == queryParameters.Level)
+                                    && (selectedUser!.Role != Role.Learner || (queryParameters.MentorId == null || x.MentorId == queryParameters.MentorId)));
         
         if(selectedUser!.Role == Role.Mentor)
         {
