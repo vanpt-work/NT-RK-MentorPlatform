@@ -2,7 +2,7 @@ using MentorPlatform.Application.Commons.Errors;
 using MentorPlatform.Application.Commons.Mappings;
 using MentorPlatform.Application.Commons.Models.Requests.CourseRequests;
 using MentorPlatform.Application.Commons.Models.Requests.ResourseRequests;
-using MentorPlatform.Application.Commons.Models.Responses.Course;
+using MentorPlatform.Application.Commons.Models.Responses.CourseResponses;
 using MentorPlatform.Application.Identity;
 using MentorPlatform.Application.Services.File;
 using MentorPlatform.Application.Services.FileStorage;

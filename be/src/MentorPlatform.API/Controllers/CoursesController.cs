@@ -9,9 +9,9 @@ namespace MentorPlatform.WebApi.Controllers;
 [Authorize]
 public class CoursesController : ApiControllerBase
 {
-    private readonly ICourseServices _courseService;
+    private readonly IResourceServices _courseService;
 
-    public CoursesController(ICourseServices courseService)
+    public CoursesController(IResourceServices courseService)
     {
         _courseService = courseService;
     }

@@ -28,9 +28,9 @@ public static class DependencyInjection
         services.AddScoped<IAuthServices, AuthServices>();
         services.AddScoped<ICourseCategoryServices, CourseCategoryServices>();
         services.AddScoped<IUserServices, UserServices>();
-        services.AddScoped<ICourseServices, CourseServices>();
+        services.AddScoped<IResourceServices, CourseServices>();
         services.AddScoped<IExpertiseUseCases, ExpertiseUseCases>();
-        services.AddScoped<ICourseServices, CourseServices>();
+        services.AddScoped<IResourceServices, CourseServices>();
         var config = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
         services.Configure<CloudinaryStorageOptions>(config.GetSection($"FileStorageOptions:{nameof(CloudinaryStorageOptions)}"));
         return services;
