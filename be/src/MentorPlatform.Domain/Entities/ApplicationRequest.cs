@@ -10,11 +10,12 @@ public class ApplicationRequest : AuditableEntity, IHasKey<Guid>, ISoftDeleteEnt
     public Guid Id { get; set; }
     public string Education { get; set; } = default!;
     public string WorkExperience { get; set; } = default!;
-    public List<string>? Certifications { get; set; } = default;
     public string Description { get; set; } = default!;
     public string? Note { get; set; } = default!;
     public ApplicationRequestStatus Status { get; set; }
-
+    
+    public DateTime Submitted { get; set; }
+    public List<string>? Certifications { get; set; } = default;
     public Guid MentorId { get; set; }
     [JsonIgnore]
     public User Mentor { get; set; } = default!;

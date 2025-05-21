@@ -1,4 +1,5 @@
 ﻿
+using MentorPlatform.Domain.Constants;
 using MentorPlatform.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -13,5 +14,9 @@ public class ApplicationDocumentConfiguration : IEntityTypeConfiguration<Applica
             .WithMany(aq => aq.ApplicationDocuments)
             .HasForeignKey(ad => ad.ApplicationRequestId);
         builder.HasQueryFilter(cc => !cc.IsDeleted);
+        builder.Property(c => c.FileName)
+            .HasMaxLength(ApplicationRequestConstants.MaxLengthFileName);
+        builder.Property(c => c.FilePath)
+            .HasMaxLength(ApplicationRequestConstants.MaxLengthFilePath);
     }
 }
