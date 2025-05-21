@@ -7,6 +7,7 @@ public static class ResourceErrorMessages
     public const string ResourceNotExists = "Resource does not exists";
     public const string AdminCanNotViewResource = "Admin can not view resources";
     public const string MentorCanNotViewResource = "Mentor do not have permission to view this resource";
+    public const string LearnerCanNotViewResource = "Learner have to join the course to see this resource";
 }
 public static class ResourceErrors
 {
@@ -16,5 +17,8 @@ public static class ResourceErrors
         ResourceErrorMessages.AdminCanNotViewResource); 
     public static Error MentorCanNotViewResource => new(nameof(MentorCanNotViewResource),
         ResourceErrorMessages.MentorCanNotViewResource);
+
+    public static Error LearnerCanNotViewResource => new(nameof(LearnerCanNotViewResource),
+        ResourceErrorMessages.LearnerCanNotViewResource);
 
 }

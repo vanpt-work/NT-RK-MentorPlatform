@@ -2,31 +2,28 @@ using MentorPlatform.Application.Commons.Errors;
 using MentorPlatform.Application.Commons.Models.Requests.ResourceRequests;
 using MentorPlatform.Application.Commons.Models.Responses.ResourceResponses;
 using MentorPlatform.Application.Identity;
-using MentorPlatform.Application.Services.File;
-using MentorPlatform.Application.Services.FileStorage;
 using MentorPlatform.Domain.Entities;
 using MentorPlatform.Domain.Enums;
 using MentorPlatform.Domain.Repositories;
 using MentorPlatform.Domain.Shared;
-using Microsoft.Extensions.Logging;
 
 namespace MentorPlatform.Application.UseCases.ResourceUseCases;
 public class ResourceServices : IResourceServices
 {
     private readonly IResourceRepository _resourceRepository;
-    private readonly ICourseRepository _courseRepository;
+    private readonly IRepository<MentoringSession, Guid> _mentorSessionRepository;
     private readonly IExecutionContext _executionContext;
     private readonly IRepository<User, Guid> _userRepository;
 
     public ResourceServices(IResourceRepository resourceRepository,
         IExecutionContext executionContext,
         IRepository<User, Guid> userRepository,
-        ICourseRepository courseRepository)
+        IRepository<MentoringSession, Guid> mentorSessionRepository)
     {
         _resourceRepository = resourceRepository;
         _executionContext = executionContext; ;
         _userRepository = userRepository;
-        _courseRepository = courseRepository;
+        _mentorSessionRepository = mentorSessionRepository;
     }
     public async Task<Result> GetAllAsync(ResourceQueryParameters queryParameters)
     {
@@ -72,7 +69,20 @@ public class ResourceServices : IResourceServices
         {
             return Result.Failure(403, ResourceErrors.AdminCanNotViewResource);
         }
-        var selectedResource = await _resourceRepository.GetByIdAsync(id, [nameof(Resource.CourseResources)]);
+
+        var query = _resourceRepository.GetQueryable()
+            .Where(x => x.Id == id)
+            .Select(x => new ResourceDetailsResponse()
+            {
+                Id = x.Id,
+                Title = x.Title,
+                FileType = x.FileType,
+                FilePath = x.FilePath,
+                MentorId = x.MentorId,
+                Description = x.Description,
+            });
+
+        var selectedResource = await _resourceRepository.FirstOrDefaultAsync(query);
         if (selectedResource == null)
         {
             return Result.Failure(404, ResourceErrors.ResourceNotExists);
@@ -83,14 +93,22 @@ public class ResourceServices : IResourceServices
             return Result.Failure(403, ResourceErrors.MentorCanNotViewResource);
         }
 
-       
-        
+        if (selectedUser.Role == Role.Learner)
+        {
+            var leanerCourses = _mentorSessionRepository.GetQueryable()
+                .Where(x => x.LearnerId == userId && x.RequestStatus == RequestMentoringSessionStatus.Approved)
+                .Select(x => x.Course).SelectMany(c => c.CourseResources).Where(cr => cr.Resource != null)
+                .Select(cr => cr.Resource.Id).Distinct();
 
-        var query = _resourceRepository.GetQueryable().Where(x => x.Id == id);
+            var learnerCourses = await _mentorSessionRepository.ToListAsync(leanerCourses);
 
-        var res = await _resourceRepository.FirstOrDefaultAsync(query);
+            if (!learnerCourses.Any(x=> x == id))
+            {
+                return Result.Failure(403, ResourceErrors.LearnerCanNotViewResource);
+            }
+        }
 
-        return Result.Success();
+        return Result<ResourceDetailsResponse>.Success(selectedResource);
     }
 }
 
