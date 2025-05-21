@@ -1,7 +1,7 @@
 ﻿using MentorPlatform.Domain.Shared;
 
 namespace MentorPlatform.Application.Commons.Errors;
-public static class CourseErrorMessage
+public static class CourseErrorMessages
 {
     public const string TitleNotEmpty = "Title cannot be empty";
     public const string TitleMinLength = "Title must be at least 3 characters long";
@@ -18,13 +18,13 @@ public static class CourseErrorMessage
 
 public static class CourseErrors
 {
-    public static Error TitleNotEmpty => new(nameof(TitleNotEmpty), CourseErrorMessage.TitleNotEmpty);
-    public static Error TitleMinLength => new(nameof(TitleMinLength), CourseErrorMessage.TitleMinLength);
-    public static Error TitleMaxLength => new(nameof(TitleMaxLength), CourseErrorMessage.TitleMaxLength);
-    public static Error DescriptionNotEmpty => new(nameof(DescriptionNotEmpty), CourseErrorMessage.DescriptionNotEmpty);
-    public static Error DescriptionMaxLength => new(nameof(DescriptionMaxLength), CourseErrorMessage.DescriptionMaxLength);
-    public static Error LevelInvalid => new(nameof(LevelInvalid), CourseErrorMessage.LevelInvalid);
-    public static Error CourseCategoryNotExists => new(nameof(CourseCategoryNotExists), CourseErrorMessage.CourseCategoryNotExists);
+    public static Error TitleNotEmpty => new(nameof(TitleNotEmpty), CourseErrorMessages.TitleNotEmpty);
+    public static Error TitleMinLength => new(nameof(TitleMinLength), CourseErrorMessages.TitleMinLength);
+    public static Error TitleMaxLength => new(nameof(TitleMaxLength), CourseErrorMessages.TitleMaxLength);
+    public static Error DescriptionNotEmpty => new(nameof(DescriptionNotEmpty), CourseErrorMessages.DescriptionNotEmpty);
+    public static Error DescriptionMaxLength => new(nameof(DescriptionMaxLength), CourseErrorMessages.DescriptionMaxLength);
+    public static Error LevelInvalid => new(nameof(LevelInvalid), CourseErrorMessages.LevelInvalid);
+    public static Error CourseCategoryNotExists => new(nameof(CourseCategoryNotExists), CourseErrorMessages.CourseCategoryNotExists);
     public static Error CourseNotExists => new(nameof(CourseNotExists),
         CourseErrorMessages.CourseNotExists);
 

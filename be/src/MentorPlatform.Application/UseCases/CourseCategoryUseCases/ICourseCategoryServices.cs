@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MentorPlatform.Application.UseCases.CourseCategory;
+namespace MentorPlatform.Application.UseCases.CourseCategoryUseCases;
 public interface ICourseCategoryServices
 {
     public Task<Result> GetAllAsync(QueryParameters queryParameters);

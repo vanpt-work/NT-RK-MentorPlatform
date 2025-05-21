@@ -8,8 +8,8 @@ public static class ResourceMapping
     {
         return new CourseResource
         {
-            Title = resourceRequest.Title,
-            Description = resourceRequest.Description,
+            //Title = resourceRequest.Title,
+            //Description = resourceRequest.Description,
         };
     }
 }

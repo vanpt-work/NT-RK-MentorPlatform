@@ -18,11 +18,11 @@ public class CreateCourseRequestValidator : AbstractValidator<CreateCourseReques
     public CreateCourseRequestValidator()
     {
         RuleFor(x => x.Title)
-            .NotEmpty().WithMessage(CourseErrorMessage.TitleNotEmpty)
-            .MinimumLength(3).WithMessage(CourseErrorMessage.TitleMinLength)
-            .MaximumLength(100).WithMessage(CourseErrorMessage.TitleMaxLength);
+            .NotEmpty().WithMessage(CourseErrorMessages.TitleNotEmpty)
+            .MinimumLength(3).WithMessage(CourseErrorMessages.TitleMinLength)
+            .MaximumLength(100).WithMessage(CourseErrorMessages.TitleMaxLength);
         RuleFor(x => x.Description)
-            .NotEmpty().WithMessage(CourseErrorMessage.DescriptionNotEmpty)
-            .MaximumLength(500).WithMessage(CourseErrorMessage.DescriptionMaxLength);
+            .NotEmpty().WithMessage(CourseErrorMessages.DescriptionNotEmpty)
+            .MaximumLength(500).WithMessage(CourseErrorMessages.DescriptionMaxLength);
     }
 }

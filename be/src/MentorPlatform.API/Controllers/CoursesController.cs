@@ -1,5 +1,5 @@
 ﻿using MentorPlatform.Application.Commons.Models.Requests.CourseRequests;
-using MentorPlatform.Application.UseCases.Course;
+using MentorPlatform.Application.UseCases.CourseUseCases;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

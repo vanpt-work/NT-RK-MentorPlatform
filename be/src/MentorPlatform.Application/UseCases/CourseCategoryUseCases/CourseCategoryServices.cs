@@ -8,7 +8,7 @@ using MentorPlatform.Domain.Entities;
 using MentorPlatform.Domain.Repositories;
 using MentorPlatform.Domain.Shared;
 
-namespace MentorPlatform.Application.UseCases.CourseCategory;
+namespace MentorPlatform.Application.UseCases.CourseCategoryUseCases;
 public class CourseCategoryServices : ICourseCategoryServices
 {
     private readonly ICourseCategoryRepository _courseCategoryRepository;
