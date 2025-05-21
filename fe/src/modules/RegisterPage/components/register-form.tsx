@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { Resolver } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import LoadingSpinner from "@/common/components/loading-spinner";
@@ -360,13 +360,11 @@ export function RegisterForm() {
                         <ArrowLeft className="mr-2 h-4 w-4" /> Back
                     </Button>
                 ) : (
-                    <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => (window.location.href = "/login")}
-                    >
-                        <ArrowLeft className="mr-2 h-4 w-4" /> Back to Login
-                    </Button>
+                    <Link to="/login">
+                        <Button type="button" variant="outline">
+                            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Login
+                        </Button>
+                    </Link>
                 )}
 
                 {step < 3 ? (
