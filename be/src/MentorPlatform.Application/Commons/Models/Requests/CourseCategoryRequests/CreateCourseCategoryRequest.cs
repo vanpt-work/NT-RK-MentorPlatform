@@ -2,7 +2,7 @@
 using MentorPlatform.Application.Commons.ValidationMessages;
 using MentorPlatform.Domain.Constants;
 
-namespace MentorPlatform.Application.Commons.Models.Requests.CourseCategory;
+namespace MentorPlatform.Application.Commons.Models.Requests.CourseCategoryRequests;
 public class CreateCourseCategoryRequest
 {
     public string Name { get; set; }

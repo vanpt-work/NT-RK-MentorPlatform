@@ -1,5 +1,5 @@
 ﻿using MentorPlatform.Application.Commons.Models.Query;
-using MentorPlatform.Application.Commons.Models.Requests.CourseCategory;
+using MentorPlatform.Application.Commons.Models.Requests.CourseCategoryRequests;
 using MentorPlatform.Domain.Shared;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MentorPlatform.Application.UseCases.CourseCategory;
+namespace MentorPlatform.Application.UseCases.CourseCategoryUseCases;
 public interface ICourseCategoryServices
 {
     public Task<Result> GetAllAsync(QueryParameters queryParameters);

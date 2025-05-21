@@ -1,14 +1,14 @@
 ﻿using MentorPlatform.Application.Commons.CommandMessages;
 using MentorPlatform.Application.Commons.Errors;
 using MentorPlatform.Application.Commons.Models.Query;
-using MentorPlatform.Application.Commons.Models.Requests.CourseCategory;
+using MentorPlatform.Application.Commons.Models.Requests.CourseCategoryRequests;
 using MentorPlatform.Application.Commons.Models.Responses.Course;
 using MentorPlatform.Application.Commons.Models.Responses.CourseCategory;
 using MentorPlatform.Domain.Entities;
 using MentorPlatform.Domain.Repositories;
 using MentorPlatform.Domain.Shared;
 
-namespace MentorPlatform.Application.UseCases.CourseCategory;
+namespace MentorPlatform.Application.UseCases.CourseCategoryUseCases;
 public class CourseCategoryServices : ICourseCategoryServices
 {
     private readonly ICourseCategoryRepository _courseCategoryRepository;
