@@ -10,6 +10,7 @@ public class CourseResponse
 {
     public Guid Id { get; set; }
     public string Title { get; set; } = default!;
+    public int LearnerCount { get; set; } = default!;
     public string Description { get; set; } = default!;
     public string CategoryName { get; set; } = default!;
     public CourseLevel Level { get; set; } = default!;
@@ -19,6 +20,7 @@ public class CourseDetailsResponse
 {
     public Guid Id { get; set; }
     public string Title { get; set; } = default!;
+    public int LearnerCount { get; set; } = default!;
     public string Description { get; set; } = default!;
     public Guid CategoryId { get; set; }
     public CourseLevel Level { get; set; } = default!;

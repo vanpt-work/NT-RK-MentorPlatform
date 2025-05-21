@@ -47,6 +47,7 @@ public class CourseServices : ICourseServices
                                 Title = x.Title,
                                 Description = x.Description,
                                 Level = x.Level,
+                                LearnerCount = x.MentoringSessions != null ? x.MentoringSessions.GroupBy(s => s.LearnerId).Count() : 0,
                                 CategoryName = x.CourseCategory.Name
                             });
         var res = PaginationResult<CourseResponse>.Create(data: await _courseRepository.ToListAsync(queryPagination),
@@ -77,6 +78,7 @@ public class CourseServices : ICourseServices
                 Id = x.Id,
                 Title = x.Title,
                 Description = x.Description,
+                LearnerCount = x.MentoringSessions != null ? x.MentoringSessions.GroupBy(s => s.LearnerId).Count() : 0,
                 CategoryId = x.CourseCategoryId,
                 Level = x.Level,
                 Mentor = new MentorInfoForCourseResponse()
