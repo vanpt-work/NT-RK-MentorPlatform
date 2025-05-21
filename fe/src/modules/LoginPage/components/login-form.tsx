@@ -26,7 +26,6 @@ import { loginSchema } from "../utils/schemas";
 export function LoginForm() {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const { login } = useAuthContext();
     const navigate = useNavigate();
 
@@ -50,9 +49,7 @@ export function LoginForm() {
 
     async function onSubmit(values: z.infer<typeof loginSchema>) {
         setIsLoading(true);
-        setError(null);
         try {
-            console.log("Logging in with values:", values);
             if (values.rememberMe == true)
                 localStorage.setItem(REMEMBER_ME_KEY, "true");
             else localStorage.removeItem(REMEMBER_ME_KEY);
@@ -63,7 +60,6 @@ export function LoginForm() {
             navigate(route);
         } catch (err) {
             console.error("Login failed:", err);
-            setError("Invalid email or password");
         } finally {
             setIsLoading(false);
         }
@@ -146,11 +142,6 @@ export function LoginForm() {
                             Forgot password?
                         </a>
                     </div>
-                    {error && (
-                        <div className="pt-2 text-center text-sm text-red-500">
-                            {error}
-                        </div>
-                    )}
                     <Button
                         disabled={isLoading}
                         type="submit"
