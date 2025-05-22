@@ -12,6 +12,7 @@ public interface IApplicationRequestServices
     Task<Result> RequestUpdateAsync(RequestUpdateApplicationDocumentRequest requestUpdateApplicationDocumentRequest);
     Task<Result> ApproveAsync(Guid id);
     Task<Result> RejectAsync(Guid id, string note);
+    Task<Result<ApplicationRequestDetailResponse>> GetCurrentUserApplicationAsync();
 
     Task<Result<PaginationResult<ApplicationRequestResponse>>> GetAsync(
         ApplicationRequestQueryParameters applicationRequestQueryParameters);

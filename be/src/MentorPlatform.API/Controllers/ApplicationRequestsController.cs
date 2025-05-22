@@ -16,6 +16,16 @@ public class ApplicationRequestsController : ApiControllerBase
     {
         _applicationRequestServices = applicationRequestServices;
     }
+    
+    [Authorize(Roles = nameof(Role.Mentor))]
+    [HttpGet("current-user")]
+    public async Task<IActionResult> GetCurrentUserApplicationAsync()
+    {
+        var result = await _applicationRequestServices.GetCurrentUserApplicationAsync();
+
+        return ProcessResult(result);
+    }
+    
     [Authorize(Roles = nameof(Role.Mentor))]
     [HttpPost]
     public async Task<IActionResult> CreateAsync([FromForm] CreateApplicationRequestMentorRequest createApplicationRequestMentorRequest)

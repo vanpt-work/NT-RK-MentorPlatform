@@ -18,13 +18,14 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
 
 import { cn } from "../lib/utils";
+import { Role } from "../types/auth";
 
 type SidebarProps = {
     onToggle?: (isOpen: boolean) => void;
-    userRole?: "admin" | "mentor" | "learner";
+    userRole?: Role;
 };
 
-const Sidebar = ({ onToggle, userRole = "admin" }: SidebarProps) => {
+const Sidebar = ({ onToggle, userRole = Role.Admin }: SidebarProps) => {
     const location = useLocation();
     const [mounted, setMounted] = useState(false);
     const [isOpen, setIsOpen] = useState(true);
@@ -137,7 +138,7 @@ const Sidebar = ({ onToggle, userRole = "admin" }: SidebarProps) => {
             path: "/mentor/availability",
         },
         {
-            name: "Course Category",
+            name: "Courses",
             icon: <Book size={20} />,
             path: "/mentor/manage-courses",
         },
@@ -149,9 +150,9 @@ const Sidebar = ({ onToggle, userRole = "admin" }: SidebarProps) => {
     ];
 
     const menuItems =
-        userRole === "admin"
+        userRole === Role.Admin
             ? adminMenuItems
-            : userRole === "mentor"
+            : userRole === Role.Mentor
               ? mentorMenuItems
               : learnerMenuItems;
 

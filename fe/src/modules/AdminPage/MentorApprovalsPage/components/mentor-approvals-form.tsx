@@ -1,6 +1,3 @@
-import type { ColumnDef } from "@tanstack/react-table";
-import { format } from "date-fns";
-import { Ban, Eye, MessageCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -68,12 +65,10 @@ export function MentorApprovalsForm() {
         defaultApplicationRequestQueryParams,
     );
 
-    // Fetch applications when component mounts or query changes
     useEffect(() => {
         handleGetList();
     }, [query]);
 
-    // Get columns with handleViewDetails function
     const columns = getColumns(handleViewDetails);
 
     // Fetch applications list from API
@@ -160,7 +155,7 @@ export function MentorApprovalsForm() {
         setIsLoading(true);
         try {
             switch (decision) {
-                case "approve":
+                case "approve": {
                     const approveResult = approveApplicationSchema.safeParse({
                         note: comments.trim(),
                     });
@@ -179,8 +174,9 @@ export function MentorApprovalsForm() {
                         `Successfully approved ${selectedApplication.fullName}'s application`,
                     );
                     break;
+                }
 
-                case "reject":
+                case "reject": {
                     const rejectResult = rejectApplicationSchema.safeParse({
                         note: comments.trim(),
                     });
@@ -200,8 +196,9 @@ export function MentorApprovalsForm() {
                         `Successfully rejected ${selectedApplication.fullName}'s application`,
                     );
                     break;
+                }
 
-                case "update":
+                case "update": {
                     const updateResult = requestUpdateSchema.safeParse({
                         note: comments.trim(),
                     });
@@ -221,6 +218,7 @@ export function MentorApprovalsForm() {
                         `Update request sent to ${selectedApplication.fullName}`,
                     );
                     break;
+                }
             }
 
             // Refresh application list

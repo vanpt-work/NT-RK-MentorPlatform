@@ -47,6 +47,17 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
             .substring(0, 2);
     };
 
+    const formatDate = (dateString?: string) => {
+        if (!dateString) return "N/A";
+        return new Date(dateString).toLocaleString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+    };
+
     const handlePreviewDocument = (doc: any) => {
         const document: Document = {
             id: doc.id || (Math.random() * 1000).toString(),
@@ -98,7 +109,7 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
                         <div className="text-right">
                             <StatusBadge status={application.status} />
                             <p className="text-muted-foreground mt-2 text-xs">
-                                Applied: {application.summitted}
+                                Applied: {formatDate(application.summitted)}
                             </p>
                         </div>
                     </div>

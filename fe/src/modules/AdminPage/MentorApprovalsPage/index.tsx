@@ -13,17 +13,7 @@ export default function MentorApprovalsPage() {
                     </p>
                 </div>
             </div>
-
-            <div className="rounded-lg border shadow-sm">
-                <div className="border-b px-6 py-5">
-                    <h2 className="text-xl font-semibold">
-                        Mentor Applications
-                    </h2>
-                </div>
-                <div className="p-6">
-                    <MentorApprovalsForm />
-                </div>
-            </div>
+            <MentorApprovalsForm />
         </div>
     );
 }

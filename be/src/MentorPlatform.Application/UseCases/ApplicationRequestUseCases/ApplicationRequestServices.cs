@@ -16,7 +16,6 @@ using MentorPlatform.Domain.Repositories;
 using MentorPlatform.Domain.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using RazorLight;
-using System.Linq;
 
 namespace MentorPlatform.Application.UseCases.ApplicationRequestUseCases;
 
@@ -118,10 +117,9 @@ public class ApplicationRequestServices : IApplicationRequestServices
 
         if (updateApplicationRequestMentorRequest.ApplicationDocuments != null && updateApplicationRequestMentorRequest.ApplicationDocuments.Count > 0)
         {
-
             var newApplicationDocument = updateApplicationRequestMentorRequest
                 .ApplicationDocuments
-                .Where(x => x.FileContent.Length > 0).ToList();
+                .Where(x => x.FileContent != null && x.FileContent.Length > 0).ToList();
             var uploadNewApplicationDocumentTasks = newApplicationDocument
                 .Select(c => _fileStorageServices.UploadFileAsync(c.FileContent)).ToList();
             await Task.WhenAll(uploadNewApplicationDocumentTasks);
@@ -155,7 +153,7 @@ public class ApplicationRequestServices : IApplicationRequestServices
         {
             return Result.Failure(ApplicationRequestErrors.NotFound);
         }
-        
+
         if (applicationRequest.Status == ApplicationRequestStatus.UnderReview)
         {
             return Result.Failure(ApplicationRequestErrors.AdminCannotRequestUpdateRequestIsUnderReview);
@@ -223,9 +221,8 @@ public class ApplicationRequestServices : IApplicationRequestServices
             Status = u.Status,
             FullName = u.Mentor.UserDetail.FullName,
             Note = u.Note,
-            // Thêm thông tin của mentor
             MentorEmail = u.Mentor.Email,
-            MentorExpertises = u.Mentor.UserExpertises != null ? 
+            MentorExpertises = u.Mentor.UserExpertises != null ?
                 u.Mentor.UserExpertises.Where(ue => !ue.IsDeleted)
                 .Select(ue => ue.Expertise.Name).ToList() : null,
             MentorCertifications = u.Certifications,
@@ -347,7 +344,7 @@ public class ApplicationRequestServices : IApplicationRequestServices
         {
             return Result.Failure(ApplicationRequestErrors.AdminCannotRejectRequestIsUnderReview);
         }
-        
+
         if (applicationRequest.Status == ApplicationRequestStatus.Approved)
         {
             return Result.Failure(ApplicationRequestErrors.CannotRejectApprovedRequest);
@@ -365,5 +362,59 @@ public class ApplicationRequestServices : IApplicationRequestServices
                                                               ApplicationRequestStatus.Rejected);
 
         return Result.Success();
+    }
+
+    public async Task<Result<ApplicationRequestDetailResponse>> GetCurrentUserApplicationAsync()
+    {
+        var currentUserId = _executionContext.GetUserId();
+        
+        var applicationDetailQuery = _applicationRequestRepository.GetQueryable()
+            .Where(u => u.MentorId == currentUserId && !u.IsDeleted)
+            .OrderByDescending(u => u.Submitted)
+            .Select(u => new ApplicationRequestDetailResponse
+            {
+                Id = u.Id,
+                Summitted = u.Submitted,
+                Description = u.Description,
+                Education = u.Education,
+                WorkExperience = u.WorkExperience,
+                Status = u.Status,
+                FullName = u.Mentor.UserDetail.FullName,
+                Note = u.Note,
+                MentorEmail = u.Mentor.Email,
+                MentorExpertises = u.Mentor.UserExpertises != null ?
+                    u.Mentor.UserExpertises.Where(ue => !ue.IsDeleted)
+                    .Select(ue => ue.Expertise.Name).ToList() : null,
+                MentorCertifications = u.Certifications,
+                AvatarUrl = u.Mentor.UserDetail.AvatarUrl,
+                ApplicationRequestDocuments = u.ApplicationDocuments != null ? u.ApplicationDocuments
+                    .Select(ad => new ApplicationRequestDocumentResponse
+                    {
+                        FilePath = ad.FilePath,
+                        FileName = ad.FileName
+                    }).ToList() : default!
+            });
+        
+        var applicationDetailResponse = await _applicationRequestRepository.FirstOrDefaultAsync(applicationDetailQuery);
+
+        if (applicationDetailResponse == null)
+        {
+            return Result<ApplicationRequestDetailResponse>.Failure(new Error("ApplicationRequest.NotFound", "No application request found for current user."));
+        }
+
+        if (applicationDetailResponse.ApplicationRequestDocuments != null && applicationDetailResponse.ApplicationRequestDocuments.Count > 0)
+        {
+            var getSignedApplicationDocumentPath = applicationDetailResponse.ApplicationRequestDocuments
+                .Select(ad => _fileStorageServices.GetPreSignedUrlFile(ad.FilePath)).ToList();
+
+            await Task.WhenAll(getSignedApplicationDocumentPath);
+
+            for (int i = 0; i < applicationDetailResponse.ApplicationRequestDocuments.Count; i++)
+            {
+                applicationDetailResponse.ApplicationRequestDocuments[i].FilePath = getSignedApplicationDocumentPath[i].Result;
+            }
+        }
+
+        return Result<ApplicationRequestDetailResponse>.Success(applicationDetailResponse);
     }
 }

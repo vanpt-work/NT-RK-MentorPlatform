@@ -71,15 +71,10 @@ export function PasswordResetForm() {
 
     // Handle OTP input change
     const handleOtpChange = (index: number, value: string) => {
-        // Only allow numbers
         if (!/^\d*$/.test(value)) return;
-
         const newOtpValues = [...otpValues];
-        // Only take the last character if more than one is pasted/entered
         newOtpValues[index] = value.slice(-1);
         setOtpValues(newOtpValues);
-
-        // Auto focus next input if a digit was entered
         if (value && index < 5) {
             inputRefs.current[index + 1]?.focus();
         }
@@ -92,7 +87,6 @@ export function PasswordResetForm() {
     ) => {
         if (e.key === "Backspace") {
             if (!otpValues[index] && index > 0) {
-                // If current input is empty and backspace is pressed, focus previous input
                 inputRefs.current[index - 1]?.focus();
             }
         } else if (e.key === "ArrowLeft" && index > 0) {
@@ -106,7 +100,7 @@ export function PasswordResetForm() {
     const handleOtpPaste = (e: React.ClipboardEvent) => {
         e.preventDefault();
         const pastedData = e.clipboardData.getData("text/plain").trim();
-        if (!/^\d+$/.test(pastedData)) return; // Only allow numbers
+        if (!/^\d+$/.test(pastedData)) return;
 
         const digits = pastedData.slice(0, 6).split("");
         const newOtpValues = [...otpValues];
@@ -119,7 +113,6 @@ export function PasswordResetForm() {
 
         setOtpValues(newOtpValues);
 
-        // Focus the input after the last filled position
         if (digits.length < 6) {
             inputRefs.current[digits.length]?.focus();
         }
@@ -140,7 +133,6 @@ export function PasswordResetForm() {
         } catch (err) {
             console.error("Password reset request failed:", err);
             setError("Failed to send OTP. Please try again.");
-            toast.error("Failed to send verification code. Please try again.");
         } finally {
             setIsLoading(false);
         }
@@ -162,7 +154,6 @@ export function PasswordResetForm() {
         } catch (err) {
             console.error("OTP verification failed:", err);
             setError("Invalid OTP. Please try again.");
-            toast.error("Invalid verification code. Please try again.");
         } finally {
             setIsLoading(false);
         }
@@ -183,14 +174,12 @@ export function PasswordResetForm() {
             toast.success("Password reset successfully");
             setIsSubmitted(true);
 
-            // Redirect to login after a delay
             setTimeout(() => {
                 navigate("/login");
             }, 3000);
         } catch (err) {
             console.error("Password reset failed:", err);
             setError("Failed to reset password. Please try again.");
-            toast.error("Failed to reset password. Please try again.");
         } finally {
             setIsLoading(false);
         }

@@ -18,6 +18,7 @@ import {
 } from "@/common/components/ui/dialog";
 
 import { type PreviewFile, SUPPORTED_EXTENSIONS } from "../types";
+import { isPdfFile } from "../utils/file-helpers";
 
 type FilePreviewDialogProps = {
     open: boolean;
@@ -36,15 +37,27 @@ const FilePreviewDialog: React.FC<FilePreviewDialogProps> = ({
 }) => {
     const [fileType, setFileType] = useState<string | null>(null);
     const [isSupported, setIsSupported] = useState<boolean>(false);
+    const [directUrl, setDirectUrl] = useState<string | null>(null);
 
     useEffect(() => {
         if (previewFile && previewFile.type) {
             const type = previewFile.type.toLowerCase();
             setFileType(type);
             setIsSupported(SUPPORTED_EXTENSIONS.includes(type));
+
+            if (previewFile.url && previewFile.url.includes("cloudinary.com")) {
+                if (isPdfFile(previewFile.file?.name || "") || type === "pdf") {
+                    setDirectUrl(previewFile.url);
+                } else {
+                    setDirectUrl(previewFile.url);
+                }
+            } else {
+                setDirectUrl(previewFile.url);
+            }
         } else {
             setFileType(null);
             setIsSupported(false);
+            setDirectUrl(null);
         }
     }, [previewFile]);
 
@@ -54,10 +67,20 @@ const FilePreviewDialog: React.FC<FilePreviewDialogProps> = ({
 
     const handleDownload = () => {
         if (previewFile?.url) {
-            saveAs(
-                previewFile.url,
-                previewFile.file?.name || `file.${previewFile.type}`,
-            );
+            const downloadUrl = previewFile.url;
+
+            const fileName =
+                previewFile.file?.name || `file.${previewFile.type}`;
+
+            fetch(downloadUrl)
+                .then((response) => response.blob())
+                .then((blob) => {
+                    saveAs(blob, fileName);
+                })
+                .catch((error) => {
+                    console.error("Download error:", error);
+                    window.open(downloadUrl, "_blank");
+                });
         }
     };
 
@@ -65,6 +88,11 @@ const FilePreviewDialog: React.FC<FilePreviewDialogProps> = ({
         console.error("Error in file viewer:", error);
         onPreviewError();
     };
+
+    const isCloudinaryPdf =
+        fileType === "pdf" &&
+        previewFile.url &&
+        previewFile.url.includes("cloudinary.com");
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -94,28 +122,38 @@ const FilePreviewDialog: React.FC<FilePreviewDialogProps> = ({
                     <div className="bg-muted/20 flex h-full w-full flex-col items-center justify-center rounded-md p-2">
                         {isSupported ? (
                             <div className="h-[70vh] w-full overflow-auto rounded-md border bg-white">
-                                <FileViewer
-                                    fileType={fileType || ""}
-                                    filePath={previewFile.url}
-                                    onError={onError}
-                                    errorComponent={
-                                        <div className="flex flex-col items-center justify-center p-10 text-center">
-                                            <AlertCircle className="text-muted-foreground mb-4 h-16 w-16" />
-                                            <h3 className="mb-2 text-lg font-semibold">
-                                                Error previewing file
-                                            </h3>
-                                            <p className="text-muted-foreground mb-4">
-                                                There was an error loading the
-                                                preview. Please download to
-                                                view.
-                                            </p>
-                                            <Button onClick={handleDownload}>
-                                                <Download className="mr-2 h-4 w-4" />{" "}
-                                                Download
-                                            </Button>
-                                        </div>
-                                    }
-                                />
+                                {isCloudinaryPdf ? (
+                                    <iframe
+                                        src={directUrl || previewFile.url}
+                                        className="h-full w-full"
+                                        title="PDF Preview"
+                                    />
+                                ) : (
+                                    <FileViewer
+                                        fileType={fileType || ""}
+                                        filePath={directUrl || previewFile.url}
+                                        onError={onError}
+                                        errorComponent={
+                                            <div className="flex flex-col items-center justify-center p-10 text-center">
+                                                <AlertCircle className="text-muted-foreground mb-4 h-16 w-16" />
+                                                <h3 className="mb-2 text-lg font-semibold">
+                                                    Error previewing file
+                                                </h3>
+                                                <p className="text-muted-foreground mb-4">
+                                                    There was an error loading
+                                                    the preview. Please download
+                                                    to view.
+                                                </p>
+                                                <Button
+                                                    onClick={handleDownload}
+                                                >
+                                                    <Download className="mr-2 h-4 w-4" />{" "}
+                                                    Download
+                                                </Button>
+                                            </div>
+                                        }
+                                    />
+                                )}
                             </div>
                         ) : (
                             <div className="flex flex-col items-center justify-center p-10 text-center">
