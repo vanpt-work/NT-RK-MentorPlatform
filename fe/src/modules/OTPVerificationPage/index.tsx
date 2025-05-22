@@ -45,9 +45,9 @@ export default function OTPVerificationPage() {
     const handleBack = () => {
         // Go back based on purpose
         if (purpose === "registration") {
-            window.location.href = "/register";
+            navigate("/register");
         } else {
-            window.location.href = "/login";
+            navigate("/login");
         }
     };
 

@@ -4,6 +4,7 @@ using MentorPlatform.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MentorPlatform.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250520073647_ConfigureApplicationRequest")]
+    partial class ConfigureApplicationRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,13 +42,11 @@ namespace MentorPlatform.Persistence.Migrations
 
                     b.Property<string>("FileName")
                         .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FilePath")
                         .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -106,9 +107,6 @@ namespace MentorPlatform.Persistence.Migrations
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("Submitted")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("WorkExperience")
                         .IsRequired()
@@ -221,6 +219,18 @@ namespace MentorPlatform.Persistence.Migrations
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -230,14 +240,13 @@ namespace MentorPlatform.Persistence.Migrations
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ResourceId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
-
-                    b.HasIndex("ResourceId");
 
                     b.ToTable("CourseResources");
                 });
@@ -362,53 +371,6 @@ namespace MentorPlatform.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("RefreshTokens");
-                });
-
-            modelBuilder.Entity("MentorPlatform.Domain.Entities.Resource", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FilePath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("MentorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("ModifiedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MentorId");
-
-                    b.ToTable("Resources");
                 });
 
             modelBuilder.Entity("MentorPlatform.Domain.Entities.Schedule", b =>
@@ -699,15 +661,7 @@ namespace MentorPlatform.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MentorPlatform.Domain.Entities.Resource", "Resource")
-                        .WithMany("CourseResources")
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Course");
-
-                    b.Navigation("Resource");
                 });
 
             modelBuilder.Entity("MentorPlatform.Domain.Entities.MentoringSession", b =>
@@ -735,17 +689,6 @@ namespace MentorPlatform.Persistence.Migrations
                     b.Navigation("Learner");
 
                     b.Navigation("Schedule");
-                });
-
-            modelBuilder.Entity("MentorPlatform.Domain.Entities.Resource", b =>
-                {
-                    b.HasOne("MentorPlatform.Domain.Entities.User", "Mentor")
-                        .WithMany("Resources")
-                        .HasForeignKey("MentorId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Mentor");
                 });
 
             modelBuilder.Entity("MentorPlatform.Domain.Entities.Schedule", b =>
@@ -832,11 +775,6 @@ namespace MentorPlatform.Persistence.Migrations
                     b.Navigation("UserExpertises");
                 });
 
-            modelBuilder.Entity("MentorPlatform.Domain.Entities.Resource", b =>
-                {
-                    b.Navigation("CourseResources");
-                });
-
             modelBuilder.Entity("MentorPlatform.Domain.Entities.Schedule", b =>
                 {
                     b.Navigation("MentoringSession");
@@ -849,8 +787,6 @@ namespace MentorPlatform.Persistence.Migrations
                     b.Navigation("Courses");
 
                     b.Navigation("MentoringSessions");
-
-                    b.Navigation("Resources");
 
                     b.Navigation("Schedules");
 

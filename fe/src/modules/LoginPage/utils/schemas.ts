@@ -23,7 +23,7 @@ export const loginSchema = z.object({
         .string()
         .nonempty(PASSWORD_CANNOT_BE_BLANK)
         .regex(
-            /^(?=.{8,32}$)(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).*$/,
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Za-z\d\W_]{8,32}$/,
             PASSWORD_IS_INVALID,
         ),
 

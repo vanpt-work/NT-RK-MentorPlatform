@@ -37,15 +37,7 @@ public class CloudinaryStorageServices : INamedFileStorageServices
     public async Task<string> UploadFileAsync(IFormFile fileUploadRequest, CancellationToken token = default)
     {
         ValidateFile(fileUploadRequest);
-
-        var uploadParams = CreateUploadParams(fileUploadRequest);
-        var uploadResult = await _cloudinary.UploadAsync(uploadParams, token);
-
-        if (uploadResult.Error != null)
-        {
-            throw new Exception(string.Format(ApplicationExceptionMessage.ErrorWhenUpload, uploadResult.Error.Message));
-        }
-
+        var uploadResult = await UploadMediaFileAsync(fileUploadRequest, token);
         return uploadResult.SecureUrl.ToString();
     }
 
@@ -57,20 +49,6 @@ public class CloudinaryStorageServices : INamedFileStorageServices
         }
     }
 
-    private ImageUploadParams CreateUploadParams(IFormFile file)
-    {
-        string fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
-        string uploadFolder = DetermineUploadFolder(fileExtension);
-
-        return new ImageUploadParams
-        {
-            File = new FileDescription(file.FileName, file.OpenReadStream()),
-            Folder = uploadFolder,
-            UseFilename = true,
-            UniqueFilename = true,
-            Overwrite = false
-        };
-    }
 
     public Task<string> GetPreSignedUrlFile(string filePath, CancellationToken token = default)
     {
@@ -81,18 +59,18 @@ public class CloudinaryStorageServices : INamedFileStorageServices
     public async Task DeleteFileAsync(string filePath, CancellationToken token = default)
     {
         ValidateFilePath(filePath);
-
         string publicId = ExtractPublicIdFromUrl(filePath);
         var deleteParams = new DeletionParams(publicId);
         var result = await _cloudinary.DestroyAsync(deleteParams);
-
-        if (result.Error != null)
-        {
-            throw new Exception(string.Format(ApplicationExceptionMessage.ErrorWhenDeletingFile, result.Error.Message));
-        }
+        CheckErrorDeleteMediaFileResult(result);
     }
 
-    private void ValidateFilePath(string filePath)
+    public string GetOriginFilePathFromFileSignedPath(string filePathSigned)
+    {
+        return filePathSigned;
+    }
+
+    private static void ValidateFilePath(string filePath)
     {
         if (string.IsNullOrEmpty(filePath))
         {
@@ -100,27 +78,106 @@ public class CloudinaryStorageServices : INamedFileStorageServices
         }
     }
 
-    private string DetermineUploadFolder(string fileExtension)
+    private Task<RawUploadResult> UploadMediaFileAsync(IFormFile file, CancellationToken cancellationToken = default)
     {
+        string fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
         if (_cloudinaryStorageOptions.MediaSettings?.Images?.AllowedExtensions != null &&
             _cloudinaryStorageOptions.MediaSettings.Images.AllowedExtensions.Contains(fileExtension))
         {
-            return _cloudinaryStorageOptions.MediaSettings.Images.FolderPath;
+            return UploadImageAsync(file, cancellationToken);
         }
         else if (_cloudinaryStorageOptions.MediaSettings?.Videos?.AllowedExtensions != null &&
                  _cloudinaryStorageOptions.MediaSettings.Videos.AllowedExtensions.Contains(fileExtension))
         {
-            return _cloudinaryStorageOptions.MediaSettings.Videos.FolderPath;
+            return UploadVideoAsync(file, cancellationToken);
         }
         else if (_cloudinaryStorageOptions.MediaSettings?.Documents?.AllowedExtensions != null &&
                 _cloudinaryStorageOptions.MediaSettings.Documents.AllowedExtensions.Contains(fileExtension))
         {
-            return _cloudinaryStorageOptions.MediaSettings.Documents.FolderPath;
+            return UploadDocumentAsync(file, cancellationToken);
         }
 
-        return "uploads";
+        return Task.FromResult(new RawUploadResult());
     }
 
+    private async Task<RawUploadResult> UploadImageAsync(IFormFile file, CancellationToken cancellationToken = default)
+    {
+        var uploadParams = CreateUploadImageParams(file);
+        var uploadResult = await _cloudinary.UploadAsync(uploadParams, cancellationToken);
+
+        CheckErrorUploadMediaFileResult(uploadResult);
+
+        return uploadResult;
+    }
+    private async Task<RawUploadResult> UploadVideoAsync(IFormFile file, CancellationToken cancellationToken = default)
+    {
+        var uploadParams = CreateUploadVideoParams(file);
+        var uploadResult = await _cloudinary.UploadAsync(uploadParams, cancellationToken);
+
+        CheckErrorUploadMediaFileResult(uploadResult);
+
+        return uploadResult;
+    }
+    private async Task<RawUploadResult> UploadDocumentAsync(IFormFile file, CancellationToken cancellationToken = default)
+    {
+        var uploadParams = CreateUploadDocumentParams(file);
+        var uploadResult = await _cloudinary.UploadAsync(uploadParams, cancellationToken: cancellationToken);
+
+        CheckErrorUploadMediaFileResult(uploadResult);
+
+        return uploadResult;
+    }
+
+    private static void CheckErrorUploadMediaFileResult(RawUploadResult uploadResult)
+    {
+        if (uploadResult.Error != null)
+        {
+            throw new UploadFileException(string.Format(ApplicationExceptionMessage.ErrorWhenUpload, uploadResult.Error.Message));
+        }
+    }
+    private static void CheckErrorDeleteMediaFileResult(DeletionResult deleteResult)
+    {
+        if (deleteResult.Error != null)
+        {
+            throw new UploadFileException(string.Format(ApplicationExceptionMessage.ErrorWhenDeletingFile, deleteResult.Error.Message));
+        }
+    }
+    private ImageUploadParams CreateUploadImageParams(IFormFile file)
+    {
+        var uploadFolder = _cloudinaryStorageOptions.MediaSettings.Images.FolderPath;
+        return new ImageUploadParams
+        {
+            File = new FileDescription(file.FileName, file.OpenReadStream()),
+            Folder = uploadFolder,
+            UseFilename = true,
+            UniqueFilename = true,
+            Overwrite = false
+        };
+    }
+    private VideoUploadParams CreateUploadVideoParams(IFormFile file)
+    {
+        var uploadFolder = _cloudinaryStorageOptions.MediaSettings.Images.FolderPath;
+        return new VideoUploadParams
+        {
+            File = new FileDescription(file.FileName, file.OpenReadStream()),
+            Folder = uploadFolder,
+            UseFilename = true,
+            UniqueFilename = true,
+            Overwrite = false
+        };
+    }
+    private RawUploadParams CreateUploadDocumentParams(IFormFile file)
+    {
+        var uploadFolder = _cloudinaryStorageOptions.MediaSettings.Images.FolderPath;
+        return new RawUploadParams
+        {
+            File = new FileDescription(file.FileName, file.OpenReadStream()),
+            Folder = uploadFolder,
+            UseFilename = true,
+            UniqueFilename = true,
+            Overwrite = false
+        };
+    }
     private static string ExtractPublicIdFromUrl(string url)
     {
         try
