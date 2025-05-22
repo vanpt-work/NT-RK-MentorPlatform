@@ -33,6 +33,7 @@ public static class DependencyInjection
         services.AddScoped<IApplicationRequestServices, ApplicationRequestServices>();
         services.AddScoped<ICourseServices, CourseServices>();
         services.AddScoped<IExpertiseUseCases, ExpertiseUseCases>();
+        services.AddScoped<ICourseServices, CourseServices>();
         services.AddScoped<IResourceServices, ResourceServices>();
         var config = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
         services.Configure<CloudinaryStorageOptions>(config.GetSection($"FileStorageOptions:{nameof(CloudinaryStorageOptions)}"));

@@ -1,5 +1,6 @@
 ﻿using MentorPlatform.Application.Commons.Models.Requests.CourseRequests;
 using MentorPlatform.Application.UseCases.CourseUseCases;
+using MentorPlatform.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,4 +31,27 @@ public class CoursesController : ApiControllerBase
         return ProcessResult(result);
     }
 
+    [HttpPost]
+    [Authorize(Roles = nameof(Role.Mentor))]
+    public async Task<IActionResult> Create(CreateCourseRequest request)
+    {
+        var result = await _courseService.AddCourseAsync(request);
+        return ProcessResult(result);
+    }
+
+    [HttpPut]
+    [Authorize(Roles = nameof(Role.Mentor))]
+    public async Task<IActionResult> Edit(EditCourseRequest request)
+    {
+        var result = await _courseService.UpdateCourseAsync(request);
+        return ProcessResult(result);
+    }
+
+    [HttpDelete("{id:guid}")]
+    [Authorize(Roles = $"{nameof(Role.Mentor)}, {nameof(Role.Admin)}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var result = await _courseService.DeleteCourseAsync(id);
+        return ProcessResult(result);
+    }
 }

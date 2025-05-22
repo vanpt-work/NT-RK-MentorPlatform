@@ -8,8 +8,8 @@ public static class CourseMapping
     {
         return new Course
         {
-            Title = request.Title,
-            Description = request.Description,
+            Title = request.Title.Trim(),
+            Description = request.Description.Trim(),
             Level = request.Level,
             CourseCategoryId = request.CourseCategoryId,
         };

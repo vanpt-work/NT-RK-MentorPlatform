@@ -7,5 +7,4 @@ public class ResourceRepository : Repository<Resource, Guid>, IResourceRepositor
     public ResourceRepository(ApplicationDbContext dbContext) : base(dbContext)
     {
     }
-
 }

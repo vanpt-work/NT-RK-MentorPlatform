@@ -1,9 +1,9 @@
 ﻿
 namespace MentorPlatform.CrossCuttingConcerns.Exceptions;
 
-public class UnAuthorizedException : ExceptionBase
+public class UnauthorizedException : ExceptionBase
 {
-    public UnAuthorizedException(string message) : base(message)
+    public UnauthorizedException(string message) : base(message)
     {
     }
 }

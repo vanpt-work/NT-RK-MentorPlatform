@@ -1,40 +1,30 @@
+using MentorPlatform.Application.Commons.CommandMessages;
 using MentorPlatform.Application.Commons.Errors;
 using MentorPlatform.Application.Commons.Mappings;
 using MentorPlatform.Application.Commons.Models.Requests.CourseRequests;
-using MentorPlatform.Application.Commons.Models.Requests.ResourseRequests;
 using MentorPlatform.Application.Commons.Models.Responses.CourseResponses;
 using MentorPlatform.Application.Identity;
-using MentorPlatform.Application.Services.File;
-using MentorPlatform.Application.Services.FileStorage;
-using MentorPlatform.CrossCuttingConcerns.Exceptions;
 using MentorPlatform.Domain.Entities;
 using MentorPlatform.Domain.Enums;
 using MentorPlatform.Domain.Repositories;
 using MentorPlatform.Domain.Shared;
-using Microsoft.Extensions.Logging;
 
 namespace MentorPlatform.Application.UseCases.CourseUseCases;
 public class CourseServices : ICourseServices
 {
     private readonly ICourseRepository _courseRepository;
-    private readonly IFileStorageServices _fileStorage;
     private readonly IExecutionContext _executionContext;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<CourseServices> _logger;
     private readonly IRepository<User, Guid> _userRepository;
 
     public CourseServices(ICourseRepository courseRepository,
-        IFileStorageFactory fileStorageFactory,
         IExecutionContext executionContext,
         IUnitOfWork unitOfWork,
-        ILogger<CourseServices> logger,
-        IRepository<User,Guid> userRepository)
+        IRepository<User, Guid> userRepository)
     {
         _courseRepository = courseRepository;
-        _fileStorage = fileStorageFactory.Get();
         _executionContext = executionContext;
         _unitOfWork = unitOfWork;
-        _logger = logger;
         _userRepository = userRepository;
     }
 
@@ -44,69 +34,94 @@ public class CourseServices : ICourseServices
 
         var newCourse = courseRequest.ToEntity();
         newCourse.MentorId = userId;
-
-        newCourse.CourseResources = new List<CourseResource>();
+        if (courseRequest.ResourceIds.Count > 0)
+        {
+            newCourse.CourseResources = [];
+            foreach (var resourceRequestId in courseRequest.ResourceIds)
+            {
+                var courseResource = new CourseResource()
+                {
+                    ResourceId = resourceRequestId,
+                };
+                newCourse.CourseResources.Add(courseResource);
+            }
+        }
 
         _courseRepository.Add(newCourse);
         await _unitOfWork.SaveChangesAsync();
 
-        return Result.Success();
+        return Result<string>.Success(CourseCommandMessages.CreateSuccessfully);
     }
 
     public async Task<Result> UpdateCourseAsync(EditCourseRequest courseRequest)
     {
         var userId = _executionContext.GetUserId();
 
-        var dbCourse = await _courseRepository.GetByIdAsync(courseRequest.Id, nameof(Course.CourseResources));
-        if (dbCourse == null)
+        var selectedCourse = await _courseRepository.GetByIdAsync(courseRequest.Id, nameof(Course.CourseResources));
+        if (selectedCourse == null)
         {
-            throw new BadRequestException(ApplicationExceptionMessage.CourseNotFound);
+            return Result.Failure(400, CourseErrors.CourseNotExists);
+        }
+        if (selectedCourse.MentorId != userId)
+        {
+            return Result.Failure(403, CourseErrors.MentorCanNotEditCourse);
         }
 
-        CopyData(courseRequest, dbCourse);
+        selectedCourse.Title = courseRequest.Title.Trim();
+        selectedCourse.Description = courseRequest.Description.Trim();
+        selectedCourse.Level = courseRequest.Level;
+        selectedCourse.CourseCategoryId = courseRequest.CourseCategoryId;
 
+        foreach (var courseResource in selectedCourse.CourseResources)
+        {
+            if (!courseRequest.OldResourceIds.Any(r => r.Equals(courseResource.ResourceId)))
+            {
+                selectedCourse.CourseResources.Remove(courseResource);
+            }
+        }
+
+        foreach (var resourceId in courseRequest.ResourceIds)
+        {
+            if (!selectedCourse.CourseResources.Any(c => c.ResourceId.Equals(resourceId)))
+            {
+                selectedCourse.CourseResources.Add(new CourseResource
+                {
+                    ResourceId = resourceId,
+                });
+            }
+        }
+
+        _courseRepository.Update(selectedCourse);
         await _unitOfWork.SaveChangesAsync();
 
-        return Result.Success();
+        return Result<string>.Success(CourseCommandMessages.UpdateSuccessfully);
     }
 
     public async Task<Result> DeleteCourseAsync(Guid courseId)
     {
-        var dbCourse = await _courseRepository.GetByIdAsync(courseId, nameof(Course.MentoringSessions));
+        var userId = _executionContext.GetUserId();
 
-        if (dbCourse == null)
+        var selectedCourse = await _courseRepository.GetByIdAsync(courseId, nameof(Course.MentoringSessions), nameof(Course.CourseResources));
+
+        if (selectedCourse == null)
         {
-            throw new BadRequestException(ApplicationExceptionMessage.CourseNotFound);
+            Result.Failure(400, CourseErrors.CourseNotExists);
         }
 
-        if (dbCourse.MentoringSessions != null && dbCourse.MentoringSessions.Count > 0)
+        if (selectedCourse.MentorId != userId)
         {
-            throw new BadRequestException(ApplicationExceptionMessage.MentoringSessionContained);
+            Result.Failure(403, CourseErrors.MentorCanNotDeleteCourse);
         }
 
-        return Result.Success();
-    }
-
-    private async Task UploadFile(ResourceRequest request, CourseResource resource)
-    {
-        try
+        if (selectedCourse.MentoringSessions != null && selectedCourse.MentoringSessions.Count > 0)
         {
-            var fileUrl = await _fileStorage.UploadFileAsync(request.File);
-            //resource.FilePath = fileUrl;
-            //resource.FileType = Path.GetExtension(request.File.FileName);
+            Result.Failure(409, CourseErrors.CourseHasMentoringSession);
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, ex.Message);
-        }
-    }
 
-    private static void CopyData(EditCourseRequest request, Course course)
-    {
-        course.Title = request.Title;
-        course.Description = request.Description;
-        course.Level = request.Level;
-        course.CourseCategoryId = request.CourseCategoryId;
+        _courseRepository.Remove(selectedCourse);
+        await _unitOfWork.SaveChangesAsync();
+
+        return Result<string>.Success(CourseCommandMessages.DeleteSuccessfully);
     }
 
     public async Task<Result> GetAllAsync(CourseQueryParameters queryParameters)
@@ -171,6 +186,7 @@ public class CourseServices : ICourseServices
                 Level = x.Level,
                 Mentor = new MentorInfoForCourseResponse()
                 {
+                    Id = x.MentorId,
                     FullName = x.Mentor.UserDetail.FullName,
                     AvatarUrl = x.Mentor.UserDetail.AvatarUrl,
                     Experience = x.Mentor.UserDetail.Experience
@@ -182,6 +198,7 @@ public class CourseServices : ICourseServices
                     )
                     ? x.CourseResources.Select(r => new ResourceResponse()
                     {
+                        Id = r.ResourceId,
                         Title = r.Resource.Title,
                         Description = r.Resource.Description,
                         FilePath = r.Resource.FilePath,

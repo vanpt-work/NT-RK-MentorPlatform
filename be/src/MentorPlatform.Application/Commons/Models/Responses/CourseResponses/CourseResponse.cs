@@ -30,17 +30,17 @@ public class CourseDetailsResponse
 
 public class MentorInfoForCourseResponse
 {
+    public Guid Id { get; set; } = default!;
     public string FullName { get; set; } = default!;
     public string? AvatarUrl { get; set; } = default;
     public string? Experience { get; set; } = default;
-
 }
 
 public class ResourceResponse
 {
+    public Guid Id { get; set; } = default!;
     public string Title { get; set; } = default!;
     public string Description { get; set; } = default!;
     public string FilePath { get; set; } = default!;
     public string FileType { get; set; } = default!;
-   
 }

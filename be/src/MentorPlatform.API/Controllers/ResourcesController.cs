@@ -1,5 +1,7 @@
-﻿using MentorPlatform.Application.Commons.Models.Requests.ResourceRequests;
+﻿using MentorPlatform.Application.Commons.Models.Requests.ResourseRequests;
 using MentorPlatform.Application.UseCases.ResourceUseCases;
+using MentorPlatform.Domain.Enums;
+using MentorPlatform.Application.Commons.Models.Requests.ResourceRequests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,6 +18,30 @@ public class ResourcesController : ApiControllerBase
         _resourceService = resourceService;
     }
 
+    [HttpPost]
+    [Authorize(Roles = nameof(Role.Mentor))]
+    public async Task<IActionResult> CreateResource([FromForm] CreateResourceRequest request)
+    {
+        var result = await _resourceService.CreateResource(request);
+        return ProcessResult(result);
+    }
+
+    [HttpPut]
+    [Authorize(Roles = nameof(Role.Mentor))]
+    public async Task<IActionResult> UpdateResource(EditResourceRequest request)
+    {
+        var result = await _resourceService.EditResource(request);
+        return ProcessResult(result);
+    }
+
+    [HttpDelete("id:guid")]
+    [Authorize(Roles = nameof(Role.Mentor))]
+    public async Task<IActionResult> UpdateResource(Guid id)
+    {
+        var result = await _resourceService.DeleteResource(id);
+        return ProcessResult(result);
+    }
+    
     [HttpGet]
     public async Task<IActionResult> GetAllAsync([FromQuery] ResourceQueryParameters queryParameters)
     {
