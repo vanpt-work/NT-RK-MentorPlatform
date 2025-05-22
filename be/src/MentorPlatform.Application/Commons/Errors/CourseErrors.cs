@@ -14,6 +14,9 @@ public static class CourseErrorMessages
     public const string CourseDuplicateName = "Course name is duplicated";
     public const string CourseIsUsed = "Course is currently used";
     public const string MentorCanNotViewCourse = "Mentor do not have permission to view this course";
+    public const string MentorCanNotEditCourse = "Mentor do not have permission to edit this course";
+    public const string MentorCanNotDeleteCourse = "Mentor do not have permission to delete this course";
+    public const string CourseHasMentoringSession = "Course has mentoring session";
 }
 
 public static class CourseErrors
@@ -36,4 +39,12 @@ public static class CourseErrors
 
     public static Error MentorCanNotViewCourse => new(nameof(MentorCanNotViewCourse),
        CourseErrorMessages.MentorCanNotViewCourse);
+
+    public static Error MentorCanNotEditCourse => new(nameof(MentorCanNotEditCourse),
+         CourseErrorMessages.MentorCanNotEditCourse);
+    public static Error MentorCanNotDeleteCourse => new(nameof(MentorCanNotDeleteCourse),
+            CourseErrorMessages.MentorCanNotDeleteCourse);
+
+    public static Error CourseHasMentoringSession => new(nameof(CourseHasMentoringSession),
+        CourseErrorMessages.CourseHasMentoringSession);
 }

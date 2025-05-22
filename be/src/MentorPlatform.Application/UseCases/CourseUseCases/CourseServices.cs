@@ -1,3 +1,4 @@
+using MentorPlatform.Application.Commons.CommandMessages;
 using MentorPlatform.Application.Commons.Errors;
 using MentorPlatform.Application.Commons.Mappings;
 using MentorPlatform.Application.Commons.Models.Requests.CourseRequests;
@@ -16,19 +17,16 @@ public class CourseServices : ICourseServices
     private readonly ICourseRepository _courseRepository;
     private readonly IExecutionContext _executionContext;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<CourseServices> _logger;
     private readonly IRepository<User, Guid> _userRepository;
 
     public CourseServices(ICourseRepository courseRepository,
         IExecutionContext executionContext,
         IUnitOfWork unitOfWork,
-        ILogger<CourseServices> logger,
         IRepository<User, Guid> userRepository)
     {
         _courseRepository = courseRepository;
         _executionContext = executionContext;
         _unitOfWork = unitOfWork;
-        _logger = logger;
         _userRepository = userRepository;
     }
 
@@ -40,7 +38,7 @@ public class CourseServices : ICourseServices
         newCourse.MentorId = userId;
         if (courseRequest.ResourceIds.Count > 0)
         {
-            newCourse.CourseResources = new List<CourseResource>();
+            newCourse.CourseResources = [];
             foreach (var resourceRequestId in courseRequest.ResourceIds)
             {
                 var courseResource = new CourseResource()
@@ -54,75 +52,78 @@ public class CourseServices : ICourseServices
         _courseRepository.Add(newCourse);
         await _unitOfWork.SaveChangesAsync();
 
-        return Result.Success();
+        return Result<string>.Success(CourseCommandMessages.CreateSuccessfully);
     }
 
     public async Task<Result> UpdateCourseAsync(EditCourseRequest courseRequest)
     {
         var userId = _executionContext.GetUserId();
 
-        var dbCourse = await _courseRepository.GetByIdAsync(courseRequest.Id, nameof(Course.CourseResources));
-        if (dbCourse == null)
+        var selectedCourse = await _courseRepository.GetByIdAsync(courseRequest.Id, nameof(Course.CourseResources));
+        if (selectedCourse == null)
         {
-            throw new BadRequestException(ApplicationExceptionMessage.CourseNotFound);
+            return Result.Failure(400, CourseErrors.CourseNotExists);
         }
-        if (dbCourse.MentorId != userId)
+        if (selectedCourse.MentorId != userId)
         {
-            throw new UnauthorizedException(ApplicationExceptionMessage.CourseNotFound);
+            return Result.Failure(403, CourseErrors.MentorCanNotEditCourse);
         }
 
-        dbCourse.Title = courseRequest.Title;
-        dbCourse.Description = courseRequest.Description;
-        dbCourse.Level = courseRequest.Level;
-        dbCourse.CourseCategoryId = courseRequest.CourseCategoryId;
+        selectedCourse.Title = courseRequest.Title;
+        selectedCourse.Description = courseRequest.Description;
+        selectedCourse.Level = courseRequest.Level;
+        selectedCourse.CourseCategoryId = courseRequest.CourseCategoryId;
+
+        foreach (var courseResource in selectedCourse.CourseResources)
+        {
+            if (!courseRequest.OldResourceIds.Any(r => r.Equals(courseResource.ResourceId)))
+            {
+                selectedCourse.CourseResources.Remove(courseResource);
+            }
+        }
 
         foreach (var resourceId in courseRequest.ResourceIds)
         {
-            if (dbCourse.CourseResources.Any(c => c.ResourceId == resourceId))
+            if (!selectedCourse.CourseResources.Any(c => c.ResourceId.Equals(resourceId)))
             {
-                continue;
+                selectedCourse.CourseResources.Add(new CourseResource
+                {
+                    ResourceId = resourceId,
+                });
             }
-            dbCourse.CourseResources.Add(new CourseResource
-            {
-                ResourceId = resourceId,
-            });
-        }
-        foreach (var courseResource in dbCourse.CourseResources)
-        {
-            if (courseRequest.OldResourceIds.Any(r => r.Equals(courseResource.ResourceId)))
-            {
-                continue;
-            }
-            dbCourse.CourseResources.Remove(courseResource);
         }
 
+        _courseRepository.Update(selectedCourse);
         await _unitOfWork.SaveChangesAsync();
 
-        return Result.Success();
+        return Result<string>.Success(CourseCommandMessages.UpdateSuccessfully);
     }
 
     public async Task<Result> DeleteCourseAsync(Guid courseId)
     {
         var userId = _executionContext.GetUserId();
 
-        var dbCourse = await _courseRepository.GetByIdAsync(courseId, nameof(Course.MentoringSessions), nameof(Course.CourseResources));
-        
-        if (dbCourse == null)
+        var selectedCourse = await _courseRepository.GetByIdAsync(courseId, nameof(Course.MentoringSessions), nameof(Course.CourseResources));
+
+        if (selectedCourse == null)
         {
-            throw new BadRequestException(ApplicationExceptionMessage.CourseNotFound);
+            Result.Failure(400, CourseErrors.CourseNotExists);
         }
 
-        if (dbCourse.MentorId != userId)
+        if (selectedCourse.MentorId != userId)
         {
-            throw new UnauthorizedException(ApplicationExceptionMessage.CourseNotFound);
+            Result.Failure(403, CourseErrors.MentorCanNotDeleteCourse);
         }
 
-        if (dbCourse.MentoringSessions != null && dbCourse.MentoringSessions.Count > 0)
+        if (selectedCourse.MentoringSessions != null && selectedCourse.MentoringSessions.Count > 0)
         {
-            throw new BadRequestException(ApplicationExceptionMessage.MentoringSessionContained);
+            Result.Failure(409, CourseErrors.CourseHasMentoringSession);
         }
 
-        return Result.Success();
+        _courseRepository.Remove(selectedCourse);
+        await _unitOfWork.SaveChangesAsync();
+
+        return Result<string>.Success(CourseCommandMessages.DeleteSuccessfully);
     }
 
     public async Task<Result> GetAllAsync(CourseQueryParameters queryParameters)

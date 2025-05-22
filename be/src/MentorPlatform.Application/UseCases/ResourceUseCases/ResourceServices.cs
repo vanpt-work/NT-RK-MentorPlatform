@@ -1,10 +1,10 @@
-﻿using MentorPlatform.Application.Commons.Mappings;
+﻿using MentorPlatform.Application.Commons.CommandMessages;
+using MentorPlatform.Application.Commons.Errors;
 using MentorPlatform.Application.Commons.Models.Requests.ResourseRequests;
 using MentorPlatform.Application.Commons.Models.Responses.ResourceResponses;
 using MentorPlatform.Application.Identity;
 using MentorPlatform.Application.Services.File;
 using MentorPlatform.Application.Services.FileStorage;
-using MentorPlatform.CrossCuttingConcerns.Exceptions;
 using MentorPlatform.Domain.Entities;
 using MentorPlatform.Domain.Repositories;
 using MentorPlatform.Domain.Shared;
@@ -39,7 +39,7 @@ public class ResourceServices : IResourceServices
         _logger = logger;
     }
 
-    public async Task<Result<ResourceResponse>> CreateResource(CreateResourceRequest request)
+    public async Task<Result> CreateResource(CreateResourceRequest request)
     {
         var userId = _executionContext.GetUserId();
 
@@ -53,14 +53,13 @@ public class ResourceServices : IResourceServices
                 FilePath = fileUrl,
                 FileType = Path.GetExtension(request.File.FileName),
                 Title = request.Title,
-                Description = request.Description,
-                IsDeleted = false,
+                Description = request.Description
             };
 
             _resourceRepository.Add(newResource);
             await _unitOfWork.SaveChangesAsync();
 
-            return Result<ResourceResponse>.Success(newResource.ToResponse());
+            return Result<string>.Success(ResourceCommandMessages.CreateSuccessfully);
         }
         catch (Exception ex)
         {
@@ -71,32 +70,46 @@ public class ResourceServices : IResourceServices
 
     public async Task<Result> EditResource(EditResourceRequest request)
     {
-        var dbResource = await _resourceRepository.GetByIdAsync(request.Id);
-        if (dbResource == null || dbResource.IsDeleted)
+        var userId = _executionContext.GetUserId();
+
+        var selectedResource = await _resourceRepository.GetByIdAsync(request.Id);
+        if (selectedResource == null)
         {
-            throw new BadRequestException(ApplicationExceptionMessage.ResourceNotFound);
+            return Result.Failure(ResourceErrors.ResourceNotFound);
+        }
+        if (selectedResource.MentorId != userId)
+        {
+            return Result.Failure(ResourceErrors.ResourceNotBelongToUser);
         }
 
-        dbResource.Title = request.Title;
-        dbResource.Description = request.Description;
+        selectedResource.Title = request.Title;
+        selectedResource.Description = request.Description;
 
+        _resourceRepository.Update(selectedResource);
         await _unitOfWork.SaveChangesAsync();
 
-        return Result.Success();
+        return Result<string>.Success(ResourceCommandMessages.UpdateSuccessfully);
     }
 
     public async Task<Result> DeleteResource(Guid id)
     {
-        var dbResource = await _resourceRepository.GetByIdAsync(id);
-        if (dbResource == null || dbResource.IsDeleted)
+        var userId = _executionContext.GetUserId();
+
+        var selectedResource = await _resourceRepository.GetByIdAsync(id);
+        if (selectedResource == null)
         {
-            throw new BadRequestException(ApplicationExceptionMessage.ResourceNotFound);
+            return Result.Failure(ResourceErrors.ResourceNotFound);
+        }
+        if (selectedResource.MentorId != userId)
+        {
+            return Result.Failure(ResourceErrors.ResourceNotBelongToUser);
         }
 
-        dbResource.IsDeleted = true;
+        selectedResource.IsDeleted = true;
 
+        _resourceRepository.Update(selectedResource);
         await _unitOfWork.SaveChangesAsync();
 
-        return Result.Success();
+        return Result<string>.Success(ResourceCommandMessages.DeleteSuccessfully);
     }
 }

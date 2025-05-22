@@ -40,7 +40,7 @@ public class CoursesController : ApiControllerBase
     }
 
     [HttpPut]
-    [Authorize]
+    [Authorize(Roles = nameof(Role.Mentor))]
     public async Task<IActionResult> Edit(EditCourseRequest request)
     {
         var result = await _courseService.UpdateCourseAsync(request);
@@ -48,7 +48,7 @@ public class CoursesController : ApiControllerBase
     }
 
     [HttpDelete("{id:guid}")]
-    [Authorize]
+    [Authorize(Roles = $"{nameof(Role.Mentor)}, {nameof(Role.Admin)}")]
     public async Task<IActionResult> Delete(Guid id)
     {
         var result = await _courseService.DeleteCourseAsync(id);
