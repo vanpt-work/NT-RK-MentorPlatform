@@ -49,7 +49,10 @@ public class ApplicationRequestServices : IApplicationRequestServices
     public async Task<Result> CreateAsync(CreateApplicationRequestMentorRequest createApplicationRequestMentorRequest)
     {
         var applicationRequest = createApplicationRequestMentorRequest.ToApplicationRequest();
-
+        if (await CheckApplicationRequestPendingOrReviewOfMentor())
+        {
+            return Result.Failure(ApplicationRequestErrors.MentorCannotCreateApplicationRequest);
+        }
         if (createApplicationRequestMentorRequest.ApplicationDocuments != null
             &&  createApplicationRequestMentorRequest.ApplicationDocuments.Count > 0)
         {
@@ -83,6 +86,17 @@ public class ApplicationRequestServices : IApplicationRequestServices
         return Result<string>.Success(ApplicationRequestCommandMessages.CreateSuccessfully);
     }
 
+    private Task<bool> CheckApplicationRequestPendingOrReviewOfMentor()
+    {
+        var mentorId = _executionContext.GetUserId();
+
+        var applicationRequestQuery = _applicationRequestRepository.GetQueryable()
+            .Where(ap => ap.MentorId == mentorId
+                         && (ap.Status == ApplicationRequestStatus.UnderReview
+                             || ap.Status == ApplicationRequestStatus.Pending));
+
+        return _applicationRequestRepository.AnyAsync(applicationRequestQuery);
+    }
     public async Task<Result> UpdateAsync(UpdateApplicationRequestMentorRequest updateApplicationRequestMentorRequest)
     {
         var applicationRequest =
