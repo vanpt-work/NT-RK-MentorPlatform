@@ -1,10 +1,4 @@
-﻿using MentorPlatform.Application.Commons.Models.Responses.Course;
-using MentorPlatform.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MentorPlatform.Domain.Enums;
 
 namespace MentorPlatform.Application.Commons.Models.Responses.CourseCategory;
 

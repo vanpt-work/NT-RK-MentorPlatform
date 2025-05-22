@@ -3,6 +3,8 @@ using MentorPlatform.Application.Commons.Errors;
 using MentorPlatform.Application.Commons.Mappings;
 using MentorPlatform.Application.Commons.Models.Requests.CourseRequests;
 using MentorPlatform.Application.Commons.Models.Responses.Course;
+using MentorPlatform.Application.Commons.Models.Requests.ResourseRequests;
+using MentorPlatform.Application.Commons.Models.Responses.CourseResponses;
 using MentorPlatform.Application.Identity;
 using MentorPlatform.CrossCuttingConcerns.Exceptions;
 using MentorPlatform.Domain.Entities;
@@ -157,7 +159,7 @@ public class CourseServices : ICourseServices
                             });
         var res = PaginationResult<CourseResponse>.Create(data: await _courseRepository.ToListAsync(queryPagination),
                                                                   totalCount: await _courseRepository.CountAsync(queryFilter),
-                                                                  pageIndex: queryParameters.PageNumber,
+                                                                  pageNumber: queryParameters.PageNumber,
                                                                   pageSize: queryParameters.PageSize);
 
         return Result<PaginationResult<CourseResponse>>.Success(res);

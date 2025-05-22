@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MentorPlatform.Application.Commons.Models.Responses.Course;
+namespace MentorPlatform.Application.Commons.Models.Responses.CourseResponses;
 public class CourseResponse
 {
     public Guid Id { get; set; }
