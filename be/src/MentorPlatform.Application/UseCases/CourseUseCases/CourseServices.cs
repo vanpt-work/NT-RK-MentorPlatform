@@ -31,6 +31,12 @@ public class CourseServices : ICourseServices
     public async Task<Result> AddCourseAsync(CreateCourseRequest courseRequest)
     {
         var userId = _executionContext.GetUserId();
+        var user = await _userRepository.GetByIdAsync(userId, nameof(User.Resources));
+
+        if (user == null)
+        {
+            return Result.Failure(403, UserErrors.UserNotExists);
+        }
 
         var newCourse = courseRequest.ToEntity();
         newCourse.MentorId = userId;
@@ -39,11 +45,14 @@ public class CourseServices : ICourseServices
             newCourse.CourseResources = [];
             foreach (var resourceRequestId in courseRequest.ResourceIds)
             {
-                var courseResource = new CourseResource()
+                if (user.Resources?.Any(r => r.Id.Equals(resourceRequestId)) ?? false)
                 {
-                    ResourceId = resourceRequestId,
-                };
-                newCourse.CourseResources.Add(courseResource);
+                    var courseResource = new CourseResource()
+                    {
+                        ResourceId = resourceRequestId,
+                    };
+                    newCourse.CourseResources.Add(courseResource);
+                }
             }
         }
 
@@ -56,6 +65,12 @@ public class CourseServices : ICourseServices
     public async Task<Result> UpdateCourseAsync(EditCourseRequest courseRequest)
     {
         var userId = _executionContext.GetUserId();
+        var user = await _userRepository.GetByIdAsync(userId, nameof(User.Resources));
+
+        if (user == null)
+        {
+            return Result.Failure(403, UserErrors.UserNotExists);
+        }
 
         var selectedCourse = await _courseRepository.GetByIdAsync(courseRequest.Id, nameof(Course.CourseResources));
         if (selectedCourse == null)
@@ -82,7 +97,8 @@ public class CourseServices : ICourseServices
 
         foreach (var resourceId in courseRequest.ResourceIds)
         {
-            if (!selectedCourse.CourseResources.Any(c => c.ResourceId.Equals(resourceId)))
+            if (!selectedCourse.CourseResources.Any(c => c.ResourceId.Equals(resourceId))
+                && (user.Resources?.Any(r => r.Id.Equals(resourceId)) ?? false))
             {
                 selectedCourse.CourseResources.Add(new CourseResource
                 {
