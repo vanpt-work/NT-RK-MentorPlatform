@@ -2,16 +2,12 @@ using MentorPlatform.Application.Commons.CommandMessages;
 using MentorPlatform.Application.Commons.Errors;
 using MentorPlatform.Application.Commons.Mappings;
 using MentorPlatform.Application.Commons.Models.Requests.CourseRequests;
-using MentorPlatform.Application.Commons.Models.Responses.Course;
-using MentorPlatform.Application.Commons.Models.Requests.ResourseRequests;
 using MentorPlatform.Application.Commons.Models.Responses.CourseResponses;
 using MentorPlatform.Application.Identity;
-using MentorPlatform.CrossCuttingConcerns.Exceptions;
 using MentorPlatform.Domain.Entities;
 using MentorPlatform.Domain.Enums;
 using MentorPlatform.Domain.Repositories;
 using MentorPlatform.Domain.Shared;
-using Microsoft.Extensions.Logging;
 
 namespace MentorPlatform.Application.UseCases.CourseUseCases;
 public class CourseServices : ICourseServices
@@ -71,8 +67,8 @@ public class CourseServices : ICourseServices
             return Result.Failure(403, CourseErrors.MentorCanNotEditCourse);
         }
 
-        selectedCourse.Title = courseRequest.Title;
-        selectedCourse.Description = courseRequest.Description;
+        selectedCourse.Title = courseRequest.Title.Trim();
+        selectedCourse.Description = courseRequest.Description.Trim();
         selectedCourse.Level = courseRequest.Level;
         selectedCourse.CourseCategoryId = courseRequest.CourseCategoryId;
 
@@ -190,6 +186,7 @@ public class CourseServices : ICourseServices
                 Level = x.Level,
                 Mentor = new MentorInfoForCourseResponse()
                 {
+                    Id = x.MentorId,
                     FullName = x.Mentor.UserDetail.FullName,
                     AvatarUrl = x.Mentor.UserDetail.AvatarUrl,
                     Experience = x.Mentor.UserDetail.Experience
@@ -201,6 +198,7 @@ public class CourseServices : ICourseServices
                     )
                     ? x.CourseResources.Select(r => new ResourceResponse()
                     {
+                        Id = r.ResourceId,
                         Title = r.Resource.Title,
                         Description = r.Resource.Description,
                         FilePath = r.Resource.FilePath,

@@ -9,15 +9,8 @@ using MentorPlatform.Domain.Entities;
 using MentorPlatform.Domain.Repositories;
 using MentorPlatform.Domain.Shared;
 using Microsoft.Extensions.Logging;
-
-using MentorPlatform.Application.Commons.Errors;
 using MentorPlatform.Application.Commons.Models.Requests.ResourceRequests;
-using MentorPlatform.Application.Commons.Models.Responses.ResourceResponses;
-using MentorPlatform.Application.Identity;
-using MentorPlatform.Domain.Entities;
 using MentorPlatform.Domain.Enums;
-using MentorPlatform.Domain.Repositories;
-using MentorPlatform.Domain.Shared;
 
 namespace MentorPlatform.Application.UseCases.ResourceUseCases;
 public class ResourceServices : IResourceServices
@@ -59,9 +52,9 @@ public class ResourceServices : IResourceServices
             {
                 MentorId = userId,
                 FilePath = fileUrl,
-                FileType = Path.GetExtension(request.File.FileName),
-                Title = request.Title,
-                Description = request.Description
+                FileType = Path.GetExtension(request.File.FileName.Trim()),
+                Title = request.Title.Trim(),
+                Description = request.Description.Trim()
             };
 
             _resourceRepository.Add(newResource);
@@ -90,8 +83,8 @@ public class ResourceServices : IResourceServices
             return Result.Failure(ResourceErrors.ResourceNotBelongToUser);
         }
 
-        selectedResource.Title = request.Title;
-        selectedResource.Description = request.Description;
+        selectedResource.Title = request.Title.Trim();
+        selectedResource.Description = request.Description.Trim();
 
         _resourceRepository.Update(selectedResource);
         await _unitOfWork.SaveChangesAsync();

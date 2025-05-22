@@ -2,7 +2,6 @@
 using MentorPlatform.Application.UseCases.ResourceUseCases;
 using MentorPlatform.Domain.Enums;
 using MentorPlatform.Application.Commons.Models.Requests.ResourceRequests;
-using MentorPlatform.Application.UseCases.ResourceUseCases;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
