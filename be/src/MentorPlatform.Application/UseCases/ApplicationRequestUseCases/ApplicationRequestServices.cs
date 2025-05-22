@@ -191,9 +191,10 @@ public class ApplicationRequestServices : IApplicationRequestServices
 
         var applicationResponseQuery = applicationRequestQuery
             .Skip(applicationRequestQueryParameters.PageSize * (applicationRequestQueryParameters.PageNumber - 1))
-            .Take(applicationRequestQueryParameters.PageNumber)
+            .Take(applicationRequestQueryParameters.PageSize)
             .Select(u => new ApplicationRequestResponse
             {
+                Id = u.Id,
                 Summitted = u.Submitted,
                 Description = u.Description,
                 Education = u.Education,
@@ -203,8 +204,8 @@ public class ApplicationRequestServices : IApplicationRequestServices
             });
         var dataResponse = await _applicationRequestRepository.ToListAsync(applicationResponseQuery);
 
-        return PaginationResult<ApplicationRequestResponse>.Create(applicationRequestQueryParameters.PageNumber,
-            applicationRequestQueryParameters.PageSize,
+        return PaginationResult<ApplicationRequestResponse>.Create(applicationRequestQueryParameters.PageSize,
+            applicationRequestQueryParameters.PageNumber,
             totalCount, dataResponse);
     }
 
