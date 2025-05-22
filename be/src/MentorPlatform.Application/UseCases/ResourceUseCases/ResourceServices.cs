@@ -39,8 +39,8 @@ public class ResourceServices : IResourceServices
         var queryFilter = _resourceRepository.GetQueryable()
                         .Where(x => queryParameters == null ||
                                     (string.IsNullOrEmpty(searchValue) || x.Title.Contains(searchValue))
-                                    && (queryParameters!.FileType == null || x.FileType == queryParameters.FileType));
-
+                                    && (queryParameters!.FileType == null || x.FileType == queryParameters.FileType)
+                                    && (selectedUser.Role != Role.Mentor || x.MentorId == selectedUser.Id));
 
         var queryPagination = queryFilter
                             .Skip((queryParameters!.PageNumber - 1) * queryParameters.PageSize)
