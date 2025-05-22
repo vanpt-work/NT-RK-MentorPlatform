@@ -1,4 +1,5 @@
 ﻿
+using MentorPlatform.Domain.Enums;
 using MentorPlatform.Domain.Primitives;
 
 namespace MentorPlatform.Domain.Entities;
@@ -15,6 +16,6 @@ public class MentoringSession : AuditableEntity, IHasKey<Guid>, ISoftDeleteEntit
     public Guid? OldScheduleId { get; set; } = default;
     public string Title { get; set; } = default!;
     public string Description { get; set; } = default!;
-    public int RequestStatus { get; set; }
+    public RequestMentoringSessionStatus RequestStatus { get; set; }
     public bool IsDeleted { get; set; }
 }

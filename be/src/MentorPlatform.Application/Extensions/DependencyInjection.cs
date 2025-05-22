@@ -8,6 +8,7 @@ using MentorPlatform.Application.UseCases.CourseCategoryUseCases;
 using MentorPlatform.Application.UseCases.CourseUseCases;
 using MentorPlatform.Application.UseCases.ExpertisesUseCases;
 using MentorPlatform.Application.UseCases.ExpertiseUseCases;
+using MentorPlatform.Application.UseCases.ResourceUseCases;
 using MentorPlatform.Application.UseCases.UserManagement;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,7 +33,7 @@ public static class DependencyInjection
         services.AddScoped<IApplicationRequestServices, ApplicationRequestServices>();
         services.AddScoped<ICourseServices, CourseServices>();
         services.AddScoped<IExpertiseUseCases, ExpertiseUseCases>();
-        services.AddScoped<ICourseServices, CourseServices>();
+        services.AddScoped<IResourceServices, ResourceServices>();
         var config = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
         services.Configure<CloudinaryStorageOptions>(config.GetSection($"FileStorageOptions:{nameof(CloudinaryStorageOptions)}"));
         return services;
