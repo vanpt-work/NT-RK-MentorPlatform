@@ -1,5 +1,4 @@
-﻿
-using MentorPlatform.Domain.Enums;
+﻿using MentorPlatform.Domain.Enums;
 
 namespace MentorPlatform.Application.Commons.Models.Responses.ApplicationRequestResponses;
 
@@ -19,6 +18,11 @@ public class ApplicationRequestDetailResponse : ApplicationRequestResponse
     public string? Note { get; set; }
 
     public List<ApplicationRequestDocumentResponse>? ApplicationRequestDocuments { get; set; } = default;
+    
+    public string MentorEmail { get; set; } = default!;
+    public List<string>? MentorExpertises { get; set; } = default!;
+    public List<string>? MentorCertifications { get; set; } = default!;
+    public string? AvatarUrl { get; set; } = default!;
 }
 
 public class ApplicationRequestDocumentResponse
