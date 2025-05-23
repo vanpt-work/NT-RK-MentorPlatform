@@ -34,9 +34,9 @@ public class ResourcesController : ApiControllerBase
         return ProcessResult(result);
     }
 
-    [HttpDelete("id:guid")]
+    [HttpDelete("{id:guid}")]
     [Authorize(Roles = nameof(Role.Mentor))]
-    public async Task<IActionResult> UpdateResource(Guid id)
+    public async Task<IActionResult> DeleteResource(Guid id)
     {
         var result = await _resourceService.DeleteResource(id);
         return ProcessResult(result);
