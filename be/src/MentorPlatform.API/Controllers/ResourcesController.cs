@@ -30,7 +30,7 @@ public class ResourcesController : ApiControllerBase
     [Authorize(Roles = nameof(Role.Mentor))]
     public async Task<IActionResult> UpdateResource(Guid id, EditResourceRequest request)
     {
-        var result = await _resourceService.EditResource(request);
+        var result = await _resourceService.EditResource(id, request);
         return ProcessResult(result);
     }
 
