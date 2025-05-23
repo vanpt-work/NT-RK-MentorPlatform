@@ -31,8 +31,6 @@ const AuthRedirectRoute: React.FC<AuthRedirectRouteProps> = ({
         } else if (user?.role === Role.Learner) {
             return <Navigate to={PATH.LearnerDashboard} replace />;
         }
-
-        return <Navigate to={PATH.LearnerDashboard} replace />;
     }
 
     if (!redirectAuthenticated && !isAuthenticated) {
