@@ -4,7 +4,6 @@ using MentorPlatform.Application.Commons.Errors;
 namespace MentorPlatform.Application.Commons.Models.Requests.CourseRequests;
 public class EditCourseRequest : CreateCourseRequest
 {
-    public Guid Id { get; set; }
     public List<Guid> OldResourceIds { get; set; }
 }
 

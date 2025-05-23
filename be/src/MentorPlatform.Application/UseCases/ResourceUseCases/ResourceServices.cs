@@ -93,11 +93,11 @@ public class ResourceServices : IResourceServices
         }
     }
 
-    public async Task<Result> EditResource(EditResourceRequest request)
+    public async Task<Result> EditResource(Guid id, EditResourceRequest request)
     {
         var userId = _executionContext.GetUserId();
 
-        var selectedResource = await _resourceRepository.GetByIdAsync(request.Id);
+        var selectedResource = await _resourceRepository.GetByIdAsync(id);
         if (selectedResource == null)
         {
             return Result.Failure(ResourceErrors.ResourceNotFound);

@@ -26,9 +26,9 @@ public class ResourcesController : ApiControllerBase
         return ProcessResult(result);
     }
 
-    [HttpPut]
+    [HttpPut("{id:guid}")]
     [Authorize(Roles = nameof(Role.Mentor))]
-    public async Task<IActionResult> UpdateResource(EditResourceRequest request)
+    public async Task<IActionResult> UpdateResource(Guid id, EditResourceRequest request)
     {
         var result = await _resourceService.EditResource(request);
         return ProcessResult(result);
