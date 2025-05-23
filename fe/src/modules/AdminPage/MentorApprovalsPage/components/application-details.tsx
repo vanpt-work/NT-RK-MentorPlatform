@@ -152,14 +152,17 @@ export const ApplicationDetails: React.FC<ApplicationDetailsProps> = ({
                                     <RefreshCw size={16} className="mr-2" />
                                     Request Update
                                 </Button>
-                                <Button onClick={onApprove} className="flex-1">
+                                <Button
+                                    onClick={onApprove}
+                                    className="flex-1 bg-green-600"
+                                >
                                     <Check size={16} className="mr-2" />
                                     Approve
                                 </Button>
                                 <Button
                                     onClick={onReject}
                                     variant="destructive"
-                                    className="flex-1"
+                                    className="dark:black flex-1 text-white"
                                 >
                                     <X size={16} className="mr-2" />
                                     Reject

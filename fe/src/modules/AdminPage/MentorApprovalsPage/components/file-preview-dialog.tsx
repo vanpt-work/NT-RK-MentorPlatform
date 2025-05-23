@@ -18,7 +18,6 @@ import {
 } from "@/common/components/ui/dialog";
 
 import { type PreviewFile, SUPPORTED_EXTENSIONS } from "../types";
-import { isPdfFile } from "../utils/file-helpers";
 
 type FilePreviewDialogProps = {
     open: boolean;
@@ -44,16 +43,7 @@ const FilePreviewDialog: React.FC<FilePreviewDialogProps> = ({
             const type = previewFile.type.toLowerCase();
             setFileType(type);
             setIsSupported(SUPPORTED_EXTENSIONS.includes(type));
-
-            if (previewFile.url && previewFile.url.includes("cloudinary.com")) {
-                if (isPdfFile(previewFile.file?.name || "") || type === "pdf") {
-                    setDirectUrl(previewFile.url);
-                } else {
-                    setDirectUrl(previewFile.url);
-                }
-            } else {
-                setDirectUrl(previewFile.url);
-            }
+            setDirectUrl(previewFile.url);
         } else {
             setFileType(null);
             setIsSupported(false);
@@ -79,7 +69,6 @@ const FilePreviewDialog: React.FC<FilePreviewDialogProps> = ({
                 })
                 .catch((error) => {
                     console.error("Download error:", error);
-                    // window.open(downloadUrl, "_blank");
                 });
         }
     };
@@ -89,10 +78,7 @@ const FilePreviewDialog: React.FC<FilePreviewDialogProps> = ({
         onPreviewError();
     };
 
-    const isCloudinaryPdf =
-        fileType === "pdf" &&
-        previewFile.url &&
-        previewFile.url.includes("cloudinary.com");
+    const isPdf = fileType === "pdf";
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -122,7 +108,7 @@ const FilePreviewDialog: React.FC<FilePreviewDialogProps> = ({
                     <div className="bg-muted/20 flex h-full w-full flex-col items-center justify-center rounded-md p-2">
                         {isSupported ? (
                             <div className="h-[70vh] w-full overflow-auto rounded-md border bg-white">
-                                {isCloudinaryPdf ? (
+                                {isPdf ? (
                                     <iframe
                                         src={directUrl || previewFile.url}
                                         className="h-full w-full"

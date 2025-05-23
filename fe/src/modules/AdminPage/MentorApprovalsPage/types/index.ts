@@ -69,16 +69,9 @@ export type RequestUpdateApplicationDocumentRequest = {
 export const SUPPORTED_EXTENSIONS = [
     "pdf",
     "docx",
-    "xlsx",
-    "csv",
     "png",
     "jpg",
     "jpeg",
-    "gif",
-    "bmp",
-    "svg",
-    "txt",
     "mp4",
     "webm",
-    "mp3",
 ];

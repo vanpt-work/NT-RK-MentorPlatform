@@ -1,22 +1,6 @@
-export const SUPPORTED_IMAGE_TYPES = [
-    "jpg",
-    "jpeg",
-    "png",
-    "gif",
-    "webp",
-    "svg",
-];
-export const SUPPORTED_VIDEO_TYPES = ["mp4", "avi", "mov", "wmv", "webm"];
-export const SUPPORTED_DOCUMENT_TYPES = [
-    "pdf",
-    "docx",
-    "doc",
-    "xlsx",
-    "xls",
-    "pptx",
-    "ppt",
-    "txt",
-];
+export const SUPPORTED_IMAGE_TYPES = ["jpg", "jpeg", "png", "webp"];
+export const SUPPORTED_VIDEO_TYPES = ["mp4", "mov"];
+export const SUPPORTED_DOCUMENT_TYPES = ["pdf", "docx", "doc"];
 
 export const getFileExtension = (fileName: string): string => {
     const parts = fileName.split(".");
@@ -57,6 +41,6 @@ export const getFileType = (
 
     if (isImageFile(extension)) return "image";
     if (isVideoFile(extension)) return "video";
-    if (isPdfFile(extension)) return "pdf";
+    if (extension === "pdf") return "pdf";
     return "other";
 };

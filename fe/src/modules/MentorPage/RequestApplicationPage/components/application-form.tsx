@@ -138,15 +138,12 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
     const calculateProgress = () => {
         const formValues = form.getValues();
         let fieldsCompleted = 0;
-        let totalFields = 0;
+        const totalFields = 3;
+
         if (formValues.education?.length >= 10) fieldsCompleted++;
         if (formValues.workExperience?.length >= 10) fieldsCompleted++;
         if (formValues.description?.length >= 10) fieldsCompleted++;
-        totalFields += 3;
-        if (formValues.certifications && formValues.certifications.length > 0) {
-            fieldsCompleted++;
-        }
-        totalFields += 1;
+
         const newProgress = Math.round((fieldsCompleted / totalFields) * 100);
         setProgress(newProgress);
     };

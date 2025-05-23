@@ -179,19 +179,14 @@ export const ApplicationEditForm: React.FC<ApplicationEditFormProps> = ({
     };
 
     const handleViewExistingFile = (url: string, fileName: string) => {
-        fetch(url)
-            .then((response) => response.blob())
-            .then((blob) => {
-                const file = new File([blob], fileName, { type: blob.type });
-                const fileUrl = URL.createObjectURL(file);
-                const fileType = getFileExtension(fileName);
-                setPreviewFile({ url: fileUrl, type: fileType, file });
-                setPreviewOpen(true);
-                setPreviewError(false);
-            })
-            .catch((error) => {
-                console.error("Error fetching file:", error);
-            });
+        try {
+            const fileType = getFileExtension(fileName);
+            setPreviewFile({ url, type: fileType });
+            setPreviewOpen(true);
+            setPreviewError(false);
+        } catch (error) {
+            console.error("Error viewing file:", error);
+        }
     };
 
     const handlePreviewError = () => {
