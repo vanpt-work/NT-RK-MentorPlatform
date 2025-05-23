@@ -1,6 +1,6 @@
 ﻿using MentorPlatform.Application.Commons.Models.Query;
-using MentorPlatform.Application.Commons.Models.Requests.CourseCategory;
-using MentorPlatform.Application.UseCases.CourseCategory;
+using MentorPlatform.Application.Commons.Models.Requests.CourseCategoryRequests;
+using MentorPlatform.Application.UseCases.CourseCategoryUseCases;
 using MentorPlatform.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

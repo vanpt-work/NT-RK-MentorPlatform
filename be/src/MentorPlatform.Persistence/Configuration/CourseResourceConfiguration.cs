@@ -9,9 +9,8 @@ public class CourseResourceConfiguration : IEntityTypeConfiguration<CourseResour
 {
     public void Configure(EntityTypeBuilder<CourseResource> builder)
     {
-        builder.HasOne(cr => cr.Course)
-            .WithMany(c => c.CourseResources)
-            .HasForeignKey(cr => cr.CourseId);
+        builder.HasOne(cr => cr.Course).WithMany(c => c.CourseResources).HasForeignKey(cr => cr.CourseId);
+        builder.HasOne(cr => cr.Resource).WithMany(r => r.CourseResources).HasForeignKey(cr => cr.ResourceId);
         builder.HasQueryFilter(cc => !cc.IsDeleted);
     }
 }

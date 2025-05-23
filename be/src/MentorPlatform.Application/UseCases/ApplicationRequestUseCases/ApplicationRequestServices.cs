@@ -31,8 +31,8 @@ public class ApplicationRequestServices : IApplicationRequestServices
     private readonly IRazorLightEngine _razorLightEngine;
     public ApplicationRequestServices(IFileStorageFactory fileStorageServices,
         IApplicationRequestRepository applicationRequestRepository,
-        IUnitOfWork unitOfWork, 
-        IExecutionContext executionContext, 
+        IUnitOfWork unitOfWork,
+        IExecutionContext executionContext,
         IBackgroundTaskQueue<Func<IServiceProvider, CancellationToken, ValueTask>> mailQueue,
         IRazorLightEngine razorLightEngine,
         IUserRepository userRepository)
@@ -51,7 +51,7 @@ public class ApplicationRequestServices : IApplicationRequestServices
         var applicationRequest = createApplicationRequestMentorRequest.ToApplicationRequest();
 
         if (createApplicationRequestMentorRequest.ApplicationDocuments != null
-            &&  createApplicationRequestMentorRequest.ApplicationDocuments.Count > 0)
+            && createApplicationRequestMentorRequest.ApplicationDocuments.Count > 0)
         {
             var uploadApplicationDocumentTasks = createApplicationRequestMentorRequest.ApplicationDocuments
                 .Select((x) => _fileStorageServices.UploadFileAsync(x.FileContent)).ToList();
@@ -86,7 +86,7 @@ public class ApplicationRequestServices : IApplicationRequestServices
     public async Task<Result> UpdateAsync(UpdateApplicationRequestMentorRequest updateApplicationRequestMentorRequest)
     {
         var applicationRequest =
-            await _applicationRequestRepository.GetByIdAsync(updateApplicationRequestMentorRequest.Id, 
+            await _applicationRequestRepository.GetByIdAsync(updateApplicationRequestMentorRequest.Id,
                                                              nameof(ApplicationRequest.ApplicationDocuments));
         if (applicationRequest == null || applicationRequest.MentorId != _executionContext.GetUserId())
         {
@@ -111,7 +111,7 @@ public class ApplicationRequestServices : IApplicationRequestServices
 
             await Task.WhenAll(documentRemoveTasks);
 
-            applicationRequest.ApplicationDocuments = applicationRequest.ApplicationDocuments.Where(x => 
+            applicationRequest.ApplicationDocuments = applicationRequest.ApplicationDocuments.Where(x =>
                 updateApplicationRequestMentorRequest.ApplicationDocuments?.Any(c => c.FilePath == x.FilePath) ?? true)
                 .ToList();
         }
@@ -150,28 +150,29 @@ public class ApplicationRequestServices : IApplicationRequestServices
 
     public async Task<Result> RequestUpdateAsync(RequestUpdateApplicationDocumentRequest requestUpdateApplicationDocumentRequest)
     {
-        var applicationRequest =
-            await _applicationRequestRepository.GetByIdAsync(requestUpdateApplicationDocumentRequest.Id);
-        if (applicationRequest == null || applicationRequest.MentorId != _executionContext.GetUserId())
+        var applicationRequest = await _applicationRequestRepository.GetByIdAsync(requestUpdateApplicationDocumentRequest.Id);
+        if (applicationRequest == null)
         {
             return Result.Failure(ApplicationRequestErrors.NotFound);
         }
+        
         if (applicationRequest.Status == ApplicationRequestStatus.UnderReview)
         {
             return Result.Failure(ApplicationRequestErrors.AdminCannotRequestUpdateRequestIsUnderReview);
         }
 
+        var oldStatus = applicationRequest.Status;
         applicationRequest.Status = ApplicationRequestStatus.UnderReview;
         applicationRequest.Note = requestUpdateApplicationDocumentRequest.Note;
-        
+
         _applicationRequestRepository.Update(applicationRequest);
         await _unitOfWork.SaveChangesAsync();
 
-        await HandleSendMailWhenChangeStatusApplicationRequest(applicationRequest, 
-                                                               ApplicationRequestStatus.Pending, 
+        await HandleSendMailWhenChangeStatusApplicationRequest(applicationRequest,
+                                                               oldStatus,
                                                                ApplicationRequestStatus.UnderReview);
 
-        return Result<string>.Success(ApplicationRequestCommandMessages.RequestMentorUpdateApplicationRequestSuccess);
+        return Result.Success();
     }
 
     public async Task<Result<PaginationResult<ApplicationRequestResponse>>> GetAsync(ApplicationRequestQueryParameters applicationRequestQueryParameters)
@@ -190,44 +191,49 @@ public class ApplicationRequestServices : IApplicationRequestServices
         var totalCount = await _applicationRequestRepository.CountAsync(applicationRequestQuery);
 
         var applicationResponseQuery = applicationRequestQuery
-            .Skip(applicationRequestQueryParameters.PageSize * (applicationRequestQueryParameters.PageNumber - 1))
-            .Take(applicationRequestQueryParameters.PageNumber)
-            .Select(u => new ApplicationRequestResponse
-            {
-                Summitted = u.Submitted,
-                Description = u.Description,
-                Education = u.Education,
-                WorkExperience = u.WorkExperience,
-                Status = u.Status,
-                FullName = u.Mentor.UserDetail.FullName
-            });
+        .Skip(applicationRequestQueryParameters.PageSize * (applicationRequestQueryParameters.PageNumber - 1))
+        .Take(applicationRequestQueryParameters.PageSize)
+        .Select(u => new ApplicationRequestResponse
+        {
+            Id = u.Id,
+            Summitted = u.Submitted,
+            Description = u.Description,
+            Education = u.Education,
+            WorkExperience = u.WorkExperience,
+            Status = u.Status,
+            FullName = u.Mentor.UserDetail.FullName,
+        });
         var dataResponse = await _applicationRequestRepository.ToListAsync(applicationResponseQuery);
 
-        return PaginationResult<ApplicationRequestResponse>.Create(applicationRequestQueryParameters.PageNumber,
-            applicationRequestQueryParameters.PageSize,
+        return PaginationResult<ApplicationRequestResponse>.Create(applicationRequestQueryParameters.PageSize,
+            applicationRequestQueryParameters.PageNumber,
             totalCount, dataResponse);
     }
 
     public async Task<Result<ApplicationRequestDetailResponse>> GetDetailAsync(Guid id)
     {
         var applicationDetailQuery = _applicationRequestRepository.GetQueryable().Where(u => u.Id == id)
-            .Select(u => new ApplicationRequestDetailResponse
-            {
-                Summitted = u.Submitted,
-                Description = u.Description,
-                Education = u.Education,
-                WorkExperience = u.WorkExperience,
-                Status = u.Status,
-                FullName = u.Mentor.UserDetail.FullName,
-                Note = u.Note,
-                ApplicationRequestDocuments = u.ApplicationDocuments != null ? u.ApplicationDocuments
-                    .Select(ad => new ApplicationRequestDocumentResponse
-                    {
-                        FilePath = ad.FilePath,
-                        FileName = ad.FileName
-                    }).ToList() : default!
-            });
-        
+        .Select(u => new ApplicationRequestDetailResponse
+        {
+            Id = u.Id,
+            Summitted = u.Submitted,
+            Description = u.Description,
+            Education = u.Education,
+            WorkExperience = u.WorkExperience,
+            Status = u.Status,
+            FullName = u.Mentor.UserDetail.FullName,
+            Note = u.Note,
+            // Thêm thông tin của mentor
+            MentorEmail = u.Mentor.Email,
+            MentorExpertises = u.Mentor.UserExpertises != null ? 
+                u.Mentor.UserExpertises.Where(ue => !ue.IsDeleted)
+                .Select(ue => ue.Expertise.Name).ToList() : null,
+            MentorCertifications = u.Certifications,
+            ApplicationRequestDocuments = u.ApplicationDocuments != null ? u.ApplicationDocuments
+            .Select(ad => new ApplicationRequestDocumentResponse { FilePath = ad.FilePath, FileName = ad.FileName }).ToList() : default!,
+            AvatarUrl = u.Mentor.UserDetail.AvatarUrl
+        });
+
         var applicationDetailResponse = await _applicationRequestRepository.FirstOrDefaultAsync(applicationDetailQuery);
 
         if (applicationDetailResponse == null)
@@ -251,8 +257,7 @@ public class ApplicationRequestServices : IApplicationRequestServices
         return applicationDetailResponse;
     }
 
-
-    private async Task HandleSendMailWhenChangeStatusApplicationRequest(ApplicationRequest applicationRequest, 
+    private async Task HandleSendMailWhenChangeStatusApplicationRequest(ApplicationRequest applicationRequest,
         ApplicationRequestStatus oldStatus,
         ApplicationRequestStatus newStatus)
     {
@@ -282,7 +287,7 @@ public class ApplicationRequestServices : IApplicationRequestServices
         var emailMentorRequestStatusChangedModel = new EmailMentorRequestStatusChangedModel
         {
             RecipientName = mentorOfRequest.UserDetail.FullName,
-            Note = applicationRequest.Note, 
+            Note = applicationRequest.Note,
             OldStatus = oldStatus,
             NewStatus = newStatus
         };
@@ -302,5 +307,63 @@ public class ApplicationRequestServices : IApplicationRequestServices
                 cancellationToken: cancellationToken
             );
         });
+    }
+
+    public async Task<Result> ApproveAsync(Guid id)
+    {
+        var applicationRequest = await _applicationRequestRepository.GetByIdAsync(id);
+        if (applicationRequest == null)
+        {
+            return Result.Failure(ApplicationRequestErrors.NotFound);
+        }
+
+        if (applicationRequest.Status == ApplicationRequestStatus.UnderReview)
+        {
+            return Result.Failure(ApplicationRequestErrors.AdminCannotApproveRequestIsUnderReview);
+        }
+
+        var oldStatus = applicationRequest.Status;
+        applicationRequest.Status = ApplicationRequestStatus.Approved;
+
+        _applicationRequestRepository.Update(applicationRequest);
+        await _unitOfWork.SaveChangesAsync();
+
+        await HandleSendMailWhenChangeStatusApplicationRequest(applicationRequest,
+                                                              oldStatus,
+                                                              ApplicationRequestStatus.Approved);
+
+        return Result.Success();
+    }
+
+    public async Task<Result> RejectAsync(Guid id, string note)
+    {
+        var applicationRequest = await _applicationRequestRepository.GetByIdAsync(id);
+        if (applicationRequest == null)
+        {
+            return Result.Failure(ApplicationRequestErrors.NotFound);
+        }
+
+        if (applicationRequest.Status == ApplicationRequestStatus.UnderReview)
+        {
+            return Result.Failure(ApplicationRequestErrors.AdminCannotRejectRequestIsUnderReview);
+        }
+        
+        if (applicationRequest.Status == ApplicationRequestStatus.Approved)
+        {
+            return Result.Failure(ApplicationRequestErrors.CannotRejectApprovedRequest);
+        }
+
+        var oldStatus = applicationRequest.Status;
+        applicationRequest.Status = ApplicationRequestStatus.Rejected;
+        applicationRequest.Note = note;
+
+        _applicationRequestRepository.Update(applicationRequest);
+        await _unitOfWork.SaveChangesAsync();
+
+        await HandleSendMailWhenChangeStatusApplicationRequest(applicationRequest,
+                                                              oldStatus,
+                                                              ApplicationRequestStatus.Rejected);
+
+        return Result.Success();
     }
 }

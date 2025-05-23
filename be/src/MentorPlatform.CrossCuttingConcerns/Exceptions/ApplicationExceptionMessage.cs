@@ -21,5 +21,8 @@ public static class ApplicationExceptionMessage
     public const string AWSS3Error = "An S3 error occurred.";
     public const string AWSClientError = "An AWS client error occurred.";
     public const string AWSServerError = "An AWS service error occurred.";
+    public const string CourseNotFound = "Course not found";
+    public const string ResourceNotFound = "Resource not found";
+    public const string MentoringSessionContained = "You can not delete this course because it still has mentoring sessions.";
     public const string ConcurrencyConflictError = "This task is currently in other process, please try it again!";
 }

@@ -28,6 +28,7 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
     public DbSet<Expertise> Expertises { get; set; } = default!;
     public DbSet<RefreshToken> RefreshTokens { get; set; } = default!;
     public DbSet<CourseResource> CourseResources { get; set; } = default!;
+    public DbSet<Resource> Resources { get; set; } = default!;
     public DbSet<MentoringSession> MentoringSessions { get; set; } = default!;
     public DbSet<Schedule> Schedules { get; set; } = default!;
     public DbSet<ApplicationDocument> ApplicationDocuments { get; set; } = default!;

@@ -1,11 +1,15 @@
-﻿using MentorPlatform.Application.Commons.Models.Responses.Course;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MentorPlatform.Domain.Enums;
 
 namespace MentorPlatform.Application.Commons.Models.Responses.CourseCategory;
+
+public class CourseInforForCategoryResponse
+{
+    public Guid Id { get; set; }
+    public string Title { get; set; } = default!;
+    public string Description { get; set; } = default!;
+    public CourseLevel Level { get; set; } = default!;
+}
+
 public class CourseCategoryResponse
 {
     public Guid Id { get; set; }
@@ -17,5 +21,5 @@ public class CourseCategoryResponse
 
 public class CourseCategoryDetailResponse : CourseCategoryResponse
 {
-    public List<CourseResponse> Courses { get; set; }
+    public List<CourseInforForCategoryResponse> Courses { get; set; }
 }

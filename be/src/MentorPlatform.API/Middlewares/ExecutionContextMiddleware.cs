@@ -49,7 +49,7 @@ public class ExecutionContextMiddleware
             }
             if (!user.IsVerifyEmail)
             {
-                throw new UnAuthorizedException(UserErrorMessages.UserHasNotBeenVerified);
+                throw new UnauthorizedException(UserErrorMessages.UserHasNotBeenVerified);
             }
 
             user.LastActive = DateTime.UtcNow;

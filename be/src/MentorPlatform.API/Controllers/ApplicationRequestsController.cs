@@ -35,10 +35,34 @@ public class ApplicationRequestsController : ApiControllerBase
     }
 
     [Authorize(Roles = nameof(Role.Admin))]
-    [HttpPut("request-update")]
-    public async Task<IActionResult> RequestUpdateAsync([FromBody] RequestUpdateApplicationDocumentRequest updateApplicationRequestMentorRequest)
+    [HttpPut("{id:guid}/request-update")]
+    public async Task<IActionResult> RequestUpdateAsync(Guid id, [FromBody] ApplicationRequestUpdate requestUpdate)
     {
-        var result = await _applicationRequestServices.RequestUpdateAsync(updateApplicationRequestMentorRequest);
+        var requestUpdateRequest = new RequestUpdateApplicationDocumentRequest
+        {
+            Id = id,
+            Note = requestUpdate.Note
+        };
+        
+        var result = await _applicationRequestServices.RequestUpdateAsync(requestUpdateRequest);
+
+        return ProcessResult(result);
+    }
+
+    [Authorize(Roles = nameof(Role.Admin))]
+    [HttpPut("{id:guid}/approve")]
+    public async Task<IActionResult> ApproveAsync(Guid id)
+    {
+        var result = await _applicationRequestServices.ApproveAsync(id);
+
+        return ProcessResult(result);
+    }
+
+    [Authorize(Roles = nameof(Role.Admin))]
+    [HttpPut("{id:guid}/reject")]
+    public async Task<IActionResult> RejectAsync(Guid id, [FromBody] ApplicationRequestUpdate rejectRequest)
+    {
+        var result = await _applicationRequestServices.RejectAsync(id, rejectRequest.Note);
 
         return ProcessResult(result);
     }

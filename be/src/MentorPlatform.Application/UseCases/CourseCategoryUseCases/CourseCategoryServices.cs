@@ -1,14 +1,12 @@
 ﻿using MentorPlatform.Application.Commons.CommandMessages;
 using MentorPlatform.Application.Commons.Errors;
 using MentorPlatform.Application.Commons.Models.Query;
-using MentorPlatform.Application.Commons.Models.Requests.CourseCategory;
-using MentorPlatform.Application.Commons.Models.Responses.Course;
+using MentorPlatform.Application.Commons.Models.Requests.CourseCategoryRequests;
 using MentorPlatform.Application.Commons.Models.Responses.CourseCategory;
-using MentorPlatform.Domain.Entities;
 using MentorPlatform.Domain.Repositories;
 using MentorPlatform.Domain.Shared;
 
-namespace MentorPlatform.Application.UseCases.CourseCategory;
+namespace MentorPlatform.Application.UseCases.CourseCategoryUseCases;
 public class CourseCategoryServices : ICourseCategoryServices
 {
     private readonly ICourseCategoryRepository _courseCategoryRepository;
@@ -39,7 +37,7 @@ public class CourseCategoryServices : ICourseCategoryServices
                             });
         var res = PaginationResult<CourseCategoryResponse>.Create(data: await _courseCategoryRepository.ToListAsync(queryPagination),
                                                                   totalCount: await _courseCategoryRepository.CountAsync(queryAll),
-                                                                  pageIndex: queryParameters.PageNumber,
+                                                                  pageNumber: queryParameters.PageNumber,
                                                                   pageSize: queryParameters.PageSize);
        
         return Result<PaginationResult<CourseCategoryResponse>>.Success(res);
@@ -56,13 +54,13 @@ public class CourseCategoryServices : ICourseCategoryServices
                                                     Description = x.Description,
                                                     CourseCount = x.Courses != null ? x.Courses.Count : 0,
                                                     IsActive = x.IsActive,
-                                                    Courses = x.Courses != null ? x.Courses.Select(c => new CourseResponse()
+                                                    Courses = x.Courses != null ? x.Courses.Select(c => new CourseInforForCategoryResponse()
                                                     {
                                                         Id = c.Id,
                                                         Title = c.Title,
                                                         Description = c.Description,
-                                                        Level = (int)c.Level
-                                                    }).ToList() : new List<CourseResponse>()
+                                                        Level = c.Level
+                                                    }).ToList() : new List<CourseInforForCategoryResponse>()
                                                 });
 
         var selectedCategory = await _courseCategoryRepository.FirstOrDefaultAsync(query);
