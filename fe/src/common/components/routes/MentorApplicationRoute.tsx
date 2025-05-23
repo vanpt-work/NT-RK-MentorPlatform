@@ -9,10 +9,7 @@ import type { CurrentUserApplication } from "@/modules/MentorPage/ApplicationSta
 
 import { FullscreenLoading } from "../loading-spinner";
 
-const ALLOWED_PENDING_PATHS = [
-    "/mentor/request-application",
-    "/mentor/applications/status",
-];
+const ALLOWED_PENDING_PATHS = ["/mentor/applications/status"];
 
 const MentorApplicationRoute = ({ children }: { children: JSX.Element }) => {
     const [application, setApplication] =

@@ -79,7 +79,7 @@ const FilePreviewDialog: React.FC<FilePreviewDialogProps> = ({
                 })
                 .catch((error) => {
                     console.error("Download error:", error);
-                    window.open(downloadUrl, "_blank");
+                    // window.open(downloadUrl, "_blank");
                 });
         }
     };

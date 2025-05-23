@@ -191,7 +191,6 @@ export const ApplicationEditForm: React.FC<ApplicationEditFormProps> = ({
             })
             .catch((error) => {
                 console.error("Error fetching file:", error);
-                window.open(url, "_blank");
             });
     };
 

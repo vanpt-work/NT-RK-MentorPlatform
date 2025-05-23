@@ -46,7 +46,15 @@ import { mentorApplicationService } from "../services/mentorApplicationService";
 import type { FormValues } from "../types";
 import { formSchema } from "../utils/schemas";
 
-export const ApplicationForm = () => {
+type ApplicationFormProps = {
+    onApplicationCreated?: () => void;
+    skipApplicationCheck?: boolean;
+};
+
+export const ApplicationForm: React.FC<ApplicationFormProps> = ({
+    onApplicationCreated,
+    skipApplicationCheck = false,
+}) => {
     const [progress, setProgress] = useState(0);
     const [files, setFiles] = useState<File[]>([]);
     const [certificationList, setCertificationList] = useState<string[]>([]);
@@ -55,9 +63,15 @@ export const ApplicationForm = () => {
     const [previewError, setPreviewError] = useState(false);
     const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
+        if (skipApplicationCheck) {
+            fetchCurrentUser();
+            return;
+        }
+
         const checkExistingApplication = async () => {
             try {
                 const response =
@@ -74,7 +88,11 @@ export const ApplicationForm = () => {
                         toast.info(
                             "You have already applied for mentor. Please check your application status.",
                         );
-                        navigate("/mentor/applications/status");
+                        if (onApplicationCreated) {
+                            onApplicationCreated();
+                        } else {
+                            navigate("/mentor/applications/status");
+                        }
                         return;
                     }
                 }
@@ -87,7 +105,7 @@ export const ApplicationForm = () => {
         };
 
         checkExistingApplication();
-    }, [navigate]);
+    }, [navigate, onApplicationCreated, skipApplicationCheck]);
 
     // Fetch current user data
     const fetchCurrentUser = async () => {
@@ -99,9 +117,6 @@ export const ApplicationForm = () => {
             }
         } catch (error) {
             console.error("Error fetching user data:", error);
-            toast.error(
-                "Unable to load user information. Please try again later.",
-            );
         } finally {
             setLoading(false);
         }
@@ -143,6 +158,8 @@ export const ApplicationForm = () => {
 
     const onSubmit: SubmitHandler<FormValues> = async (values) => {
         try {
+            setIsSubmitting(true);
+
             if (files.length > 0) {
                 const formData = new FormData();
 
@@ -183,33 +200,51 @@ export const ApplicationForm = () => {
 
                 if (response.isSuccess) {
                     toast.success("Application submitted successfully!");
-                    setTimeout(() => {
-                        navigate("/mentor/applications/status");
-                    }, 1500);
+                    if (onApplicationCreated) {
+                        onApplicationCreated();
+                    } else {
+                        setTimeout(() => {
+                            navigate("/mentor/applications/status");
+                        }, 1500);
+                    }
                 } else {
-                    toast.error(
-                        response.errors?.[0]?.message ||
-                            "Failed to submit application",
-                    );
+                    console.error("API Error:", response.errors);
                 }
             } else {
+                const formData = new FormData();
+                formData.append("education", values.education);
+                formData.append("workExperience", values.workExperience);
+                formData.append("description", values.description);
+                formData.append("status", values.status.toString());
+
+                if (values.certifications && values.certifications.length > 0) {
+                    values.certifications.forEach((cert, index) => {
+                        formData.append(`certifications[${index}]`, cert);
+                    });
+                }
+
                 const response =
-                    await mentorApplicationService.createApplication(values);
+                    await mentorApplicationService.createApplicationWithFormData(
+                        formData,
+                    );
 
                 if (response.isSuccess) {
                     toast.success("Application submitted successfully!");
-                    setTimeout(() => {
-                        navigate("/mentor/applications/status");
-                    }, 1500);
+                    if (onApplicationCreated) {
+                        onApplicationCreated();
+                    } else {
+                        setTimeout(() => {
+                            navigate("/mentor/applications/status");
+                        }, 1500);
+                    }
                 } else {
-                    toast.error(
-                        response.errors?.[0]?.message ||
-                            "Failed to submit application",
-                    );
+                    console.error("API Error:", response.errors);
                 }
             }
         } catch (error: any) {
             console.error("Error submitting application:", error);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -637,8 +672,19 @@ export const ApplicationForm = () => {
 
                     {/* Submit Button */}
                     <div className="pt-4">
-                        <Button type="submit" className="w-full sm:w-auto">
-                            Submit Application
+                        <Button
+                            type="submit"
+                            className="w-full sm:w-auto"
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? (
+                                <>
+                                    <LoadingSpinner className="mr-2" />
+                                    Submitting...
+                                </>
+                            ) : (
+                                "Submit Application"
+                            )}
                         </Button>
                     </div>
                 </form>

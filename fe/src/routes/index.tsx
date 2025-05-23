@@ -11,7 +11,6 @@ import MentorApprovalsPage from "@/modules/AdminPage/MentorApprovalsPage";
 import HomePage from "@/modules/HomePage";
 import Login from "@/modules/LoginPage";
 import ApplicationStatusPage from "@/modules/MentorPage/ApplicationStatusPage";
-import RequestApplicationPage from "@/modules/MentorPage/RequestApplicationPage";
 import OTPVerificationPage from "@/modules/OTPVerificationPage";
 
 import MainLayout from "../layouts/main-layout";
@@ -155,10 +154,6 @@ const router = createBrowserRouter([
             {
                 path: "applications/status",
                 element: <ApplicationStatusPage />,
-            },
-            {
-                path: "request-application",
-                element: <RequestApplicationPage />,
             },
             {
                 path: "profile",

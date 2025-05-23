@@ -1,6 +1,13 @@
-import { Download, Edit, Eye, FileText, Mail, RefreshCw } from "lucide-react";
+import {
+    Download,
+    Edit,
+    Eye,
+    FileText,
+    Mail,
+    PlusCircle,
+    RefreshCw,
+} from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import {
@@ -25,6 +32,7 @@ import { getFileExtension } from "@/modules/AdminPage/MentorApprovalsPage/utils/
 import ApplicationEditForm from "./application-edit-form";
 import ApplicationStatusSection from "./application-status";
 
+import ApplicationForm from "../../RequestApplicationPage/components/application-form";
 import { applicationStatusService } from "../services/applicationStatusService";
 import type { CurrentUserApplication } from "../types";
 
@@ -33,10 +41,10 @@ export default function ApplicationStatusView() {
         useState<CurrentUserApplication | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [showEditForm, setShowEditForm] = useState(false);
+    const [showNewApplicationForm, setShowNewApplicationForm] = useState(false);
     const [previewFile, setPreviewFile] = useState<PreviewFile | null>(null);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewError, setPreviewError] = useState(false);
-    const navigate = useNavigate();
 
     // Fetch application data
     const fetchData = async () => {
@@ -80,7 +88,6 @@ export default function ApplicationStatusView() {
 
             if (response.isSuccess && response.data) {
                 setApplication(response.data);
-                toast.success("Application data has been updated");
             } else {
                 setApplication(null);
             }
@@ -114,11 +121,44 @@ export default function ApplicationStatusView() {
         setPreviewError(true);
     };
 
+    // Handle create new application
+    const handleCreateApplication = () => {
+        if (application && application.status === ApplicationStatus.Rejected) {
+            if (
+                confirm(
+                    "This will create a new application and you'll no longer be able to view this rejected application. Continue?",
+                )
+            ) {
+                setApplication(null);
+                setShowNewApplicationForm(true);
+            }
+        } else {
+            setShowNewApplicationForm(true);
+        }
+    };
+
+    const handleApplicationCreated = () => {
+        toast.success("Application submitted successfully! Updating status...");
+        setTimeout(() => {
+            setShowNewApplicationForm(false);
+            refreshData();
+        }, 2000);
+    };
+
     if (showEditForm && application) {
         return (
             <ApplicationEditForm
                 application={application}
                 onUpdateSuccess={handleUpdateSuccess}
+            />
+        );
+    }
+
+    if (showNewApplicationForm) {
+        return (
+            <ApplicationForm
+                onApplicationCreated={handleApplicationCreated}
+                skipApplicationCheck={true}
             />
         );
     }
@@ -147,6 +187,18 @@ export default function ApplicationStatusView() {
                                     >
                                         <Edit className="mr-2 h-4 w-4" />
                                         Edit Application
+                                    </Button>
+                                )}
+                            {application &&
+                                application.status ===
+                                    ApplicationStatus.Rejected && (
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={handleCreateApplication}
+                                    >
+                                        <PlusCircle className="mr-2 h-4 w-4" />
+                                        New Application
                                     </Button>
                                 )}
                             {application && (
@@ -260,32 +312,51 @@ export default function ApplicationStatusView() {
                                 />
 
                                 {application.status !==
-                                    ApplicationStatus.Approved && (
+                                    ApplicationStatus.Approved &&
+                                    application.status !==
+                                        ApplicationStatus.Rejected && (
+                                        <div className="mt-4 rounded-md border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-900/30 dark:bg-yellow-900/20">
+                                            <div className="flex">
+                                                <div className="ml-3">
+                                                    <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-400">
+                                                        Note
+                                                    </h3>
+                                                    <div className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
+                                                        <p>
+                                                            You cannot create a
+                                                            new mentor
+                                                            application when you
+                                                            already have an
+                                                            application
+                                                            {application.status ===
+                                                                ApplicationStatus.Pending &&
+                                                                " pending"}
+                                                            {application.status ===
+                                                                ApplicationStatus.UnderReview &&
+                                                                " under review"}
+                                                            .
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                {application.status ===
+                                    ApplicationStatus.Rejected && (
                                     <div className="mt-4 rounded-md border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-900/30 dark:bg-yellow-900/20">
                                         <div className="flex">
                                             <div className="ml-3">
                                                 <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-400">
-                                                    Note
+                                                    Your application was
+                                                    rejected
                                                 </h3>
                                                 <div className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
                                                     <p>
-                                                        You cannot create a new
-                                                        mentor application when
-                                                        you already have an
-                                                        application
-                                                        {application.status ===
-                                                            ApplicationStatus.Pending &&
-                                                            " pending"}
-                                                        {application.status ===
-                                                            ApplicationStatus.UnderReview &&
-                                                            " under review"}
-                                                        {application.status ===
-                                                            ApplicationStatus.Rejected &&
-                                                            " rejected"}
-                                                        .
-                                                        {application.status ===
-                                                            ApplicationStatus.Rejected &&
-                                                            " Please read the note from the administrator and update your application."}
+                                                        Please read the note
+                                                        from the administrator
+                                                        and create a new
+                                                        application with the
+                                                        required changes.
                                                     </p>
                                                 </div>
                                             </div>
@@ -449,9 +520,7 @@ export default function ApplicationStatusView() {
                                     No application found
                                 </p>
                                 <Button
-                                    onClick={() =>
-                                        navigate("/mentor/request-application")
-                                    }
+                                    onClick={handleCreateApplication}
                                     className="mt-2"
                                 >
                                     Create Application
