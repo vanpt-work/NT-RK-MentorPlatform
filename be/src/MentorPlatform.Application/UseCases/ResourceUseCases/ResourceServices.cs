@@ -8,6 +8,7 @@ using MentorPlatform.Application.Options;
 using MentorPlatform.Application.Services.File;
 using MentorPlatform.Application.Services.FileStorage;
 using MentorPlatform.Domain.Entities;
+using MentorPlatform.Domain.Enums;
 using MentorPlatform.Domain.Repositories;
 using MentorPlatform.Domain.Shared;
 using Microsoft.Extensions.Logging;
