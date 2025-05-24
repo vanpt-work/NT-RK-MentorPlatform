@@ -1,6 +1,5 @@
 ﻿
 using FluentValidation;
-using MentorPlatform.Application.Options;
 using MentorPlatform.Application.Services.Security;
 using MentorPlatform.Application.UseCases.ApplicationRequestUseCases;
 using MentorPlatform.Application.UseCases.Authentication;
@@ -35,8 +34,6 @@ public static class DependencyInjection
         services.AddScoped<IExpertiseUseCases, ExpertiseUseCases>();
         services.AddScoped<ICourseServices, CourseServices>();
         services.AddScoped<IResourceServices, ResourceServices>();
-        var config = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
-        services.Configure<CloudinaryStorageOptions>(config.GetSection($"FileStorageOptions:{nameof(CloudinaryStorageOptions)}"));
         return services;
     }
     public static IServiceCollection ConfigureFluentValidation(this IServiceCollection services)

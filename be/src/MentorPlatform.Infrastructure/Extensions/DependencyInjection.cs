@@ -46,8 +46,8 @@ public static class DependencyInjection
         services
             .AddScoped<INamedFileStorageServices, CloudinaryStorageServices>((serviceProvider) =>
             {
-                var options = serviceProvider.GetRequiredService<IOptions<FileStorageOptions>>().Value;
-                return new CloudinaryStorageServices(options.CloudinaryStorageOptions!);
+                var fileStorageOptions = serviceProvider.GetRequiredService<IOptions<FileStorageOptions>>().Value;
+                return new CloudinaryStorageServices(fileStorageOptions, fileStorageOptions.CloudinaryStorageOptions!);
             });
         services.AddScoped<IFileStorageFactory, FileStorageFactory>();
         return services;

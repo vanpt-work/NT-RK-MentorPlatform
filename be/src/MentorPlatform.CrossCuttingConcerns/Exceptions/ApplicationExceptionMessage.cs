@@ -24,4 +24,5 @@ public static class ApplicationExceptionMessage
     public const string CourseNotFound = "Course not found";
     public const string ResourceNotFound = "Resource not found";
     public const string MentoringSessionContained = "You can not delete this course because it still has mentoring sessions.";
+    public const string ConcurrencyConflictError = "This task is currently in other process, please try it again!";
 }

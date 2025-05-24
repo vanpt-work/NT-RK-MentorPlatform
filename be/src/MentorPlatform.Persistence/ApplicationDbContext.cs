@@ -1,5 +1,7 @@
 ﻿
+using MentorPlatform.CrossCuttingConcerns.Exceptions;
 using MentorPlatform.Domain.Entities;
+using MentorPlatform.Domain.Primitives;
 using MentorPlatform.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -37,7 +39,20 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (typeof(IConcurrencyEntity).IsAssignableFrom(entityType.ClrType))
+            {
+                modelBuilder.Entity(entityType.ClrType)
+                    .Property(nameof(IConcurrencyEntity.RowVersion))
+                    .IsRowVersion()
+                    .IsConcurrencyToken();
+            }
+        }
+
         base.OnModelCreating(modelBuilder);
+
     }
     public async Task BeginTransactionAsync()
     {
@@ -86,6 +101,18 @@ public class ApplicationDbContext : DbContext, IUnitOfWork
                 _transaction.Dispose();
                 _transaction = null;
             }
+        }
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new ConcurrencyConflictException(ApplicationExceptionMessage.ConcurrencyConflictError);
         }
     }
 

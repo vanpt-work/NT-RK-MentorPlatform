@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MentorPlatform.Application\MentorPlatform.Application.csproj" />
+    <ProjectReference Include="..\MentorPlatform.CrossCuttingConcerns\MentorPlatform.CrossCuttingConcerns.csproj" />
     <ProjectReference Include="..\MentorPlatform.Domain\MentorPlatform.Domain.csproj" />
   </ItemGroup>
 
