@@ -135,11 +135,6 @@ export function RegisterForm() {
 
             const formData = new FormData();
 
-            console.log(
-                "Register request data:",
-                JSON.stringify(registerData, null, 2),
-            );
-
             formData.append("email", registerData.email);
             formData.append("password", registerData.password);
             formData.append("fullName", registerData.fullName);
@@ -235,7 +230,6 @@ export function RegisterForm() {
             }, 1500);
         } catch (error) {
             console.error("Registration failed:", error);
-            toast.error("Registration failed. Please try again.");
         } finally {
             setIsLoading(false);
         }

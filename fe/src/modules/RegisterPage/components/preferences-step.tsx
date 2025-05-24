@@ -42,6 +42,21 @@ export function PreferencesStep({
     const [searchTerm, setSearchTerm] = useState("");
     const [previousRole, setPreviousRole] = useState<string | null>(null);
 
+    // Set default values for learning style and teaching approach
+    useEffect(() => {
+        if (!form.getValues("learningStyle")) {
+            form.setValue("learningStyle", "Visual", {
+                shouldValidate: true,
+            });
+        }
+
+        if (role === "Mentor" && !form.getValues("teachingStyles")) {
+            form.setValue("teachingStyles", "handson", {
+                shouldValidate: true,
+            });
+        }
+    }, [form, role]);
+
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -73,14 +88,16 @@ export function PreferencesStep({
                     shouldValidate: true,
                 });
             } else if (role === "Mentor") {
-                form.setValue("learningStyle", null, {
+                form.setValue("teachingStyles", "handson", {
                     shouldValidate: true,
                 });
             }
 
-            form.setValue("learningStyle", null, {
-                shouldValidate: true,
-            });
+            if (!form.getValues("learningStyle")) {
+                form.setValue("learningStyle", "Visual", {
+                    shouldValidate: true,
+                });
+            }
 
             setPreviousRole(role);
         }
@@ -104,19 +121,9 @@ export function PreferencesStep({
 
     // Handle learning style selection/deselection
     const handleLearningStyleChange = (style: string) => {
-        const currentStyle = form.getValues("learningStyle");
-
-        // If current style is selected, clear it (unselect)
-        if (currentStyle === style) {
-            form.setValue("learningStyle", null, {
-                shouldValidate: true,
-            });
-        } else {
-            // Otherwise select the new style
-            form.setValue("learningStyle", style, {
-                shouldValidate: true,
-            });
-        }
+        form.setValue("learningStyle", style, {
+            shouldValidate: true,
+        });
         form.trigger("learningStyle");
     };
 
@@ -124,19 +131,9 @@ export function PreferencesStep({
     const handleTeachingStyleChange = (
         style: "handson" | "discussion" | "project" | "lecture",
     ) => {
-        const currentStyles = form.getValues("teachingStyles");
-
-        // If current style is selected, clear it (unselect)
-        if (currentStyles === style) {
-            form.setValue("teachingStyles", null, {
-                shouldValidate: true,
-            });
-        } else {
-            // Otherwise select the new style
-            form.setValue("teachingStyles", style, {
-                shouldValidate: true,
-            });
-        }
+        form.setValue("teachingStyles", style, {
+            shouldValidate: true,
+        });
         form.trigger("teachingStyles");
     };
 
@@ -152,6 +149,13 @@ export function PreferencesStep({
             onChange={() => form.trigger()}
             onSubmit={(e) => {
                 e.preventDefault();
+                if (!form.getValues("learningStyle")) {
+                    form.setError("learningStyle", {
+                        type: "required",
+                        message: "Preferred learning style is invalid.",
+                    });
+                    return;
+                }
                 onSubmit();
             }}
         >
@@ -187,11 +191,11 @@ export function PreferencesStep({
                                                 <button
                                                     type="button"
                                                     className="hover:bg-muted-foreground/20 inline-flex h-4 w-4 items-center justify-center rounded-full"
-                                                    onClick={() =>
+                                                    onClick={() => {
                                                         handleTopicChange(
                                                             categoryId,
-                                                        )
-                                                    }
+                                                        );
+                                                    }}
                                                 >
                                                     <X className="h-3 w-3" />
                                                 </button>

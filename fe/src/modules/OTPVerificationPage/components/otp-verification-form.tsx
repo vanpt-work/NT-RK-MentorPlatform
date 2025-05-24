@@ -143,13 +143,11 @@ export function OTPVerificationForm({
             await authService.resendVerifyEmail({
                 email: email,
             });
-
             toast.success("OTP has been sent! Please check your email.");
             setCanResendOtp(false);
             setResendCountdown(60);
         } catch (error) {
             console.error("Failed to resend OTP:", error);
-            setError("Failed to resend OTP. Please try again.");
         } finally {
             setIsResending(false);
         }
@@ -173,7 +171,6 @@ export function OTPVerificationForm({
             onVerificationSuccess();
         } catch (error) {
             console.error("OTP verification failed:", error);
-            setError("OTP verification failed. Please try again.");
         } finally {
             setIsVerifying(false);
         }

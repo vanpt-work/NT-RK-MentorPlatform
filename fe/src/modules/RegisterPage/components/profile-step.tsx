@@ -39,6 +39,7 @@ export function ProfileStep({
     const [previousRole, setPreviousRole] = useState<"Learner" | "Mentor">(
         form.getValues("role") || "Learner",
     );
+    const [photoError, setPhotoError] = useState<string | null>(null);
 
     // Fetch expertise list when component mounts
     useEffect(() => {
@@ -85,6 +86,28 @@ export function ProfileStep({
         form.setValue("expertises", updatedExpertise, {
             shouldValidate: true,
         });
+    };
+
+    // Custom avatar change handler to validate file type and size
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        setPhotoError(null);
+
+        if (file) {
+            if (!file.type.startsWith("image/")) {
+                setPhotoError("Image type is invalid, please upload again.");
+                e.target.value = "";
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                setPhotoError("Image must be less than or equal to 5 MB.");
+                e.target.value = "";
+                return;
+            }
+
+            onAvatarChange(e);
+        }
     };
 
     // Get icon for expertise
@@ -288,7 +311,7 @@ export function ProfileStep({
                                         type="file"
                                         accept="image/*"
                                         className="hidden"
-                                        onChange={onAvatarChange}
+                                        onChange={handleAvatarChange}
                                     />
                                     <Button
                                         type="button"
@@ -305,6 +328,11 @@ export function ProfileStep({
                                 <p className="text-muted-foreground text-xs">
                                     Maximum file size: 5MB
                                 </p>
+                                {photoError && (
+                                    <p className="text-sm text-red-500">
+                                        {photoError}
+                                    </p>
+                                )}
                                 {form.formState.errors.photo && (
                                     <p className="text-sm text-red-500">
                                         {form.formState.errors.photo.message?.toString()}
