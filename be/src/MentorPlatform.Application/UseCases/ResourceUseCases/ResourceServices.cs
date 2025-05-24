@@ -1,16 +1,18 @@
 ﻿using MentorPlatform.Application.Commons.CommandMessages;
 using MentorPlatform.Application.Commons.Errors;
+using MentorPlatform.Application.Commons.Models.Requests.ResourceRequests;
 using MentorPlatform.Application.Commons.Models.Requests.ResourseRequests;
 using MentorPlatform.Application.Commons.Models.Responses.ResourceResponses;
 using MentorPlatform.Application.Identity;
 using MentorPlatform.Application.Services.File;
 using MentorPlatform.Application.Services.FileStorage;
+using MentorPlatform.CrossCuttingConcerns.Options;
 using MentorPlatform.Domain.Entities;
+using MentorPlatform.Domain.Enums;
 using MentorPlatform.Domain.Repositories;
 using MentorPlatform.Domain.Shared;
 using Microsoft.Extensions.Logging;
-using MentorPlatform.Application.Commons.Models.Requests.ResourceRequests;
-using MentorPlatform.Domain.Enums;
+using Microsoft.Extensions.Options;
 
 namespace MentorPlatform.Application.UseCases.ResourceUseCases;
 public class ResourceServices : IResourceServices
@@ -20,6 +22,7 @@ public class ResourceServices : IResourceServices
     private readonly IExecutionContext _executionContext;
     private readonly IUserRepository _userRepository;
     private readonly IFileStorageServices _fileStorageServices;
+    private readonly FileStorageOptions _fileStorageOptions;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<ResourceServices> _logger;
 
@@ -29,7 +32,8 @@ public class ResourceServices : IResourceServices
         IRepository<MentoringSession, Guid> mentorSessionRepository,
         IFileStorageFactory fileStorageFactory,
         IUnitOfWork unitOfWork,
-        ILogger<ResourceServices> logger)
+        ILogger<ResourceServices> logger,
+        IOptions<FileStorageOptions> fileStorageOptions)
     {
         _resourceRepository = resourceRepository;
         _executionContext = executionContext;
@@ -38,6 +42,7 @@ public class ResourceServices : IResourceServices
         _fileStorageServices = fileStorageFactory.Get();
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _fileStorageOptions = fileStorageOptions.Value;
     }
 
     public async Task<Result> CreateResource(CreateResourceRequest request)
@@ -48,11 +53,29 @@ public class ResourceServices : IResourceServices
         {
             var fileUrl = await _fileStorageServices.UploadFileAsync(request.File);
 
+            string fileExtension = Path.GetExtension(request.File.FileName).ToLowerInvariant();
+            string fileType = string.Empty;
+            if (_fileStorageOptions.MediaSettings?.Images?.AllowedExtensions != null &&
+                _fileStorageOptions.MediaSettings.Images.AllowedExtensions.Contains(fileExtension))
+            {
+                fileType = "Image";
+            }
+            else if (_fileStorageOptions.MediaSettings?.Videos?.AllowedExtensions != null &&
+                     _fileStorageOptions.MediaSettings.Videos.AllowedExtensions.Contains(fileExtension))
+            {
+                fileType = "Video";
+            }
+            else if (_fileStorageOptions.MediaSettings?.Documents?.AllowedExtensions != null &&
+                    _fileStorageOptions.MediaSettings.Documents.AllowedExtensions.Contains(fileExtension))
+            {
+                fileType = "Document";
+            }
+
             var newResource = new Resource
             {
                 MentorId = userId,
                 FilePath = fileUrl,
-                FileType = Path.GetExtension(request.File.FileName.Trim()),
+                FileType = fileType,
                 Title = request.Title.Trim(),
                 Description = request.Description.Trim()
             };
@@ -69,11 +92,11 @@ public class ResourceServices : IResourceServices
         }
     }
 
-    public async Task<Result> EditResource(EditResourceRequest request)
+    public async Task<Result> EditResource(Guid id, EditResourceRequest request)
     {
         var userId = _executionContext.GetUserId();
 
-        var selectedResource = await _resourceRepository.GetByIdAsync(request.Id);
+        var selectedResource = await _resourceRepository.GetByIdAsync(id);
         if (selectedResource == null)
         {
             return Result.Failure(ResourceErrors.ResourceNotFound);

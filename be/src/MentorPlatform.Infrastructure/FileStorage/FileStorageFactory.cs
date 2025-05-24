@@ -3,7 +3,7 @@ using MentorPlatform.Application.Services.File;
 using MentorPlatform.Application.Services.FileStorage;
 using MentorPlatform.CrossCuttingConcerns.Exceptions;
 using MentorPlatform.CrossCuttingConcerns.Helpers;
-using MentorPlatform.Infrastructure.Options;
+using MentorPlatform.CrossCuttingConcerns.Options;
 using Microsoft.Extensions.Options;
 
 namespace MentorPlatform.Infrastructure.FileStorage;

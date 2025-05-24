@@ -31,6 +31,12 @@ public class CourseServices : ICourseServices
     public async Task<Result> AddCourseAsync(CreateCourseRequest courseRequest)
     {
         var userId = _executionContext.GetUserId();
+        var user = await _userRepository.GetByIdAsync(userId, nameof(User.Resources));
+
+        if (user == null)
+        {
+            return Result.Failure(403, UserErrors.UserNotExists);
+        }
 
         var newCourse = courseRequest.ToEntity();
         newCourse.MentorId = userId;
@@ -39,11 +45,14 @@ public class CourseServices : ICourseServices
             newCourse.CourseResources = [];
             foreach (var resourceRequestId in courseRequest.ResourceIds)
             {
-                var courseResource = new CourseResource()
+                if (user.Resources?.Any(r => r.Id.Equals(resourceRequestId)) ?? false)
                 {
-                    ResourceId = resourceRequestId,
-                };
-                newCourse.CourseResources.Add(courseResource);
+                    var courseResource = new CourseResource()
+                    {
+                        ResourceId = resourceRequestId,
+                    };
+                    newCourse.CourseResources.Add(courseResource);
+                }
             }
         }
 
@@ -53,11 +62,17 @@ public class CourseServices : ICourseServices
         return Result<string>.Success(CourseCommandMessages.CreateSuccessfully);
     }
 
-    public async Task<Result> UpdateCourseAsync(EditCourseRequest courseRequest)
+    public async Task<Result> UpdateCourseAsync(Guid courseId, EditCourseRequest courseRequest)
     {
         var userId = _executionContext.GetUserId();
+        var user = await _userRepository.GetByIdAsync(userId, nameof(User.Resources));
 
-        var selectedCourse = await _courseRepository.GetByIdAsync(courseRequest.Id, nameof(Course.CourseResources));
+        if (user == null)
+        {
+            return Result.Failure(403, UserErrors.UserNotExists);
+        }
+
+        var selectedCourse = await _courseRepository.GetByIdAsync(courseId, nameof(Course.CourseResources));
         if (selectedCourse == null)
         {
             return Result.Failure(400, CourseErrors.CourseNotExists);
@@ -72,23 +87,10 @@ public class CourseServices : ICourseServices
         selectedCourse.Level = courseRequest.Level;
         selectedCourse.CourseCategoryId = courseRequest.CourseCategoryId;
 
-        foreach (var courseResource in selectedCourse.CourseResources)
-        {
-            if (!courseRequest.OldResourceIds.Any(r => r.Equals(courseResource.ResourceId)))
-            {
-                selectedCourse.CourseResources.Remove(courseResource);
-            }
-        }
-
+        selectedCourse.CourseResources = [];
         foreach (var resourceId in courseRequest.ResourceIds)
         {
-            if (!selectedCourse.CourseResources.Any(c => c.ResourceId.Equals(resourceId)))
-            {
-                selectedCourse.CourseResources.Add(new CourseResource
-                {
-                    ResourceId = resourceId,
-                });
-            }
+            selectedCourse.CourseResources.Add(new CourseResource { ResourceId = resourceId });
         }
 
         _courseRepository.Update(selectedCourse);
@@ -105,17 +107,17 @@ public class CourseServices : ICourseServices
 
         if (selectedCourse == null)
         {
-            Result.Failure(400, CourseErrors.CourseNotExists);
+            return Result.Failure(400, CourseErrors.CourseNotExists);
         }
 
         if (selectedCourse.MentorId != userId)
         {
-            Result.Failure(403, CourseErrors.MentorCanNotDeleteCourse);
+            return Result.Failure(403, CourseErrors.MentorCanNotDeleteCourse);
         }
 
         if (selectedCourse.MentoringSessions != null && selectedCourse.MentoringSessions.Count > 0)
         {
-            Result.Failure(409, CourseErrors.CourseHasMentoringSession);
+            return Result.Failure(409, CourseErrors.CourseHasMentoringSession);
         }
 
         _courseRepository.Remove(selectedCourse);

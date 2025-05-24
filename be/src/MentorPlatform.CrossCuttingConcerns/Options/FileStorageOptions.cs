@@ -1,10 +1,13 @@
-﻿namespace MentorPlatform.Application.Options;
-public class CloudinaryStorageOptions
+﻿
+namespace MentorPlatform.CrossCuttingConcerns.Options;
+
+public class FileStorageOptions
 {
-    public string CloudName { get; set; } = default!;
-    public string ApiKey { get; set; } = default!;
-    public string ApiSecret { get; set; } = default!;
+    public string FileStorageProvider { get; set; } = default!;
     public MediaSettings MediaSettings { get; set; } = default!;
+    public AWSS3StorageOptions? AWSS3StorageOptions { get; set; } = default;
+    public CloudinaryStorageOptions? CloudinaryStorageOptions { get; set; } = default;
+
 }
 
 public class MediaSettings
@@ -34,4 +37,3 @@ public class DocumentSettings
     public long MaxSizeBytes { get; set; } = default!;
     public string FolderPath { get; set; } = default!;
 }
-

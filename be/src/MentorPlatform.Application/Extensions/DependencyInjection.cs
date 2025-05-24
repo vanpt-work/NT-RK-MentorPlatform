@@ -9,6 +9,7 @@ using MentorPlatform.Application.UseCases.ExpertisesUseCases;
 using MentorPlatform.Application.UseCases.ExpertiseUseCases;
 using MentorPlatform.Application.UseCases.ResourceUseCases;
 using MentorPlatform.Application.UseCases.UserManagement;
+using MentorPlatform.CrossCuttingConcerns.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -26,6 +27,8 @@ public static class DependencyInjection
 
     public static IServiceCollection ConfigureUseCases(this IServiceCollection services)
     {
+        var config = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+        services.Configure<FileStorageOptions>(config.GetSection(nameof(FileStorageOptions)));
         services.AddScoped<IAuthServices, AuthServices>();
         services.AddScoped<ICourseCategoryServices, CourseCategoryServices>();
         services.AddScoped<IUserServices, UserServices>();

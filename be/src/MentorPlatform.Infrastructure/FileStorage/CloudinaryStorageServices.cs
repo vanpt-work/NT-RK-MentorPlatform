@@ -2,7 +2,7 @@
 using CloudinaryDotNet.Actions;
 using MentorPlatform.Application.Services.File;
 using MentorPlatform.CrossCuttingConcerns.Exceptions;
-using MentorPlatform.Infrastructure.Options;
+using MentorPlatform.CrossCuttingConcerns.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 

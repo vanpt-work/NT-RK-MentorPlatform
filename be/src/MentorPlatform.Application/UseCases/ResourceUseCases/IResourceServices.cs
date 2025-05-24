@@ -6,7 +6,7 @@ namespace MentorPlatform.Application.UseCases.ResourceUseCases;
 public interface IResourceServices
 {
     public Task<Result> CreateResource(CreateResourceRequest request);
-    public Task<Result> EditResource(EditResourceRequest request);
+    public Task<Result> EditResource(Guid id, EditResourceRequest request);
     public Task<Result> DeleteResource(Guid id);
     public Task<Result> GetAllAsync(ResourceQueryParameters queryParameters);
     public Task<Result> GetByIdAsync(Guid id);

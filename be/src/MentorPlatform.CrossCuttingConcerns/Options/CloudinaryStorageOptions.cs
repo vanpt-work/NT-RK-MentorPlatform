@@ -1,4 +1,4 @@
-﻿namespace MentorPlatform.Infrastructure.Options;
+﻿namespace MentorPlatform.CrossCuttingConcerns.Options;
 
 public class CloudinaryStorageOptions
 {

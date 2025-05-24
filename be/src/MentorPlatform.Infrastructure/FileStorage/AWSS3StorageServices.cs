@@ -3,7 +3,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using MentorPlatform.Application.Services.File;
 using MentorPlatform.CrossCuttingConcerns.Exceptions;
-using MentorPlatform.Infrastructure.Options;
+using MentorPlatform.CrossCuttingConcerns.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

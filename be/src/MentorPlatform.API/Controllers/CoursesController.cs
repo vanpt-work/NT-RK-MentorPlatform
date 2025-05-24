@@ -39,11 +39,11 @@ public class CoursesController : ApiControllerBase
         return ProcessResult(result);
     }
 
-    [HttpPut]
+    [HttpPut("{id:guid}")]
     [Authorize(Roles = nameof(Role.Mentor))]
-    public async Task<IActionResult> Edit(EditCourseRequest request)
+    public async Task<IActionResult> Edit(Guid id, EditCourseRequest request)
     {
-        var result = await _courseService.UpdateCourseAsync(request);
+        var result = await _courseService.UpdateCourseAsync(id, request);
         return ProcessResult(result);
     }
 

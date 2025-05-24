@@ -1,11 +1,15 @@
 ﻿using FluentValidation;
 using MentorPlatform.Application.Commons.Errors;
+using MentorPlatform.Domain.Enums;
 
 namespace MentorPlatform.Application.Commons.Models.Requests.CourseRequests;
-public class EditCourseRequest : CreateCourseRequest
+public class EditCourseRequest
 {
-    public Guid Id { get; set; }
-    public List<Guid> OldResourceIds { get; set; }
+    public string Title { get; set; } = default!;
+    public string Description { get; set; } = default!;
+    public CourseLevel Level { get; set; } = default!;
+    public Guid CourseCategoryId { get; set; } = default!;
+    public List<Guid> ResourceIds { get; set; } = default!;
 }
 
 public class EditCourseRequestValidator : AbstractValidator<EditCourseRequest>
