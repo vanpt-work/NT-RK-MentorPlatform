@@ -10,16 +10,19 @@ namespace MentorPlatform.Infrastructure.FileStorage;
 
 public class CloudinaryStorageServices : INamedFileStorageServices
 {
+    private readonly FileStorageOptions _fileStorageOptions;
     private readonly CloudinaryStorageOptions _cloudinaryStorageOptions;
     private readonly Cloudinary _cloudinary;
 
-    public CloudinaryStorageServices(IOptions<CloudinaryStorageOptions> cloudinaryStorageOptions)
+    public CloudinaryStorageServices(IOptions<FileStorageOptions> fileStorageOptions, IOptions<CloudinaryStorageOptions> cloudinaryStorageOptions)
     {
+        _fileStorageOptions = fileStorageOptions.Value;
         _cloudinaryStorageOptions = cloudinaryStorageOptions.Value;
         _cloudinary = SetupCloudinary();
     }
-    public CloudinaryStorageServices(CloudinaryStorageOptions cloudinaryStorageOptions)
+    public CloudinaryStorageServices(FileStorageOptions fileStorageOptions, CloudinaryStorageOptions cloudinaryStorageOptions)
     {
+        _fileStorageOptions = fileStorageOptions;
         _cloudinaryStorageOptions = cloudinaryStorageOptions;
         _cloudinary = SetupCloudinary();
     }
@@ -48,7 +51,6 @@ public class CloudinaryStorageServices : INamedFileStorageServices
             throw new ArgumentException(ApplicationExceptionMessage.InvalidFile);
         }
     }
-
 
     public Task<string> GetPreSignedUrlFile(string filePath, CancellationToken token = default)
     {
@@ -81,18 +83,18 @@ public class CloudinaryStorageServices : INamedFileStorageServices
     private Task<RawUploadResult> UploadMediaFileAsync(IFormFile file, CancellationToken cancellationToken = default)
     {
         string fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
-        if (_cloudinaryStorageOptions.MediaSettings?.Images?.AllowedExtensions != null &&
-            _cloudinaryStorageOptions.MediaSettings.Images.AllowedExtensions.Contains(fileExtension))
+        if (_fileStorageOptions.MediaSettings?.Images?.AllowedExtensions != null &&
+            _fileStorageOptions.MediaSettings.Images.AllowedExtensions.Contains(fileExtension))
         {
             return UploadImageAsync(file, cancellationToken);
         }
-        else if (_cloudinaryStorageOptions.MediaSettings?.Videos?.AllowedExtensions != null &&
-                 _cloudinaryStorageOptions.MediaSettings.Videos.AllowedExtensions.Contains(fileExtension))
+        else if (_fileStorageOptions.MediaSettings?.Videos?.AllowedExtensions != null &&
+                 _fileStorageOptions.MediaSettings.Videos.AllowedExtensions.Contains(fileExtension))
         {
             return UploadVideoAsync(file, cancellationToken);
         }
-        else if (_cloudinaryStorageOptions.MediaSettings?.Documents?.AllowedExtensions != null &&
-                _cloudinaryStorageOptions.MediaSettings.Documents.AllowedExtensions.Contains(fileExtension))
+        else if (_fileStorageOptions.MediaSettings?.Documents?.AllowedExtensions != null &&
+                _fileStorageOptions.MediaSettings.Documents.AllowedExtensions.Contains(fileExtension))
         {
             return UploadDocumentAsync(file, cancellationToken);
         }
@@ -144,7 +146,7 @@ public class CloudinaryStorageServices : INamedFileStorageServices
     }
     private ImageUploadParams CreateUploadImageParams(IFormFile file)
     {
-        var uploadFolder = _cloudinaryStorageOptions.MediaSettings.Images.FolderPath;
+        var uploadFolder = _fileStorageOptions.MediaSettings.Images.FolderPath;
         return new ImageUploadParams
         {
             File = new FileDescription(file.FileName, file.OpenReadStream()),
