@@ -139,8 +139,6 @@ export function PasswordResetForm() {
             setStep(2);
         } catch (err) {
             console.error("Password reset request failed:", err);
-            setError("Failed to send OTP. Please try again.");
-            toast.error("Failed to send verification code. Please try again.");
         } finally {
             setIsLoading(false);
         }
@@ -161,8 +159,6 @@ export function PasswordResetForm() {
             setStep(3);
         } catch (err) {
             console.error("OTP verification failed:", err);
-            setError("Invalid OTP. Please try again.");
-            toast.error("Invalid verification code. Please try again.");
         } finally {
             setIsLoading(false);
         }
@@ -189,8 +185,6 @@ export function PasswordResetForm() {
             }, 3000);
         } catch (err) {
             console.error("Password reset failed:", err);
-            setError("Failed to reset password. Please try again.");
-            toast.error("Failed to reset password. Please try again.");
         } finally {
             setIsLoading(false);
         }
