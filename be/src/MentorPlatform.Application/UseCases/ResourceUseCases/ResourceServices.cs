@@ -4,16 +4,15 @@ using MentorPlatform.Application.Commons.Models.Requests.ResourceRequests;
 using MentorPlatform.Application.Commons.Models.Requests.ResourseRequests;
 using MentorPlatform.Application.Commons.Models.Responses.ResourceResponses;
 using MentorPlatform.Application.Identity;
-using MentorPlatform.Application.Options;
 using MentorPlatform.Application.Services.File;
 using MentorPlatform.Application.Services.FileStorage;
+using MentorPlatform.CrossCuttingConcerns.Options;
 using MentorPlatform.Domain.Entities;
 using MentorPlatform.Domain.Enums;
 using MentorPlatform.Domain.Repositories;
 using MentorPlatform.Domain.Shared;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Threading;
 
 namespace MentorPlatform.Application.UseCases.ResourceUseCases;
 public class ResourceServices : IResourceServices
@@ -23,9 +22,9 @@ public class ResourceServices : IResourceServices
     private readonly IExecutionContext _executionContext;
     private readonly IUserRepository _userRepository;
     private readonly IFileStorageServices _fileStorageServices;
+    private readonly FileStorageOptions _fileStorageOptions;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<ResourceServices> _logger;
-    private readonly CloudinaryStorageOptions _cloudinaryStorageOptions;
 
     public ResourceServices(IResourceRepository resourceRepository,
         IExecutionContext executionContext,
@@ -34,7 +33,7 @@ public class ResourceServices : IResourceServices
         IFileStorageFactory fileStorageFactory,
         IUnitOfWork unitOfWork,
         ILogger<ResourceServices> logger,
-        IOptions<CloudinaryStorageOptions> cloudinaryStorageOptions)
+        IOptions<FileStorageOptions> fileStorageOptions)
     {
         _resourceRepository = resourceRepository;
         _executionContext = executionContext;
@@ -43,7 +42,7 @@ public class ResourceServices : IResourceServices
         _fileStorageServices = fileStorageFactory.Get();
         _unitOfWork = unitOfWork;
         _logger = logger;
-        _cloudinaryStorageOptions = cloudinaryStorageOptions.Value;
+        _fileStorageOptions = fileStorageOptions.Value;
     }
 
     public async Task<Result> CreateResource(CreateResourceRequest request)
@@ -56,18 +55,18 @@ public class ResourceServices : IResourceServices
 
             string fileExtension = Path.GetExtension(request.File.FileName).ToLowerInvariant();
             string fileType = string.Empty;
-            if (_cloudinaryStorageOptions.MediaSettings?.Images?.AllowedExtensions != null &&
-                _cloudinaryStorageOptions.MediaSettings.Images.AllowedExtensions.Contains(fileExtension))
+            if (_fileStorageOptions.MediaSettings?.Images?.AllowedExtensions != null &&
+                _fileStorageOptions.MediaSettings.Images.AllowedExtensions.Contains(fileExtension))
             {
                 fileType = "Image";
             }
-            else if (_cloudinaryStorageOptions.MediaSettings?.Videos?.AllowedExtensions != null &&
-                     _cloudinaryStorageOptions.MediaSettings.Videos.AllowedExtensions.Contains(fileExtension))
+            else if (_fileStorageOptions.MediaSettings?.Videos?.AllowedExtensions != null &&
+                     _fileStorageOptions.MediaSettings.Videos.AllowedExtensions.Contains(fileExtension))
             {
                 fileType = "Video";
             }
-            else if (_cloudinaryStorageOptions.MediaSettings?.Documents?.AllowedExtensions != null &&
-                    _cloudinaryStorageOptions.MediaSettings.Documents.AllowedExtensions.Contains(fileExtension))
+            else if (_fileStorageOptions.MediaSettings?.Documents?.AllowedExtensions != null &&
+                    _fileStorageOptions.MediaSettings.Documents.AllowedExtensions.Contains(fileExtension))
             {
                 fileType = "Document";
             }

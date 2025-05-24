@@ -3,7 +3,7 @@ using MailKit.Net.Smtp;
 using MailKit.Security;
 using MentorPlatform.Application.Commons.Models.Mail;
 using MentorPlatform.Application.Services.Mail;
-using MentorPlatform.Infrastructure.Options;
+using MentorPlatform.CrossCuttingConcerns.Options;
 using Microsoft.Extensions.Options;
 using MimeKit;
 

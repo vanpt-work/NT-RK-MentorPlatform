@@ -10,7 +10,7 @@ using MentorPlatform.Infrastructure.Emails;
 using MentorPlatform.Infrastructure.FileStorage;
 using MentorPlatform.Infrastructure.HostedServices;
 using MentorPlatform.Infrastructure.Identity;
-using MentorPlatform.Infrastructure.Options;
+using MentorPlatform.CrossCuttingConcerns.Options;
 using MentorPlatform.Infrastructure.Security;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

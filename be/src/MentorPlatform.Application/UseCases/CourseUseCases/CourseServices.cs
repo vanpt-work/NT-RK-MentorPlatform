@@ -87,24 +87,10 @@ public class CourseServices : ICourseServices
         selectedCourse.Level = courseRequest.Level;
         selectedCourse.CourseCategoryId = courseRequest.CourseCategoryId;
 
-        foreach (var courseResource in selectedCourse.CourseResources)
-        {
-            if (!courseRequest.OldResourceIds.Any(r => r.Equals(courseResource.ResourceId)))
-            {
-                selectedCourse.CourseResources.Remove(courseResource);
-            }
-        }
-
+        selectedCourse.CourseResources = [];
         foreach (var resourceId in courseRequest.ResourceIds)
         {
-            if (!selectedCourse.CourseResources.Any(c => c.ResourceId.Equals(resourceId))
-                && (user.Resources?.Any(r => r.Id.Equals(resourceId)) ?? false))
-            {
-                selectedCourse.CourseResources.Add(new CourseResource
-                {
-                    ResourceId = resourceId,
-                });
-            }
+            selectedCourse.CourseResources.Add(new CourseResource { ResourceId = resourceId });
         }
 
         _courseRepository.Update(selectedCourse);
