@@ -7,7 +7,10 @@ import React, {
     useState,
 } from "react";
 
-import LoadingSpinner from "../components/loading-spinner";
+import { ApplicationStatus } from "@/modules/AdminPage/MentorApprovalsPage/types";
+import { applicationStatusService } from "@/modules/MentorPage/ApplicationStatusPage/services/applicationStatusService";
+
+import { FullscreenLoading } from "../components/loading-spinner";
 import { PATH } from "../constants/paths";
 import {
     getAccessToken,
@@ -18,12 +21,13 @@ import {
     setClientToken,
 } from "../lib/token";
 import authService from "../services/authServices";
-import type {
-    CurrentUser,
-    LoginRequest,
-    Token,
-    VerifyEmailRequest,
-    VerifyEmailResponse,
+import {
+    type CurrentUser,
+    type LoginRequest,
+    Role,
+    type Token,
+    type VerifyEmailRequest,
+    type VerifyEmailResponse,
 } from "../types/auth";
 import type { Result } from "../types/result";
 
@@ -69,6 +73,12 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         getCurrentUser();
     }, []);
 
+    const checkMentorApplicationStatus = async () => {
+        const response =
+            await applicationStatusService.getCurrentUserApplication();
+        return response.data;
+    };
+
     const logout = () => {
         const refreshToken = getRefreshToken();
         const accesshToken = getAccessToken();
@@ -91,7 +101,25 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
             };
             setClientToken(token);
             setIsAuthenticated(true);
-            getCurrentUser();
+            const userResponse = await authService.getCurrentUser();
+            const currentUser = userResponse.data;
+            setUser(currentUser);
+
+            if (currentUser?.role === Role.Admin) {
+                return PATH.AdminDashboard;
+            } else if (currentUser?.role === Role.Learner) {
+                return PATH.LearnerDashboard;
+            } else if (currentUser?.role === Role.Mentor) {
+                const applicationStatus = await checkMentorApplicationStatus();
+                if (
+                    applicationStatus &&
+                    applicationStatus.status === ApplicationStatus.Approved
+                ) {
+                    return PATH.MentorDashboard;
+                } else {
+                    return PATH.MentorApplication;
+                }
+            }
 
             return PATH.Home;
         } else {
@@ -140,7 +168,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         verify,
     };
     return loading ? (
-        <LoadingSpinner />
+        <FullscreenLoading />
     ) : (
         <AuthContext.Provider value={contextValue}>
             {children}

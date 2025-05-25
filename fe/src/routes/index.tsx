@@ -1,73 +1,83 @@
-import { createBrowserRouter } from "react-router-dom";
+import { Navigate, createBrowserRouter } from "react-router-dom";
 
-import PrivateRoute from "@/common/components/routes/PrivateRoute";
+import AuthRedirectRoute from "@/common/components/routes/AuthRedirectRoute";
+import MentorApplicationRoute from "@/common/components/routes/MentorApplicationRoute";
+import PermissionRoute from "@/common/components/routes/PermissionRoute";
+import { Role } from "@/common/types/auth";
+import MentorLayout from "@/layouts/mentor-layout";
 import ManageCourseCategoryPage from "@/modules/AdminPage/ManageCourseCategoryPage";
 import ManageUsersPage from "@/modules/AdminPage/ManageUsersPage";
 import MentorApprovalsPage from "@/modules/AdminPage/MentorApprovalsPage";
 import HomePage from "@/modules/HomePage";
 import Login from "@/modules/LoginPage";
+import ApplicationStatusPage from "@/modules/MentorPage/ApplicationStatusPage";
 import OTPVerificationPage from "@/modules/OTPVerificationPage";
-import ForgotPassword from "@/modules/PasswordResetPage";
 
 import MainLayout from "../layouts/main-layout";
+import ForgotPassword from "../modules/PasswordResetPage";
 import ProfilePage from "../modules/ProfilePage";
 import Register from "../modules/RegisterPage";
 
 const router = createBrowserRouter([
-    // Protected routes with layout
-    {
-        element: (
-            <PrivateRoute>
-                <MainLayout />
-            </PrivateRoute>
-        ),
-        children: [
-            {
-                path: "/profile",
-                element: <ProfilePage />,
-            },
-            {
-                path: "/home",
-                element: <div>Home</div>,
-            },
-        ],
-    },
     {
         path: "/login",
-        element: <Login />,
+        element: (
+            <AuthRedirectRoute>
+                <Login />
+            </AuthRedirectRoute>
+        ),
     },
     {
         path: "/register",
-        element: <Register />,
+        element: (
+            <AuthRedirectRoute>
+                <Register />
+            </AuthRedirectRoute>
+        ),
     },
     {
         path: "/forgot-password",
-        element: <ForgotPassword />,
+        element: (
+            <AuthRedirectRoute>
+                <ForgotPassword />
+            </AuthRedirectRoute>
+        ),
     },
     {
         path: "/verify-otp",
-        element: <OTPVerificationPage />,
+        element: (
+            <AuthRedirectRoute>
+                <OTPVerificationPage />
+            </AuthRedirectRoute>
+        ),
     },
     {
         path: "/",
-        element: <HomePage />,
+        element: (
+            <AuthRedirectRoute>
+                <HomePage />
+            </AuthRedirectRoute>
+        ),
     },
-    // Admin routes
     {
         path: "/admin",
         element: (
-            <PrivateRoute>
+            <PermissionRoute role={Role.Admin}>
                 <MainLayout />
-            </PrivateRoute>
+            </PermissionRoute>
         ),
         children: [
+            {
+                path: "dashboard",
+                element: <div>Dashboard</div>,
+            },
             {
                 path: "manage-users",
                 element: <ManageUsersPage />,
             },
             {
-                path: "profile",
-                element: <ProfilePage />,
+                path: "manage-courses",
+                element: <div>Manage Courses</div>,
             },
             {
                 path: "manage-course-categories",
@@ -77,76 +87,122 @@ const router = createBrowserRouter([
                 path: "mentor-approvals",
                 element: <MentorApprovalsPage />,
             },
+            {
+                path: "resources",
+                element: <div>Resources</div>,
+            },
+            {
+                path: "messages",
+                element: <div>Messages</div>,
+            },
+            {
+                path: "profile",
+                element: <ProfilePage />,
+            },
         ],
     },
-
-    //   // Mentor routes
-    //   {
-    //     path: "/mentor",
-    //     element: <MainLayout userRole="mentor" />,
-    //     children: [
-    //       {
-    //         path: "dashboard",
-    //         element: <DashboardPage />,
-    //       },
-    //       {
-    //         path: "resources",
-    //         element: <ResourcesPage />,
-    //       },
-    //       {
-    //         path: "availability",
-    //         element: <AvailabilityPage />,
-    //       },
-    //       {
-    //         path: "manage-courses",
-    //         element: <ManageCoursesPage />,
-    //       },
-    //       {
-    //         path: "messages",
-    //         element: <MessagesPage />,
-    //       },
-    //       {
-    //         path: "profile",
-    //         element: <ProfilePage />,
-    //       },
-    //     ],
-    //   },
-
-    //   // Learner routes
-    //   {
-    //     path: "/learner",
-    //     element: <MainLayout userRole="learner" />,
-    //     children: [
-    //       {
-    //         path: "dashboard",
-    //         element: <DashboardPage />,
-    //       },
-    //       {
-    //         path: "find-mentor",
-    //         element: <FindMentorPage />,
-    //       },
-    //       {
-    //         path: "session",
-    //         element: <SessionPage />,
-    //       },
-    //       {
-    //         path: "progress",
-    //         element: <ProgressPage />,
-    //       },
-    //       {
-    //         path: "resources",
-    //         element: <ResourcesPage />,
-    //       },
-    //       {
-    //         path: "messages",
-    //         element: <MessagesPage />,
-    //       },
-    //       {
-    //         path: "profile",
-    //         element: <ProfilePage />,
-    //       },
-    //     ],
-    //   },
+    {
+        path: "/mentor",
+        element: (
+            <PermissionRoute role={Role.Mentor}>
+                <MentorApplicationRoute>
+                    <MainLayout />
+                </MentorApplicationRoute>
+            </PermissionRoute>
+        ),
+        children: [
+            {
+                path: "dashboard",
+                element: <div>Dashboard</div>,
+            },
+            {
+                path: "resources",
+                element: <div>Resources</div>,
+            },
+            {
+                path: "availability",
+                element: <div>Availability</div>,
+            },
+            {
+                path: "courses",
+                element: <div>Courses</div>,
+            },
+            {
+                path: "manage-courses",
+                element: <div>Manage Courses</div>,
+            },
+            {
+                path: "messages",
+                element: <div>Messages</div>,
+            },
+            {
+                path: "profile",
+                element: <ProfilePage />,
+            },
+        ],
+    },
+    {
+        path: "/mentor",
+        element: (
+            <PermissionRoute role={Role.Mentor}>
+                <MentorApplicationRoute>
+                    <MentorLayout />
+                </MentorApplicationRoute>
+            </PermissionRoute>
+        ),
+        children: [
+            {
+                path: "applications/status",
+                element: <ApplicationStatusPage />,
+            },
+            {
+                path: "profile",
+                element: <ProfilePage />,
+            },
+        ],
+    },
+    {
+        path: "/learner",
+        element: (
+            <PermissionRoute role={Role.Learner}>
+                <MainLayout />
+            </PermissionRoute>
+        ),
+        children: [
+            {
+                path: "dashboard",
+                element: <div>Dashboard</div>,
+            },
+            {
+                path: "find-mentors",
+                element: <div>Find Mentors</div>,
+            },
+            {
+                path: "sessions",
+                element: <div>Sessions</div>,
+            },
+            {
+                path: "my-progress",
+                element: <div>My Progress</div>,
+            },
+            {
+                path: "resources",
+                element: <div>Resources</div>,
+            },
+            {
+                path: "messages",
+                element: <div>Messages</div>,
+            },
+            {
+                path: "profile",
+                element: <ProfilePage />,
+            },
+        ],
+    },
+    {
+        path: "*",
+        element: <Navigate to="/" replace />,
+    },
 ]);
 
 export default router;

@@ -16,9 +16,7 @@ public class ApplicationRequestResponse
 public class ApplicationRequestDetailResponse : ApplicationRequestResponse
 {
     public string? Note { get; set; }
-
     public List<ApplicationRequestDocumentResponse>? ApplicationRequestDocuments { get; set; } = default;
-    
     public string MentorEmail { get; set; } = default!;
     public List<string>? MentorExpertises { get; set; } = default!;
     public List<string>? MentorCertifications { get; set; } = default!;

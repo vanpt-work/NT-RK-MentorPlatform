@@ -1,12 +1,10 @@
 import { Link } from "react-router-dom";
 
-import Header from "@/common/components/header";
 import { Button } from "@/common/components/ui/button";
 
 export default function HomePage() {
     return (
         <div className="bg-background text-foreground flex min-h-screen flex-col items-center justify-center">
-            <Header />
             <div className="container mx-auto flex flex-col items-center px-4 py-8">
                 <h1 className="mb-6 text-4xl font-bold">Mentor Platform</h1>
                 <p className="mb-8 max-w-2xl text-center text-xl">
@@ -16,11 +14,11 @@ export default function HomePage() {
 
                 <div className="mt-6 flex gap-4">
                     <Button asChild size="lg">
-                        <Link to="/register">Register Now</Link>
+                        <Link to="/login">Sign In</Link>
                     </Button>
 
                     <Button asChild variant="outline" size="lg">
-                        <Link to="/login">Sign In</Link>
+                        <Link to="/register">Register Now</Link>
                     </Button>
                 </div>
 

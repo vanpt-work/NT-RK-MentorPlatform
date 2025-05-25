@@ -3,9 +3,11 @@ import { Outlet } from "react-router-dom";
 
 import Header from "@/common/components/header";
 import Sidebar from "@/common/components/sidebar";
+import { useAuthContext } from "@/common/context/auth-context";
 
 const MainLayout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const { user } = useAuthContext();
 
     const handleSidebarToggle = (isOpen: boolean) => {
         setIsSidebarOpen(isOpen);
@@ -14,7 +16,7 @@ const MainLayout = () => {
     return (
         <div className="flex min-h-screen flex-col">
             <Header />
-            <Sidebar onToggle={handleSidebarToggle} />
+            <Sidebar onToggle={handleSidebarToggle} userRole={user?.role} />
             <main
                 className={`flex-grow pt-16 transition-all duration-300 ease-in-out ${
                     isSidebarOpen ? "pl-64" : "pl-20"

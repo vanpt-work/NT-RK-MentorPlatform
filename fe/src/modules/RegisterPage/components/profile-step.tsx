@@ -239,7 +239,17 @@ export function ProfileStep({
                             <Input
                                 id="fullName"
                                 placeholder=""
-                                {...form.register("fullName")}
+                                {...form.register("fullName", {
+                                    onChange: (e) => {
+                                        const value = e.target.value;
+                                        if (value.length > 200) {
+                                            e.target.value = value.slice(
+                                                0,
+                                                200,
+                                            );
+                                        }
+                                    },
+                                })}
                             />
                             {form.formState.errors.fullName && (
                                 <p className="text-sm text-red-500">
@@ -260,7 +270,17 @@ export function ProfileStep({
                                 placeholder="Tell us about yourself..."
                                 className="min-h-24"
                                 maxLength={2000}
-                                {...form.register("bio")}
+                                {...form.register("bio", {
+                                    onChange: (e) => {
+                                        const value = e.target.value;
+                                        if (value.length > 2000) {
+                                            e.target.value = value.slice(
+                                                0,
+                                                2000,
+                                            );
+                                        }
+                                    },
+                                })}
                             />
                             {form.formState.errors.bio && (
                                 <p className="text-sm text-red-500">
@@ -389,7 +409,17 @@ export function ProfileStep({
                                     placeholder="e.g. JavaScript, Project Management, Research"
                                     className="min-h-16"
                                     maxLength={200}
-                                    {...form.register("professionalSkill")}
+                                    {...form.register("professionalSkill", {
+                                        onChange: (e) => {
+                                            const value = e.target.value;
+                                            if (value.length > 200) {
+                                                e.target.value = value.slice(
+                                                    0,
+                                                    200,
+                                                );
+                                            }
+                                        },
+                                    })}
                                 />
                                 {form.formState.errors.professionalSkill && (
                                     <p className="text-sm text-red-500">
@@ -415,7 +445,17 @@ export function ProfileStep({
                                     placeholder="e.g. 5 years in Tech, 3 years in Finance"
                                     className="min-h-16"
                                     maxLength={200}
-                                    {...form.register("experience")}
+                                    {...form.register("experience", {
+                                        onChange: (e) => {
+                                            const value = e.target.value;
+                                            if (value.length > 200) {
+                                                e.target.value = value.slice(
+                                                    0,
+                                                    200,
+                                                );
+                                            }
+                                        },
+                                    })}
                                 />
                                 {form.formState.errors.experience && (
                                     <p className="text-sm text-red-500">
@@ -443,7 +483,17 @@ export function ProfileStep({
                                 placeholder="What do you want to achieve?"
                                 className="min-h-16"
                                 maxLength={200}
-                                {...form.register("goals")}
+                                {...form.register("goals", {
+                                    onChange: (e) => {
+                                        const value = e.target.value;
+                                        if (value.length > 200) {
+                                            e.target.value = value.slice(
+                                                0,
+                                                200,
+                                            );
+                                        }
+                                    },
+                                })}
                             />
                             {form.formState.errors.goals && (
                                 <p className="text-sm text-red-500">

@@ -29,19 +29,25 @@ export function LoadingSpinner({
             <div className="relative">
                 <div
                     className={cn(
-                        "border-t-primary animate-spin rounded-full border-transparent",
+                        "animate-spin rounded-full border-transparent",
+                        "border-t-primary dark:border-t-primary",
+                        "shadow-[0_0_10px_rgba(var(--primary)/0.3)] dark:shadow-[0_0_10px_rgba(var(--primary)/0.5)]",
                         sizeClasses[size],
                     )}
                 />
                 <div
                     className={cn(
-                        "border-primary/20 absolute inset-0 rounded-full border-t-transparent",
+                        "absolute inset-0 rounded-full",
+                        "border-primary/20 dark:border-primary/30",
+                        "border-t-transparent",
                         sizeClasses[size],
                     )}
                 />
             </div>
             {text && (
-                <p className="text-muted-foreground mt-4 text-sm">{text}</p>
+                <p className="text-foreground/70 dark:text-foreground/80 mt-4 text-sm font-medium">
+                    {text}
+                </p>
             )}
         </div>
     );

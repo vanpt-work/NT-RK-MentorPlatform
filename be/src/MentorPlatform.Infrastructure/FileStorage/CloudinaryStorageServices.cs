@@ -158,7 +158,7 @@ public class CloudinaryStorageServices : INamedFileStorageServices
     }
     private VideoUploadParams CreateUploadVideoParams(IFormFile file)
     {
-        var uploadFolder = _fileStorageOptions.MediaSettings.Images.FolderPath;
+        var uploadFolder = _cloudinaryStorageOptions.MediaSettings.Videos.FolderPath;
         return new VideoUploadParams
         {
             File = new FileDescription(file.FileName, file.OpenReadStream()),
@@ -170,7 +170,7 @@ public class CloudinaryStorageServices : INamedFileStorageServices
     }
     private RawUploadParams CreateUploadDocumentParams(IFormFile file)
     {
-        var uploadFolder = _fileStorageOptions.MediaSettings.Images.FolderPath;
+        var uploadFolder = _cloudinaryStorageOptions.MediaSettings.Documents.FolderPath;
         return new RawUploadParams
         {
             File = new FileDescription(file.FileName, file.OpenReadStream()),

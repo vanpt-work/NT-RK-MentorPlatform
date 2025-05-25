@@ -5,7 +5,7 @@ import { PATH } from "@/common/constants/paths";
 import { useAuthContext } from "@/common/context/auth-context";
 import type { Role } from "@/common/types/auth";
 
-import LoadingSpinner from "../loading-spinner";
+import { FullscreenLoading } from "../loading-spinner";
 
 const PermissionRoute = ({
     children,
@@ -17,7 +17,7 @@ const PermissionRoute = ({
     const { user, loading } = useAuthContext();
     const location = useLocation();
     if (loading) {
-        return <LoadingSpinner />;
+        return <FullscreenLoading />;
     }
     return user?.role == role ? (
         children
